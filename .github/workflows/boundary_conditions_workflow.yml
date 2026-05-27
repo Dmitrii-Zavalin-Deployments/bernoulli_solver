@@ -38,10 +38,19 @@ jobs:
             # 3. Write the metadata note locally to that hash
             git notes --ref=commits add -f -m "robot: true" $TARGET_COMMIT
 
-            # 🚀 4. Push the code branch first
+            # 🚀 4. Push the code branch first (This works perfectly)
             git push origin HEAD
 
-            # 🚀 5. Explicitly push the notes namespace so GitHub receives it
+            # 🔄 5. FETCH the remote notes history so the runner isn't blind
+            echo "🛰️ Fetching remote notes tree..."
+            git fetch origin refs/notes/commits:refs/notes/commits --force || echo "No remote notes tracking history yet."
+
+            # 🔄 6. MERGE the local note into the remote note tree using the 'cat_sort_uniq' strategy
+            echo "🧩 Merging local and remote notes..."
+            git notes merge origin/refs/notes/commits -s cat_sort_uniq || echo "Notes are already fully synchronized."
+
+            # 🚀 7. Push the reconciled notes namespace safely
+            echo "📡 Pushing synchronized notes namespace..."
             git push origin refs/notes/commits
           else
             echo "No changes to commit."
