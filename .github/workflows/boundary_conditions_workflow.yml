@@ -13,50 +13,36 @@ jobs:
       - name: 🛎️ Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # 🔑 Crucial: Must be 0 so Git knows the history to link notes
 
       - name: 🤖 Initialize Robot Identity & Notes
         run: |
           git config --global user.name "Automation Engine"
           git config --global user.email "automation@yourdomain"
-          git config --global notes.rewriteRef "refs/notes/*"
 
-      - name: 📝 Execute Core Automation Operations
+      - name: 📝 Make Local Changes
         run: |
-          # ------------------------------------------------------------------
-          # PLACE YOUR FUTURE INTERACTIVE LOGIC / SCRIPT INVOCATIONS HERE
-          # ------------------------------------------------------------------
-          echo "$(date '+%Y-%m-%d %H:%M:%S'): Core pipeline execution tick" >> trigger.txt
+          echo "$(date '+%Y-%m-%d %H:%M:%S'): Core pipeline tick" >> trigger.txt
 
-      - name: 🚀 Deterministic Commit & Notes Push Execution
+      - name: 🚀 Commit, Link Note, and Double-Push
         run: |
-          # Stage the explicit modifications
           git add trigger.txt
           
           if ! git diff --cached --quiet; then
+            # 1. Create the local commit on the runner VM
             git commit -m "🤖 robot: STEP processor operational update"
 
-            # 🧹 Step 1: Safely isolate runtime or transient file mutations
-            git stash --include-untracked
-
-            # 🏁 Step 2: Pull remote branch history to eliminate cross-job drift
-            git pull --rebase origin main || echo "No upstream branch adjustments required"
-
-            # 🔓 Step 3: Return workspace modifications to normal state
-            git stash pop || echo "Workspace reset complete"
-
-            # 🎯 Step 4: Lock down the finalized, stable post-rebase commit hash
+            # 2. Extract the hash of the commit we just created
             TARGET_COMMIT=$(git rev-parse HEAD)
+
+            # 3. Write the metadata note locally to that hash
             git notes --ref=commits add -f -m "robot: true" $TARGET_COMMIT
 
-            # 🔄 Step 5: Sync separate Git Notes historical tracking tree
-            echo "🛰️ Synchronizing Git Notes namespace..."
-            git fetch origin refs/notes/commits:refs/notes/commits --force || echo "Initializing new notes database structure."
-            git notes merge origin/refs/notes/commits -s cat_sort_uniq || echo "Notes fully aligned."
-
-            # 🚀 Step 6: Perform atomic push sequence (Notes payload must land first)
-            git push origin refs/notes/commits
+            # 🚀 4. Push the code branch first
             git push origin HEAD
+
+            # 🚀 5. Explicitly push the notes namespace so GitHub receives it
+            git push origin refs/notes/commits
           else
-            echo "Workspace completely clear. No operational commits generated."
+            echo "No changes to commit."
           fi
