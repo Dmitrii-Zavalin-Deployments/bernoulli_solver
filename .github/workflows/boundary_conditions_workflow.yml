@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: 🛎️ Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       # 🔧 GLOBAL ROBOT IDENTITY + NOTES INITIALIZATION
       - name: 🤖 Initialize Robot Identity & Notes
@@ -44,11 +46,16 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "🤖 robot: auto-clean unused imports"
 
-            # 🎯 FIX: Capture exact commit hash and force bind the note
+            # 🎯 100% Note Mandate: Bind note to the newly created commit hash
             TARGET_COMMIT=$(git rev-parse HEAD)
             git notes --ref=commits add -f -m "robot: true" $TARGET_COMMIT
-            git push origin refs/notes/commits
 
+            # 🔄 Clean sync cycle to bypass parallel race conditions
+            git fetch origin refs/notes/commits:refs/notes/commits --force || echo "First-time notes initialization."
+            git notes merge origin/refs/notes/commits -s cat_sort_uniq || echo "Notes tree synchronized."
+
+            # 🚀 Push notes data followed by standard branch updates
+            git push origin refs/notes/commits
             git push origin HEAD
           else
             echo "No autoflake changes to commit."
@@ -66,6 +73,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       # 🔧 GLOBAL ROBOT IDENTITY + NOTES INITIALIZATION
       - name: 🤖 Initialize Robot Identity & Notes
@@ -133,7 +141,7 @@ jobs:
           fi
 
       # ----------------------------------------------------------------------
-      # Integration Tests 1, 2, 3 Execution
+      # Integration Test 1: test_cube_no_slip
       # ----------------------------------------------------------------------
       - name: 🏃 Run Integration Test (test_cube_no_slip)
         id: integration_test_cube_no_slip
@@ -145,6 +153,9 @@ jobs:
           python3 src/gmsh_runner.py --step "$STEP_FILE" --resolution 0.5 --flow_region internal --no_slip true --initial_velocity 1.0 0.0 0.0 --initial_pressure 101325 --output "$TEMP_OUTPUT_FILE"
           python3 tests/helpers/compare_json.py "$EXPECTED_OUTPUT_PATH" "$TEMP_OUTPUT_FILE"
 
+      # ----------------------------------------------------------------------
+      # Integration Test 2: cube_with_hole_no_slip
+      # ----------------------------------------------------------------------
       - name: 🏃 Run Integration Test (cube_with_hole_no_slip)
         id: integration_test_cube_with_hole_no_slip
         run: |
@@ -155,6 +166,9 @@ jobs:
           python3 src/gmsh_runner.py --step "$STEP_FILE" --resolution 0.5 --flow_region internal --no_slip true --initial_velocity 1.0 0.0 0.0 --initial_pressure 101325 --output "$TEMP_OUTPUT_FILE"
           python3 tests/helpers/compare_json.py "$EXPECTED_OUTPUT_PATH" "$TEMP_OUTPUT_FILE"
 
+      # ----------------------------------------------------------------------
+      # Integration Test 3: hollow_cylinder_external_output_slip
+      # ----------------------------------------------------------------------
       - name: 🏃 Run Integration Test (hollow_cylinder_external_output_slip)
         id: integration_test_hollow_cylinder_external_output_slip
         run: |
