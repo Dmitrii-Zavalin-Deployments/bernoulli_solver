@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "$(date '+%Y-%m-%d %H:%M:%S'): Core pipeline tick" >> trigger.txt
 
-            - name: 🚀 Commit, Link Note, and Sync Notes
+      - name: 🚀 Commit, Link Note, and Sync Notes
         run: |
           git add trigger.txt
           
