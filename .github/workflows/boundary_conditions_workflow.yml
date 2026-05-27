@@ -24,34 +24,28 @@ jobs:
         run: |
           echo "$(date '+%Y-%m-%d %H:%M:%S'): Core pipeline tick" >> trigger.txt
 
-      - name: 🚀 Commit, Link Note, and Double-Push
+            - name: 🚀 Commit, Link Note, and Sync Notes
         run: |
           git add trigger.txt
           
           if ! git diff --cached --quiet; then
-            # 1. Create the local commit on the runner VM
             git commit -m "🤖 robot: STEP processor operational update"
-
-            # 2. Extract the hash of the commit we just created
             TARGET_COMMIT=$(git rev-parse HEAD)
 
-            # 3. Write the metadata note locally to that hash
-            git notes --ref=commits add -f -m "robot: true" $TARGET_COMMIT
+            # 1️⃣ Fetch remote notes FIRST
+            echo "🛰️ Fetching remote notes..."
+            git fetch origin refs/notes/commits:refs/notes/commits || true
 
-            # 🚀 4. Push the code branch first (This works perfectly)
+            # 2️⃣ Add the note locally
+            echo "📝 Adding note to commit $TARGET_COMMIT"
+            git notes --ref=commits add -f -m "robot: true" "$TARGET_COMMIT"
+
+            # 3️⃣ Push commit normally
             git push origin HEAD
 
-            # 🔄 5. FETCH the remote notes history so the runner isn't blind
-            echo "🛰️ Fetching remote notes tree..."
-            git fetch origin refs/notes/commits:refs/notes/commits --force || echo "No remote notes tracking history yet."
-
-            # 🔄 6. MERGE the local note into the remote note tree using the 'cat_sort_uniq' strategy
-            echo "🧩 Merging local and remote notes..."
-            git notes merge origin/refs/notes/commits -s cat_sort_uniq || echo "Notes are already fully synchronized."
-
-            # 🚀 7. Push the reconciled notes namespace safely
-            echo "📡 Pushing synchronized notes namespace..."
-            git push origin refs/notes/commits
+            # 4️⃣ Force‑push notes (the ONLY safe method)
+            echo "📡 Force‑pushing notes..."
+            git push --force origin refs/notes/commits
           else
             echo "No changes to commit."
           fi
