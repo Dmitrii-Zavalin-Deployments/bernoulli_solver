@@ -223,10 +223,18 @@ jobs:
           git add trigger.txt
           git commit -m "🤖 robot: STEP processor trigger log"
 
-          # 🎯 FIX: Explicitly extract HEAD hash and update targeting namespace
+          # 🎯 Step 1: Capture the exact commit we just made
           TARGET_COMMIT=$(git rev-parse HEAD)
           git notes --ref=commits add -f -m "robot: true" $TARGET_COMMIT
+
+          # 🔄 Step 2: Fetch and safely merge remote notes to prevent [rejected] errors
+          echo "🛰️ Synchronizing Git Notes namespace..."
+          git fetch origin refs/notes/commits:refs/notes/commits --force || echo "No remote notes tracking history yet."
+          git notes merge origin/refs/notes/commits -s cat_sort_uniq || echo "Notes are already fully synchronized."
+
+          # 🚀 Step 3: Push the isolated notes tree safely
           git push origin refs/notes/commits
 
+          # 🏁 Step 4: Rebase and push standard branch code
           git pull --rebase origin main || echo "⚠️ Rebase fallback triggered"
           git push origin main
