@@ -2,7 +2,7 @@
 
 class StepS3SolveMissingVariableInterface:
     """
-    Contract-only interface for Step S3: Solve the missing Bernoulli variable.
+    Contract-only interface for Step S3: Solve the missing Bernoulli primary variable.
 
     This step performs the first computational action in the solver. Given a
     partial BernoulliState (with exactly one primary variable marked UNFILLED),
@@ -10,8 +10,8 @@ class StepS3SolveMissingVariableInterface:
     the missing variable.
 
     S3 does NOT:
-    - compute delta_h or delta_v,
-    - compute energy or energy_imbalance,
+    - compute energy or energy_imbalance (computed in S4),
+    - compute p_min, p_max, v_min, or v_max (computed in S5),
     - mutate the input state,
     - perform type validation,
     - or infer any values other than the single missing primary variable.
@@ -31,6 +31,8 @@ class StepS3SolveMissingVariableInterface:
         Returns:
             new_state: BernoulliState
                 A new state with the missing primary variable computed and populated.
+                All other fields remain unchanged and any diagnostic or derived fields
+                remain UNFILLED.
 
         This method performs the Bernoulli computation but no other computations.
         """

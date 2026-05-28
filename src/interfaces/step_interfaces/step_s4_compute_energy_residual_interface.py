@@ -20,7 +20,7 @@ class StepS4ComputeEnergyResidualInterface:
     S4 does NOT:
         - modify primary variables,
         - compute any missing variable (S3),
-        - compute min/max constraints (S5),
+        - compute constraint-export fields (p_min, p_max, v_min, v_max),
         - perform validation or inference,
         - mutate the input state.
 

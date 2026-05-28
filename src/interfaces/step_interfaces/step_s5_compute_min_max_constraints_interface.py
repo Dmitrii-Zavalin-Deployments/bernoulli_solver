@@ -5,9 +5,9 @@ class StepS5ComputeMinMaxConstraintsInterface:
     Contract-only interface for Step S5: Compute the Bernoulli-derived
     physical constraint envelopes required by the Navier–Stokes solver.
 
-    Unlike earlier versions, S5 does NOT use pure min/max of p1, p2, v1, v2.
-    Instead, it constructs *loose but truthful* physical bounds using
-    four independent looseness coefficients supplied in SolverConfig:
+    S5 does NOT use pure min/max of p1, p2, v1, v2. Instead, it constructs
+    *loose but truthful* physical bounds using four independent looseness
+    coefficients supplied in SolverConfig:
 
         k_v_min, k_v_max, k_p_min, k_p_max
 

@@ -7,8 +7,9 @@ class StepS2ConstructPartialStateInterface:
     This step creates the initial BernoulliState (the Sovereign Container)
     using the validated input from S1. All fields that are present in the
     input are copied directly into the state. The single missing primary
-    variable, as well as all diagnostic fields (delta_h, delta_v, energy,
-    energy_imbalance), are populated with an explicit UNFILLED sentinel.
+    variable, as well as all diagnostic and execution-derived fields
+    (energy, energy_imbalance, p_min, p_max, v_min, v_max), are populated
+    with an explicit UNFILLED sentinel.
 
     S2 performs no computation, no inference, no type checking, and no
     mutation of values. It does not attempt to solve the missing variable
@@ -36,10 +37,10 @@ class StepS2ConstructPartialStateInterface:
         Returns:
             bernoulli_state_instance:
                 A BernoulliState object (Sovereign Container) with:
-                - all known fields populated with real values,
+                - all known primary fields populated with real values,
                 - the missing primary variable set to the sentinel,
-                - all diagnostic fields (delta_h, delta_v, energy,
-                  energy_imbalance) set to the sentinel.
+                - all diagnostic and execution-derived fields (energy,
+                  energy_imbalance, p_min, p_max, v_min, v_max) set to the sentinel.
 
         This method performs no computation and no inference.
         """

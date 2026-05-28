@@ -22,8 +22,9 @@ class StepS1ExactlyOneMissingInterface:
     - infer values,
     - construct or mutate the Sovereign Container,
     - inspect numerical ranges,
-    - classify diagnostic fields (energy, energy_imbalance),
-    - or interact with Δh or Δv.
+    - classify diagnostic or derived fields (energy, energy_imbalance,
+      p_min, p_max, v_min, v_max),
+    - or interact with removed fields such as delta_h or delta_v.
 
     This is a pure structural validation step and the gatekeeper for the solver.
     """
