@@ -9,14 +9,18 @@ class NoComputationBeforeValidationTestSignature:
     def test_solver_refuses_execution_if_validation_fails(self):
         """
         Validate that the solver refuses to execute any step of the
-        Minimal Step Chain when validation has not passed or has failed.
+        Minimal Step Chain (S0–S5) when validation has not passed or
+        has failed. No partial state construction or internal
+        computation is permitted.
         """
         raise NotImplementedError
 
     def test_solver_requires_successful_validation_before_execution(self):
         """
         Validate that the solver may only begin execution after all
-        contract‑validation checks have succeeded.
+        contract‑validation checks have succeeded. This includes type
+        validation, presence validation, excess‑field validation, and
+        schema ↔ state mapping.
         """
         raise NotImplementedError
 
@@ -24,6 +28,8 @@ class NoComputationBeforeValidationTestSignature:
         """
         Validate that the solver cannot execute partial steps, preview
         steps, or internal computations before validation succeeds.
+        No step (including S0 classification or S5 constraint export)
+        may run until validation is complete.
         """
         raise NotImplementedError
 
@@ -31,5 +37,7 @@ class NoComputationBeforeValidationTestSignature:
         """
         Validate that the validation gate cannot be bypassed by direct
         calls, internal methods, or step‑level execution attempts.
+        All execution paths must enforce the global validation gate
+        before any computation is allowed.
         """
         raise NotImplementedError
