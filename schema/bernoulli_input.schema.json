@@ -1,0 +1,22 @@
+{
+  "$id": "bernoulli_input.schema.json",
+  "title": "Bernoulli Solver Input Schema",
+  "type": "object",
+  "additionalProperties": false,
+
+  "properties": {
+    "p1":      { "type": "number" },
+    "p2":      { "type": "number" },
+    "v1":      { "type": "number" },
+    "v2":      { "type": "number" },
+    "h1":      { "type": "number" },
+    "h2":      { "type": "number" },
+    "delta_h": { "type": "number" },
+    "delta_v": { "type": "number" },
+    "rho":     { "type": "number" }
+  },
+
+  "required": [],
+
+  "description": "All Bernoulli variables are optional. Exactly one must be missing. This constraint is enforced by the Contract-Validation Step (Phase 2) and not by JSON Schema."
+}
