@@ -1,7 +1,5 @@
 import pytest
-import json
-from unittest.mock import patch, MagicMock
-from pathlib import Path
+from unittest.mock import patch
 from src.bernoulli_pipeline_orchestrator import run_solver
 from tests.signatures.no_computation_before_validation_signature import NoComputationBeforeValidationTestSignature
 
@@ -35,7 +33,6 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         # We need a dummy valid file for this test
         # (Assuming you have a valid test_input.json)
         # If no file exists, this test serves as a documentation of the gate.
-        pass
 
     def test_no_partial_or_intermediate_execution_allowed(self):
         """
