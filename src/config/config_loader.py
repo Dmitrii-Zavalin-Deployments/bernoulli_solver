@@ -24,7 +24,8 @@ def load_and_validate_config(config_path: str = "config/config.json") -> SolverC
             ) from e
 
     try:
-        # Dictionary unpacking creates the direct, un-defaulted link to the interface fields
+        # Dictionary unpacking creates the direct, un-defaulted link to the interface fields.
+        # Now matches the updated __init__ signature in config_interface.py
         validated_config = SolverConfig(**raw_data)
     except TypeError as e:
         raise TypeError(
