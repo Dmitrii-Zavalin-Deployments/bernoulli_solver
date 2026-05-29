@@ -67,7 +67,7 @@ class BernoulliPipelineOrchestrator:
         
         # --- Step S0: Classify Filled vs Unfilled Fields ---
         # Breaks circular dependency between raw validation and container construction.
-        filled_fields, unfilled_fields = self.s0_classifier.classify_fields(raw_input)
+        filled_fields, unfilled_fields = self.s0_classifier.classify_filled_and_unfilled(raw_input)
 
         # --- Step S1: Enforce "Exactly One Missing" Rule ---
         # Quality Gate verifying structural schema rules. Returns target identity key.
