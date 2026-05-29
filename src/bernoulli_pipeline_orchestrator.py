@@ -1,5 +1,19 @@
+import json
+import logging
+import sys
+import traceback
+from dataclasses import asdict
+from pathlib import Path
 from typing import Dict, Any
+
+import jsonschema
+import numpy as np
+
+# Rule 5: Force global arithmetic trapping for deterministic stability
+np.seterr(all="raise")
+
 from src.config.config_interface import SolverConfig
+from src.config.config_loader import load_and_validate_config
 from src.containers.bernoulli_state import BernoulliState
 
 # Import the direct, concrete step implementations of the Minimal Step Chain
@@ -9,6 +23,12 @@ from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialStat
 from src.steps.step_s3_solve_missing_variable import StepS3SolveMissingVariable
 from src.steps.step_s4_compute_energy_residual import StepS4ComputeEnergyResidual
 from src.steps.step_s5_compute_min_max_constraints import StepS5ComputeMinMaxConstraints
+
+# Configure Logger to align with professional execution standards
+logger = logging.getLogger("BernoulliSolver.Main")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class BernoulliPipelineOrchestrator:
@@ -89,3 +109,88 @@ class BernoulliPipelineOrchestrator:
 
         # Return the completely resolved, immutable Sovereign Container mapping
         return final_state
+
+
+def run_solver(input_path: str) -> str:
+    """
+    Main execution routine handling file input/output lifecycle, schema compliance,
+    and state injection mapping.
+    """
+    full_input_path = Path(input_path)
+    if not full_input_path.is_absolute():
+        full_input_path = BASE_DIR / input_path
+
+    if not full_input_path.exists():
+        raise FileNotFoundError(f"Input file missing at absolute path location: {full_input_path}")
+
+    # 1. Acquire and validate the physical parameter layout contract at startup
+    config_json_path = BASE_DIR / "src/config/config.json"
+    config = load_and_validate_config(str(config_json_path))
+    logger.info("Configuration contract verified and locked into internal scope.")
+
+    # 2. Extract the incoming raw simulation parameters
+    with open(full_input_path, "r", encoding="utf-8") as f:
+        raw_input = json.load(f)
+
+    # 3. Quality Gate: Validate incoming input data payload structure against JSON Schema
+    input_schema_path = BASE_DIR / "schema/bernoulli_input.schema.json"
+    if not input_schema_path.exists():
+        raise FileNotFoundError(f"Input schema schema definitions missing at: {input_schema_path}")
+
+    with open(input_schema_path, "r", encoding="utf-8") as f:
+        input_schema = json.load(f)
+
+    try:
+        jsonschema.validate(instance=raw_input, schema=input_schema)
+        logger.info("Input packet matches structural specifications of bernoulli_input.schema.json")
+    except jsonschema.exceptions.ValidationError as e:
+        logger.error(f"!!! INPUT CONTRACT VIOLATION: {e.message}")
+        raise
+
+    # 4. Instantiate components and process data through the DAG
+    orchestrator = BernoulliPipelineOrchestrator()
+    final_state = orchestrator.execute_pipeline(raw_input, config)
+    logger.info("Sovereign execution loop evaluated without precision exceptions.")
+
+    # 5. Extract structural mapping from Sovereign Container dataclass 
+    output_dict = asdict(final_state)
+
+    # 6. Quality Gate: Validate output payload dictionary structure against JSON Schema
+    output_schema_path = BASE_DIR / "schema/bernoulli_output.schema.json"
+    if not output_schema_path.exists():
+        raise FileNotFoundError(f"Output schema definitions missing at: {output_schema_path}")
+
+    with open(output_schema_path, "r", encoding="utf-8") as f:
+        output_schema = json.load(f)
+
+    try:
+        jsonschema.validate(instance=output_dict, schema=output_schema)
+        logger.info("Output contract verified against bernoulli_output.schema.json rules.")
+    except jsonschema.exceptions.ValidationError as e:
+        logger.error(f"!!! OUTPUT STATE CONTRACT VIOLATION: {e.message}")
+        raise
+
+    # 7. Write finalized output back to the specific directory where input lives
+    output_file_path = full_input_path.parent / "bernoulli_solver_output.json"
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        json.dump(output_dict, f, indent=2)
+        
+    return str(output_file_path)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python3 src/bernoulli_pipeline_orchestrator.py <input_json_path>")
+        sys.exit(1)
+    try:
+        output_json_path = run_solver(sys.argv[1])
+        print(f"Pipeline complete. Output JSON written to: {output_json_path}")
+        sys.exit(0)
+    except Exception as e:
+        print(f"FATAL PIPELINE ERROR: {str(e)}", file=sys.stderr)
+        traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
