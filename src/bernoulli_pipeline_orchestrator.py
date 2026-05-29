@@ -111,64 +111,56 @@ class BernoulliPipelineOrchestrator:
 
 def run_solver(input_path: str) -> str:
     """
-    Main execution routine handling file input/output lifecycle, schema compliance,
-    and state injection mapping.
+    Main execution routine with explicit pre-flight environment verification.
     """
+    # 1. PRE-FLIGHT: Environment Verification
     full_input_path = Path(input_path)
     if not full_input_path.is_absolute():
         full_input_path = BASE_DIR / input_path
+    
+    # Check for inputs before loading ANY other system dependencies
+    required_paths = {
+        "Input File": full_input_path,
+        "Config File": BASE_DIR / "src/config/config.json",
+        "Input Schema": BASE_DIR / "schema/bernoulli_input.schema.json",
+        "Output Schema": BASE_DIR / "schema/bernoulli_output.schema.json"
+    }
 
-    if not full_input_path.exists():
-        raise FileNotFoundError(f"Input file missing at absolute path location: {full_input_path}")
+    for label, path in required_paths.items():
+        if not path.exists():
+            # Using logger for structured error reporting
+            logger.critical(f"ENVIRONMENT ANOMALY: {label} not found at {path}")
+            raise FileNotFoundError(f"Missing dependency: {label} at {path}")
 
-    # 1. Acquire and validate the physical parameter layout contract at startup
-    config_json_path = BASE_DIR / "src/config/config.json"
-    config = load_and_validate_config(str(config_json_path))
-    logger.info("Configuration contract verified and locked into internal scope.")
+    # 2. Acquire configuration and validate contract
+    config = load_and_validate_config(str(required_paths["Config File"]))
+    logger.info("Configuration contract verified.")
 
-    # 2. Extract the incoming raw simulation parameters
+    # 3. Data Extraction
     with open(full_input_path, "r", encoding="utf-8") as f:
         raw_input = json.load(f)
 
-    # 3. Quality Gate: Validate incoming input data payload structure against JSON Schema
-    input_schema_path = BASE_DIR / "schema/bernoulli_input.schema.json"
-    if not input_schema_path.exists():
-        raise FileNotFoundError(f"Input schema schema definitions missing at: {input_schema_path}")
-
-    with open(input_schema_path, "r", encoding="utf-8") as f:
+    # 4. Input Schema Verification
+    with open(required_paths["Input Schema"], "r", encoding="utf-8") as f:
         input_schema = json.load(f)
 
     try:
         jsonschema.validate(instance=raw_input, schema=input_schema)
-        logger.info("Input packet matches structural specifications of bernoulli_input.schema.json")
     except jsonschema.exceptions.ValidationError as e:
         logger.error(f"!!! INPUT CONTRACT VIOLATION: {e.message}")
         raise
 
-    # 4. Instantiate components and process data through the DAG
+    # 5. Pipeline Execution
     orchestrator = BernoulliPipelineOrchestrator()
     final_state = orchestrator.execute_pipeline(raw_input, config)
-    logger.info("Sovereign execution loop evaluated without precision exceptions.")
 
-    # 5. Extract structural mapping from Sovereign Container dataclass 
+    # 6. Output Generation & Verification
     output_dict = asdict(final_state)
-
-    # 6. Quality Gate: Validate output payload dictionary structure against JSON Schema
-    output_schema_path = BASE_DIR / "schema/bernoulli_output.schema.json"
-    if not output_schema_path.exists():
-        raise FileNotFoundError(f"Output schema definitions missing at: {output_schema_path}")
-
-    with open(output_schema_path, "r", encoding="utf-8") as f:
+    with open(required_paths["Output Schema"], "r", encoding="utf-8") as f:
         output_schema = json.load(f)
+    
+    jsonschema.validate(instance=output_dict, schema=output_schema)
 
-    try:
-        jsonschema.validate(instance=output_dict, schema=output_schema)
-        logger.info("Output contract verified against bernoulli_output.schema.json rules.")
-    except jsonschema.exceptions.ValidationError as e:
-        logger.error(f"!!! OUTPUT STATE CONTRACT VIOLATION: {e.message}")
-        raise
-
-    # 7. Write finalized output back to the specific directory where input lives
     output_file_path = full_input_path.parent / "bernoulli_solver_output.json"
     with open(output_file_path, "w", encoding="utf-8") as f:
         json.dump(output_dict, f, indent=2)
