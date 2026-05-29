@@ -1,0 +1,62 @@
+from typing import Dict, Any
+from src.interfaces.step_interfaces.step_s2_construct_partial_state_interface import StepS2ConstructPartialStateInterface
+from src.containers.bernoulli_state import BernoulliState
+
+class StepS2ConstructPartialState(StepS2ConstructPartialStateInterface):
+    """
+    Concrete implementation of Step S2: Construct BernoulliState (partial).
+    Inherits explicitly from StepS2ConstructPartialStateInterface to guarantee 
+    a 100% structural match of the core code to the constitution.
+    """
+
+    def construct_partial_state(
+        self, 
+        validated_input_dict: Dict[str, Any], 
+        missing_variable_name: str, 
+        unfilled_sentinel: Any
+    ) -> BernoulliState:
+        """
+        Constructs a structurally complete BernoulliState instance (Sovereign Container).
+        
+        Maps all verified active input fields directly into the container. Forces the 
+        isolated missing primary variable and all diagnostic/execution-derived fields 
+        to the uniform unfilled sentinel state.
+        """
+        # Canonical primary variables universe
+        primary_fields = ["p1", "p2", "v1", "v2", "h1", "h2", "rho"]
+        
+        # Build assignment arguments for primary variables
+        assigned_values = {}
+        for field in primary_fields:
+            if field == missing_variable_name:
+                assigned_values[field] = unfilled_sentinel
+            else:
+                # Direct extraction of values verified and passed through the S1 gatekeeper
+                assigned_values[field] = validated_input_dict[field]
+
+        # Populate diagnostic and execution-derived fields with the sentinel.
+        # Since the pure BernoulliState container strictly type-annotates 'energy' 
+        # as a List[float], we initialize its elements with the sentinel to remain type-safe.
+        assigned_values["energy"] = [unfilled_sentinel, unfilled_sentinel]
+        assigned_values["energy_imbalance"] = unfilled_sentinel
+        assigned_values["p_min"] = unfilled_sentinel
+        assigned_values["p_max"] = unfilled_sentinel
+        assigned_values["v_min"] = unfilled_sentinel
+        assigned_values["v_max"] = unfilled_sentinel
+
+        # Return the pristine, logic-free Sovereign Container
+        return BernoulliState(
+            p1=assigned_values["p1"],
+            p2=assigned_values["p2"],
+            v1=assigned_values["v1"],
+            v2=assigned_values["v2"],
+            h1=assigned_values["h1"],
+            h2=assigned_values["h2"],
+            rho=assigned_values["rho"],
+            energy=assigned_values["energy"],
+            energy_imbalance=assigned_values["energy_imbalance"],
+            p_min=assigned_values["p_min"],
+            p_max=assigned_values["p_max"],
+            v_min=assigned_values["v_min"],
+            v_max=assigned_values["v_max"]
+        )
