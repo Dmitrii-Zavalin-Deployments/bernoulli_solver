@@ -23,21 +23,24 @@ class S0ClassificationTestSignature:
         - Perform numeric work.
 
     GLOBAL 4.1 TEST CATEGORIES APPLIED TO S0:
-        Sensitivity gates:
+
+        Sensitivity Gates:
             - Valid engineering ranges for p, v, h, rho.
             - Zero/low velocities.
             - Extreme but physically admissible values.
             - Reject NaN, None, non-numeric, negative density.
 
-        Physics & math gates:
+        Physics & Math Gates:
             - Correct classification of all primary variables.
             - Correct classification of diagnostic fields.
             - Reject any field outside the Sovereign Container.
             - No Bernoulli math performed.
 
-        MMS gates:
-            - Accept MMS profiles without modification.
-            - Do not compute or validate MMS correctness.
+        Consistency Gates:
+            - Accept deterministic, analytically verifiable profiles
+              without modification.
+            - Do not compute or validate any step-level correctness.
+            - Preserve input structure and ordering.
     """
 
     def test_accepts_all_primary_fields(self):
@@ -83,8 +86,11 @@ class S0ClassificationTestSignature:
         """S0 must classify diagnostic fields but must not compute them."""
         raise NotImplementedError
 
-    def test_mms_passthrough(self):
-        """S0 must accept MMS profiles without modification or validation."""
+    def test_consistency_passthrough(self):
+        """
+        S0 must accept deterministic, analytically verifiable profiles
+        (formerly MMS) without modification or validation.
+        """
         raise NotImplementedError
 
     def test_input_immutability(self):

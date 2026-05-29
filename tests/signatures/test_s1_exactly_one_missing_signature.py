@@ -24,24 +24,23 @@ class S1ExactlyOneMissingTestSignature:
 
     GLOBAL 4.1 TEST CATEGORIES APPLIED TO S1:
 
-        Sensitivity gates:
+        Sensitivity Gates:
             - S1 must accept all valid engineering ranges for p, v, h, rho.
             - Zero/low velocities must not affect missing‑field logic.
             - Extreme but admissible values must not affect missing‑field logic.
             - Non‑numeric or NaN values must be rejected BEFORE S1 (S0 territory),
               but S1 must still reject them if they slip through.
 
-        Physics & math gates:
+        Physics & Math Gates:
             - S1 performs NO physics.
             - S1 must correctly count missing primary variables.
             - S1 must ignore diagnostic fields when counting missing variables.
             - S1 must not perform Bernoulli rearrangements or energy checks.
 
-        MMS gates:
-            - MMS profiles must pass through S1 unchanged.
-            - S1 must not validate MMS correctness.
-            - S1 must only enforce the exactly‑one‑missing invariant.
-
+        Consistency Gates:
+            - Deterministic, analytically verifiable profiles must pass through S1 unchanged.
+            - S1 must not validate correctness of such profiles.
+            - S1 must enforce ONLY the exactly‑one‑missing invariant.
     """
 
     def test_accepts_exactly_one_missing_primary(self):
@@ -95,10 +94,10 @@ class S1ExactlyOneMissingTestSignature:
         """
         raise NotImplementedError
 
-    def test_mms_passthrough(self):
+    def test_consistency_passthrough(self):
         """
-        MMS profiles must pass through S1 unchanged.
-        S1 must not validate MMS correctness or perform physics.
+        Deterministic, analytically verifiable profiles (formerly MMS) must pass through S1 unchanged.
+        S1 must not validate their correctness or perform physics.
         """
         raise NotImplementedError
 

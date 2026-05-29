@@ -23,14 +23,14 @@ class S3MissingVariableTestSignature:
 
     GLOBAL 4.1 TEST CATEGORIES APPLIED TO S3:
 
-        Sensitivity gates:
+        Sensitivity Gates:
             - S3 must solve correctly across valid engineering ranges for p, v, h, rho.
             - Zero/low velocities must be handled without instability.
             - Extreme but admissible pressures/elevations must not break the solver.
             - Non‑numeric or NaN values should already be rejected in S0/S1/S2,
               but S3 must still reject them if they slip through.
 
-        Physics & math gates:
+        Physics & Math Gates:
             - Correct Bernoulli rearrangements for all 7 missing‑variable cases.
             - Correct sign conventions for p, h, v.
             - Correct use of g and rho.
@@ -39,10 +39,11 @@ class S3MissingVariableTestSignature:
             - Reject negative density solutions.
             - No energy or envelope computations.
 
-        MMS gates:
-            - Manufactured solutions must be solved exactly (within tolerance).
-            - MMS profiles must produce the known missing variable.
-            - MMS correctness must be validated by S4, not S3.
+        Consistency Gates:
+            - Deterministic, analytically verifiable profiles must be solved exactly
+              (within numerical tolerance).
+            - Known fields must pass through unchanged.
+            - S3 must not validate full‑pipeline correctness (S4’s job).
     """
 
     # -------------------------
@@ -118,18 +119,18 @@ class S3MissingVariableTestSignature:
         raise NotImplementedError
 
     # -------------------------
-    # MMS gates
+    # Consistency gates
     # -------------------------
 
-    def test_mms_exact_solution(self):
+    def test_consistency_exact_solution(self):
         """
-        S3 must recover the exact missing variable for MMS profiles
-        (within numerical tolerance).
+        S3 must recover the exact missing variable for deterministic,
+        analytically verifiable profiles (formerly MMS), within numerical tolerance.
         """
         raise NotImplementedError
 
-    def test_mms_passthrough_for_known_fields(self):
-        """Known MMS fields must pass through unchanged."""
+    def test_consistency_passthrough_for_known_fields(self):
+        """Known deterministic fields must pass through unchanged."""
         raise NotImplementedError
 
     # -------------------------

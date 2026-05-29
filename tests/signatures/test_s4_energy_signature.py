@@ -24,14 +24,14 @@ class S4EnergyDiagnosticsTestSignature:
 
     GLOBAL 4.1 TEST CATEGORIES APPLIED TO S4:
 
-        Sensitivity gates:
+        Sensitivity Gates:
             - S4 must compute energy correctly across valid engineering ranges.
             - Zero/low velocities must not cause instability.
             - Extreme but admissible pressures/elevations must not break energy computation.
             - Non‑numeric or NaN values should already be rejected in S0–S3,
               but S4 must still reject them if they slip through.
 
-        Physics & math gates:
+        Physics & Math Gates:
             - Correct Bernoulli energy expressions for E1 and E2.
             - Correct use of g and rho.
             - Correct sign conventions.
@@ -39,9 +39,11 @@ class S4EnergyDiagnosticsTestSignature:
             - Enforce energy‑balance tolerance.
             - No constraint envelope computation.
 
-        MMS gates:
-            - MMS profiles must produce zero (or known) energy imbalance within tolerance.
-            - MMS correctness must be validated here (S4), not in S3.
+        Consistency Gates:
+            - Deterministic, analytically verifiable profiles must produce the known
+              energy imbalance (often zero) within tolerance.
+            - Known fields must pass through unchanged.
+            - S4 validates consistency but does not modify physics inputs.
     """
 
     # -------------------------
@@ -100,18 +102,18 @@ class S4EnergyDiagnosticsTestSignature:
         raise NotImplementedError
 
     # -------------------------
-    # MMS gates
+    # Consistency gates
     # -------------------------
 
-    def test_mms_energy_consistency(self):
+    def test_consistency_energy_behavior(self):
         """
-        MMS profiles must produce the known energy imbalance (usually zero)
-        within numerical tolerance.
+        Deterministic, analytically verifiable profiles (formerly MMS) must produce
+        the known energy imbalance (usually zero) within numerical tolerance.
         """
         raise NotImplementedError
 
-    def test_mms_passthrough_for_known_fields(self):
-        """Known MMS fields must pass through unchanged."""
+    def test_consistency_passthrough_for_known_fields(self):
+        """Known deterministic fields must pass through unchanged."""
         raise NotImplementedError
 
     # -------------------------

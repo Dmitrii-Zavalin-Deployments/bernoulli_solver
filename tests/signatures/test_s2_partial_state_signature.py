@@ -25,25 +25,24 @@ class S2PartialStateTestSignature:
 
     GLOBAL 4.1 TEST CATEGORIES APPLIED TO S2:
 
-        Sensitivity gates:
+        Sensitivity Gates:
             - S2 must accept all valid engineering ranges for p, v, h, rho.
             - Zero/low velocities must not affect partial-state construction.
             - Extreme but admissible values must not affect copying behavior.
             - Non-numeric or NaN values should already be rejected in S0/S1,
               but S2 must still reject them if they slip through.
 
-        Physics & math gates:
+        Physics & Math Gates:
             - S2 performs NO physics.
             - S2 must correctly propagate known primary variables.
             - S2 must correctly mark exactly one primary variable as UNFILLED.
             - S2 must set ALL diagnostic/derived fields to UNFILLED.
             - S2 must not perform any Bernoulli rearrangement.
 
-        MMS gates:
-            - MMS profiles must pass through S2 unchanged for known fields.
-            - S2 must not compute or validate MMS correctness.
+        Consistency Gates:
+            - Deterministic, analytically verifiable profiles must pass through S2 unchanged.
+            - S2 must not compute or validate correctness of such profiles.
             - S2 must only construct the partial state.
-
     """
 
     def test_copies_all_known_primary_variables(self):
@@ -90,10 +89,11 @@ class S2PartialStateTestSignature:
         """
         raise NotImplementedError
 
-    def test_mms_passthrough(self):
+    def test_consistency_passthrough(self):
         """
-        MMS profiles must pass through S2 unchanged for known fields.
-        S2 must not compute or validate MMS correctness.
+        Deterministic, analytically verifiable profiles (formerly MMS) must pass
+        through S2 unchanged for known fields. S2 must not compute or validate
+        correctness of such profiles.
         """
         raise NotImplementedError
 
