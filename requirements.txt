@@ -1,19 +1,21 @@
-numpy>=1.24.0
+# Foundation (Rule 9: Hybrid Memory)
+numpy>=2.0.0
+h5py>=3.12.0
+
+# Archivist I/O Layer (Rule 10: Cloud Sync)
 dropbox>=11.36.2
-hypothesis>=6.98.0
-pytest>=7.4.0
-jsonschema>=4.0.0
-PyYAML>=6.0.1
-gmsh==4.11.1
-scikit-learn>=1.2.0
-pytest-cov>=4.1.0  # Used for measuring test coverage
-autoflake>=2.2.1   # Used for automatically removing unused imports and variables
-vulture>=2.9       # Used for finding and reporting dead code
+requests>=2.32.0
 
+# Contract Enforcement
+jsonschema>=4.23.0
 
+# Testing & Quality
+pytest>=8.3.0
+pytest-mock>=3.14.0
+pytest-cov>=4.1.0
+hypothesis>=6.103.1
 
-
-
-
-
-
+# Scientific Pipeline Guard (Rule 2 & 6)
+ruff>=0.9.0
+vulture>=2.9
+autoflake>=2.2.1
