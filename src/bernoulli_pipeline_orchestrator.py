@@ -9,20 +9,18 @@ from typing import Dict, Any
 import jsonschema
 import numpy as np
 
-# Rule 5: Force global arithmetic trapping for deterministic stability
-np.seterr(all="raise")
-
 from src.config.config_interface import SolverConfig
 from src.config.config_loader import load_and_validate_config
 from src.containers.bernoulli_state import BernoulliState
-
-# Import the direct, concrete step implementations of the Minimal Step Chain
 from src.steps.step_s0_filled_unfilled_classifier import StepS0FilledUnfilledClassifier
 from src.steps.step_s1_exactly_one_missing import StepS1ExactlyOneMissing
 from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialState
 from src.steps.step_s3_solve_missing_variable import StepS3SolveMissingVariable
 from src.steps.step_s4_compute_energy_residual import StepS4ComputeEnergyResidual
 from src.steps.step_s5_compute_min_max_constraints import StepS5ComputeMinMaxConstraints
+
+# Rule 5: Force global arithmetic trapping for deterministic stability
+np.seterr(all="raise")
 
 # Configure Logger to align with professional execution standards
 logger = logging.getLogger("BernoulliSolver.Main")
