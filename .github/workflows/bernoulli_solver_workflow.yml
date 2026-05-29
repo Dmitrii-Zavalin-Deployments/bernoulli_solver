@@ -233,7 +233,7 @@ jobs:
           EOF
           )
 
-          HEADER="# 🌊 Navier–Stokes Solver Performance Audit"
+          HEADER="# 🌊 Bernoulli Solver Performance Audit"
           if [ -f "performance_audit.md" ]; then
               tail -n +2 performance_audit.md > old_body.tmp
               echo "$HEADER" > performance_audit.md
