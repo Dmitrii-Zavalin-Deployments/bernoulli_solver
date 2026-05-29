@@ -1,4 +1,4 @@
-# 🌊 Navier–Stokes Solver Performance Audit
+# 🌊 Bernoulli Solver Performance Audit
 
 ### Audit: 2026-05-29 18:38:44 UTC
 - **Branch:** `main`
