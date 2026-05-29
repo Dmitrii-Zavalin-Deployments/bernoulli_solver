@@ -1,6 +1,7 @@
 import json
+import pytest
 from pathlib import Path
-from typing import get_type_hints
+from typing import get_type_hints, get_origin, Dict, Any, List
 from src.containers.bernoulli_state import BernoulliState
 from tests.signatures.type_validation_signature import TypeValidationTestSignature
 
@@ -32,8 +33,12 @@ class TestTypeValidation(TypeValidationTestSignature):
 
         for field, schema_def in properties.items():
             assert field in type_hints, f"Schema field '{field}' is missing from BernoulliState definition."
+            
             expected_type = TYPE_MAPPING.get(schema_def["type"])
-            assert type_hints[field] == expected_type, \
+            # Normalize generic types (e.g., List[float]) to their origin (list)
+            actual_type = get_origin(type_hints[field]) or type_hints[field]
+            
+            assert actual_type == expected_type, \
                 f"Type mismatch for input field '{field}': Expected {expected_type}, got {type_hints[field]}"
 
     def test_output_schema_field_types(self):
@@ -46,9 +51,11 @@ class TestTypeValidation(TypeValidationTestSignature):
         for field, schema_def in properties.items():
             assert field in type_hints, f"Schema field '{field}' is missing from BernoulliState definition."
             
-            # Handle array mapping specifically
             expected_type = TYPE_MAPPING.get(schema_def["type"])
-            assert type_hints[field] == expected_type, \
+            # Normalize generic types (e.g., List[float]) to their origin (list)
+            actual_type = get_origin(type_hints[field]) or type_hints[field]
+            
+            assert actual_type == expected_type, \
                 f"Type mismatch for output field '{field}': Expected {expected_type}, got {type_hints[field]}"
 
     def test_state_interface_type_completeness(self):
