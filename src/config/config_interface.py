@@ -18,7 +18,3 @@ class SolverConfig:
     k_v_max: float           # looseness factor for maximum velocity bound
     k_p_min: float           # looseness factor for minimum pressure bound
     k_p_max: float           # looseness factor for maximum pressure bound
-
-    # Identifier for observability and pipeline tracking.
-    # Default value allows compatibility with legacy config files.
-    id: str = "default_run"

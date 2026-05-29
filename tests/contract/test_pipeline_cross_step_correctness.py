@@ -17,7 +17,17 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
 
     @pytest.fixture
     def config(self) -> SolverConfig:
-        return SolverConfig(id="contract_test_run", validation_mode="strict")
+        """
+        Provides the strictly defined physical configuration for the contract tests.
+        """
+        return SolverConfig(
+            g=9.81,
+            precision=1e-6,
+            k_v_min=0.1,
+            k_v_max=0.1,
+            k_p_min=0.1,
+            k_p_max=0.1
+        )
 
     @pytest.fixture
     def baseline_input(self) -> Dict[str, Any]:

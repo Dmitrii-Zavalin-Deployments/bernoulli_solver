@@ -4,10 +4,11 @@ from src.config.config_interface import SolverConfig
 
 def load_and_validate_config(config_path: str = "config/config.json") -> SolverConfig:
     """
-    Loads the actual configuration file from disk and explicitly validates 
+    Loads the actual configuration file from disk and validates 
     it against the frozen SolverConfig contract-only interface.
     
-    Aborts execution immediately if any structural deviation is detected.
+    Aborts execution immediately if the JSON structure does not 
+    perfectly match the SolverConfig fields.
     """
     if not os.path.exists(config_path):
         raise FileNotFoundError(
@@ -24,13 +25,14 @@ def load_and_validate_config(config_path: str = "config/config.json") -> SolverC
             ) from e
 
     try:
-        # Dictionary unpacking creates the direct, un-defaulted link to the interface fields.
-        # Now matches the updated __init__ signature in config_interface.py
+        # Dictionary unpacking creates a direct link to the interface fields.
+        # This will raise a TypeError if config.json contains extra or missing fields.
         validated_config = SolverConfig(**raw_data)
     except TypeError as e:
         raise TypeError(
             f"Configuration Invariant Violation: The runtime 'config.json' file does not "
-            f"match the structural contract defined in 'config_interface.py'. Internal validation error: {e}"
+            f"match the structural contract defined in 'config_interface.py'. "
+            f"Ensure no extra fields (like 'id') are present. Internal error: {e}"
         ) from e
 
     return validated_config
