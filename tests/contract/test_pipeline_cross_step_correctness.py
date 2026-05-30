@@ -69,7 +69,8 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
     def test_s4_energy_matches_expected_values(self, executed_state, baseline_input):
         # E1 check: p1 + 0.5 * rho * v1^2
         e1 = baseline_input["p1"] + 0.5 * baseline_input["rho"] * (baseline_input["v1"]**2)
-        assert executed_state.energy_1 == pytest.approx(e1, rel=1e-5)
+        # FIX: Changed executed_state.energy_1 to executed_state.energy[0] to match your interface contract
+        assert executed_state.energy[0] == pytest.approx(e1, rel=1e-5)
 
     def test_s4_energy_imbalance_consistent_with_s3_solution(self, executed_state):
         assert executed_state.energy_imbalance == pytest.approx(0.0, abs=1e-5)
@@ -96,14 +97,24 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         assert executed_state.p1 == baseline_input["p1"]
 
     def test_round_trip_zero_energy_imbalance(self, orchestrator, baseline_input, config):
+        """
+        FIX: Populated p2 with its pre-solved value but set p1 to None.
+        This maintains the strict "exactly one missing variable" S1 validation gate rule.
+        """
         inp = copy.deepcopy(baseline_input)
-        inp["p2"] = 101141.25 # Pre-solved
+        inp["p2"] = 101141.25 
+        inp["p1"] = None  # <--- Exactly one missing variable contract satisfied
         state = orchestrator.execute_pipeline(inp, config)
         assert state.energy_imbalance == pytest.approx(0.0, abs=1e-4)
 
     def test_round_trip_minimal_envelopes(self, orchestrator, baseline_input, config):
+        """
+        FIX: Populated p2 with its pre-solved value but set p1 to None.
+        This maintains the strict "exactly one missing variable" S1 validation gate rule.
+        """
         inp = copy.deepcopy(baseline_input)
         inp["p2"] = 101141.25
+        inp["p1"] = None  # <--- Exactly one missing variable contract satisfied
         state = orchestrator.execute_pipeline(inp, config)
         assert state.p_max >= state.p_min
 

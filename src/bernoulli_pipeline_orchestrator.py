@@ -66,12 +66,12 @@ class BernoulliPipelineOrchestrator:
         )
 
         # --- Step S2: Construct Partial State ---
-        # Fixed: Passed all three required arguments to match StepS2ConstructPartialStateInterface
-        # 'None' is passed as the sentinel for unfilled fields.
+        # FIX: Changed unfilled_sentinel from None to float('nan')
+        # This prevents TypeError in S3's math.isnan() checks.
         partial_state: BernoulliState = self.s2_constructor.construct_partial_state(
             validated_input_dict=validated_input, 
             missing_variable_name=missing_variable,
-            unfilled_sentinel=None 
+            unfilled_sentinel=float('nan') 
         )
 
         # --- Step S3: Solve Missing Bernoulli Primary Variable ---
