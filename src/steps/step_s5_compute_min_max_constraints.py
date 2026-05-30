@@ -52,8 +52,8 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
         v_max = k_v_max * v_char
 
         # 3. Compute Pressure Envelope
-        p_min = p_low - k_p_min * delta_p
-        p_max = p_high + k_p_max * delta_p
+        p_min = p_low - p_buffer
+        p_max = p_high + p_buffer
 
         # Yield a completely fresh Sovereign Container instance ensuring no in-place mutation.
         # At this stage, every field is now fully resolved and filled.

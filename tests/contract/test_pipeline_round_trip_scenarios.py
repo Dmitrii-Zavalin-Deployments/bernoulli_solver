@@ -85,7 +85,8 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
     def test_s5_minimal_envelopes(self, orchestrator, ground_truth, valid_config):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
         # For a perfect state, max and min should be identical
-        assert math.isclose(res.p_max, res.p_min, abs_tol=1e-5)
+          assert math.isclose(res.p_max, max(ground_truth["p1"], ground_truth["p2"]), abs_tol=1e-5)
+          assert math.isclose(res.p_min, min(ground_truth["p1"], ground_truth["p2"]), abs_tol=1e-5)
 
     def test_s5_correct_envelope_bounds(self, orchestrator, ground_truth, valid_config):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
