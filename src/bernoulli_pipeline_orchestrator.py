@@ -54,6 +54,10 @@ class BernoulliPipelineOrchestrator:
         """
         Executes the full chain sequentially (S0 -> S1 -> S2 -> S3 -> S4 -> S5).
         """
+        # --- Guard Clause: Fail-Fast for missing configuration ---
+        # Ensures that a missing config is caught before S1 validation occurs.
+        if config is None:
+            raise TypeError("Configuration object is mandatory for pipeline execution.")
         
         # --- Step S0: Classify Filled vs Unfilled Fields ---
         filled_fields, unfilled_fields = self.s0_classifier.classify_filled_and_unfilled(
@@ -66,8 +70,7 @@ class BernoulliPipelineOrchestrator:
         )
 
         # --- Step S2: Construct Partial State ---
-        # FIX: Changed unfilled_sentinel from None to float('nan')
-        # This prevents TypeError in S3's math.isnan() checks.
+        # Note: Using float('nan') as the sentinel to avoid TypeError in S3 math
         partial_state: BernoulliState = self.s2_constructor.construct_partial_state(
             validated_input_dict=validated_input, 
             missing_variable_name=missing_variable,
