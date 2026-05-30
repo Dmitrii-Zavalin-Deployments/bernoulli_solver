@@ -1,3 +1,4 @@
+from typing import List
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
 
 class BernoulliState(BernoulliStateInterface):
@@ -23,7 +24,7 @@ class BernoulliState(BernoulliStateInterface):
     h1: float
     h2: float
     rho: float
-    energy: float
+    energy: List[float]
     energy_imbalance: float
     p_min: float
     p_max: float
@@ -39,7 +40,7 @@ class BernoulliState(BernoulliStateInterface):
         h1: float,
         h2: float,
         rho: float,
-        energy: float,
+        energy: List[float],
         energy_imbalance: float,
         p_min: float,
         p_max: float,

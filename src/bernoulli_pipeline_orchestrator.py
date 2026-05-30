@@ -52,47 +52,59 @@ class BernoulliPipelineOrchestrator:
 
     def execute_pipeline(self, raw_input: Dict[str, Any], config: SolverConfig) -> BernoulliState:
         """
-        Executes the full chain sequentially (S0 -> S1 -> S2 -> S3 -> S4 -> S5).
+        Executes the full chain sequentially.
         """
         # --- Guard Clause: Fail-Fast for missing configuration ---
         # Ensures that a missing config is caught before S1 validation occurs.
         if config is None:
             raise TypeError("Configuration object is mandatory for pipeline execution.")
         
-        # --- Step S0: Classify Filled vs Unfilled Fields ---
-        filled_fields, unfilled_fields = self.s0_classifier.classify_filled_and_unfilled(
-            input_schema_instance=raw_input
-        )
-
-        # --- Step S1: Enforce "Exactly One Missing" Rule ---
+        # S0 & S1: Validation
+        _, _ = self.s0_classifier.classify_filled_and_unfilled(input_schema_instance=raw_input)
         validated_input, missing_variable = self.s1_validator.enforce_exactly_one_missing(
             raw_input_dict=raw_input
         )
 
-        # --- Step S2: Construct Partial State ---
-        # Note: Using float('nan') as the sentinel to avoid TypeError in S3 math
+        # S2: Construct State
         partial_state: BernoulliState = self.s2_constructor.construct_partial_state(
             validated_input_dict=validated_input, 
             missing_variable_name=missing_variable,
             unfilled_sentinel=float('nan') 
         )
 
-        # --- Step S3: Solve Missing Bernoulli Primary Variable ---
+        # S3: Solve or Identity Path
         if missing_variable:
             solved_state: BernoulliState = self.s3_solver.solve_missing_variable(
                 partial_state=partial_state, 
                 config=config
             )
         else:
-            solved_state = partial_state
+            # IDENTITY PATH: Manual construction of BernoulliState
+            # Ensure we calculate energy and bounds for downstream S4/S5 consistency
+            p1, p2 = partial_state.p1, partial_state.p2
+            v1, v2 = partial_state.v1, partial_state.v2
+            h1, h2 = partial_state.h1, partial_state.h2
+            rho = partial_state.rho
+            g = config.g
 
-        # --- Step S4: Compute Energy and Residuals ---
+            e1 = p1 + 0.5 * rho * (v1 ** 2) + rho * g * h1
+            e2 = p2 + 0.5 * rho * (v2 ** 2) + rho * g * h2
+
+            solved_state = BernoulliState(
+                p1=p1, p2=p2, v1=v1, v2=v2, h1=h1, h2=h2, rho=rho,
+                energy=[e1, e2],
+                energy_imbalance=abs(e1 - e2),
+                p_min=min(p1, p2), p_max=max(p1, p2),
+                v_min=min(v1, v2), v_max=max(v1, v2)
+            )
+
+        # S4: Compute Energy and Residuals
         state_with_energy: BernoulliState = self.s4_diagnician.compute_energy_and_residual(
             solved_state=solved_state, 
             config=config
         )
 
-        # --- Step S5: Compute Min/Max Constraints Envelopes ---
+        # S5: Compute Min/Max Constraints Envelopes ---
         final_state: BernoulliState = self.s5_enveloper.compute_min_max_constraints(
             state_with_energy=state_with_energy, 
             config=config

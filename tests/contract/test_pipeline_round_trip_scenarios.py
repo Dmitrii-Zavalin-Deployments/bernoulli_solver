@@ -76,7 +76,7 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
 
     def test_s4_correct_energy_terms(self, orchestrator, ground_truth, valid_config):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
-        assert res.energy > 0.0
+        assert res.energy[0] > 0.0
 
     # -------------------------
     # S5 behaviour
