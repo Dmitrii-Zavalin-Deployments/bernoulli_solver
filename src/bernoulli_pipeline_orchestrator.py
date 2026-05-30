@@ -39,6 +39,10 @@ class BernoulliPipelineOrchestrator:
     """
 
     def __init__(self) -> None:
+        """
+        Statically instantiates the isolated components of the Minimal Step Chain.
+        Enforces a clean composition foundation with clear step isolation.
+        """
         self.s0_classifier = StepS0FilledUnfilledClassifier()
         self.s1_validator = StepS1ExactlyOneMissing()
         self.s2_constructor = StepS2ConstructPartialState()
