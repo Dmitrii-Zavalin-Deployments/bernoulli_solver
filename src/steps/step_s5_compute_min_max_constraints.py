@@ -42,10 +42,10 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
         # Apply buffers ONLY if there is an energy imbalance (uncertainty)
         # If imbalance is 0, we trust the input values perfectly.
         p_buffer = (abs(p1 - p2) * config.k_p_max) if energy_imbalance > 0 else 0.0
-        v_buffer = (abs(v1 - v2) * config.k_v_max) if energy_imbalance > 0 else 0.0
+        (abs(v1 - v2) * config.k_v_max) if energy_imbalance > 0 else 0.0
 
         p_high = max(p1, p2)
-        delta_p = abs(p1 - p2)
+        abs(p1 - p2)
 
         # 2. Compute Velocity Envelope
         v_min = -k_v_min * v_char
