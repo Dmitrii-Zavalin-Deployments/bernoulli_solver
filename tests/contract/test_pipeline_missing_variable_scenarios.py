@@ -24,11 +24,13 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
         return BernoulliPipelineOrchestrator()
 
     @pytest.fixture
+    @pytest.fixture
     def ground_truth(self):
-        # A fully known state that satisfies Bernoulli: E1 == E2
+        # A physically balanced state: 100k + 50k = 78k + 72k = 150k
         return {
-            "p1": 100000.0, "v1": 10.0, "h1": 0.0,
-            "p2": 110000.0, "v2": 10.0, "h2": 0.0,
+            "p1": 100000.0, "p2": 78000.0,
+            "v1": 10.0, "v2": 12.0,
+            "h1": 0.0, "h2": 0.0,
             "rho": 1000.0
         }
 
