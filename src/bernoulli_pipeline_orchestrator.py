@@ -39,10 +39,6 @@ class BernoulliPipelineOrchestrator:
     """
 
     def __init__(self) -> None:
-        """
-        Statically instantiates the isolated components of the Minimal Step Chain.
-        Enforces a clean composition foundation with clear step isolation.
-        """
         self.s0_classifier = StepS0FilledUnfilledClassifier()
         self.s1_validator = StepS1ExactlyOneMissing()
         self.s2_constructor = StepS2ConstructPartialState()
@@ -53,58 +49,45 @@ class BernoulliPipelineOrchestrator:
     def execute_pipeline(self, raw_input: Dict[str, Any], config: SolverConfig) -> BernoulliState:
         """
         Executes the full chain sequentially (S0 -> S1 -> S2 -> S3 -> S4 -> S5).
-        
-        Inputs:
-            raw_input: Dict[str, Any]
-                The raw input matching fields defined in the input schema.
-            config: SolverConfig
-                The runtime validated internal configuration instance.
-                
-        Returns:
-            final_state: BernoulliState
-                The fully completed Sovereign Container satisfying the Output Schema.
         """
         
         # --- Step S0: Classify Filled vs Unfilled Fields ---
-        # Breaks circular dependency between raw validation and container construction.
-        filled_fields, unfilled_fields = self.s0_classifier.classify_filled_and_unfilled(raw_input)
+        filled_fields, unfilled_fields = self.s0_classifier.classify_filled_and_unfilled(
+            input_schema_instance=raw_input
+        )
 
         # --- Step S1: Enforce "Exactly One Missing" Rule ---
-        # Quality Gate verifying structural schema rules. Returns target identity key.
-        # Adhering to interface: using raw_input_dict argument.
         validated_input, missing_variable = self.s1_validator.enforce_exactly_one_missing(
             raw_input_dict=raw_input
         )
 
         # --- Step S2: Construct Partial State ---
-        # Builds the initial Sovereign Container mapping sentinels to unresolved parameters.
+        # Fixed: Passed all three required arguments to match StepS2ConstructPartialStateInterface
+        # 'None' is passed as the sentinel for unfilled fields.
         partial_state: BernoulliState = self.s2_constructor.construct_partial_state(
-            validated_input=validated_input, 
-            missing_variable=missing_variable
+            validated_input_dict=validated_input, 
+            missing_variable_name=missing_variable,
+            unfilled_sentinel=None 
         )
 
         # --- Step S3: Solve Missing Bernoulli Primary Variable ---
-        # Applies deterministic physical formulas to evaluate the unpopulated state field.
         solved_state: BernoulliState = self.s3_solver.solve_missing_variable(
             partial_state=partial_state, 
             config=config
         )
 
         # --- Step S4: Compute Energy and Residuals ---
-        # Builds non-leakage internal verification diagnostics without altering primary steps.
         state_with_energy: BernoulliState = self.s4_diagnician.compute_energy_and_residual(
             solved_state=solved_state, 
             config=config
         )
 
         # --- Step S5: Compute Min/Max Constraints Envelopes ---
-        # Maps industrial-grade tuning looseness coefficients to export final boundaries.
         final_state: BernoulliState = self.s5_enveloper.compute_min_max_constraints(
             state_with_energy=state_with_energy, 
             config=config
         )
 
-        # Return the completely resolved, immutable Sovereign Container mapping
         return final_state
 
 
@@ -112,12 +95,10 @@ def run_solver(input_path: str) -> str:
     """
     Main execution routine with explicit pre-flight environment verification.
     """
-    # 1. PRE-FLIGHT: Environment Verification
     full_input_path = Path(input_path)
     if not full_input_path.is_absolute():
         full_input_path = BASE_DIR / input_path
     
-    # Check for inputs before loading ANY other system dependencies
     required_paths = {
         "Input File": full_input_path,
         "Config File": BASE_DIR / "src/config/config.json",
@@ -127,19 +108,15 @@ def run_solver(input_path: str) -> str:
 
     for label, path in required_paths.items():
         if not path.exists():
-            # Using logger for structured error reporting
             logger.critical(f"ENVIRONMENT ANOMALY: {label} not found at {path}")
             raise FileNotFoundError(f"Missing dependency: {label} at {path}")
 
-    # 2. Acquire configuration and validate contract
     config = load_and_validate_config(str(required_paths["Config File"]))
     logger.info("Configuration contract verified.")
 
-    # 3. Data Extraction
     with open(full_input_path, "r", encoding="utf-8") as f:
         raw_input = json.load(f)
 
-    # 4. Input Schema Verification
     with open(required_paths["Input Schema"], "r", encoding="utf-8") as f:
         input_schema = json.load(f)
 
@@ -149,11 +126,9 @@ def run_solver(input_path: str) -> str:
         logger.error(f"!!! INPUT CONTRACT VIOLATION: {e.message}")
         raise
 
-    # 5. Pipeline Execution
     orchestrator = BernoulliPipelineOrchestrator()
     final_state = orchestrator.execute_pipeline(raw_input, config)
 
-    # 6. Output Generation & Verification
     output_dict = asdict(final_state)
     with open(required_paths["Output Schema"], "r", encoding="utf-8") as f:
         output_schema = json.load(f)
