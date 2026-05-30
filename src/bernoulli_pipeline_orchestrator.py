@@ -71,9 +71,9 @@ class BernoulliPipelineOrchestrator:
 
         # --- Step S1: Enforce "Exactly One Missing" Rule ---
         # Quality Gate verifying structural schema rules. Returns target identity key.
+        # Adhering to interface: using raw_input_dict argument.
         validated_input, missing_variable = self.s1_validator.enforce_exactly_one_missing(
-            filled_fields=filled_fields, 
-            unfilled_fields=unfilled_fields
+            raw_input_dict=raw_input
         )
 
         # --- Step S2: Construct Partial State ---
