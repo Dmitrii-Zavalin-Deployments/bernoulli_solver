@@ -26,7 +26,7 @@ class TestPipelineDeterministicConsistency(PipelineDeterministicConsistencyScena
         # A fully specified input where E1 == E2 for easy round-trip validation
         return {
             "p1": 100000.0, "v1": 10.0, "h1": 0.0,
-            "p2": 100000.0, "v2": 10.0, "h2": 0.0,
+            "p2": 100000.0, "v2": None, "h2": 0.0,
             "rho": 1000.0
         }
 
