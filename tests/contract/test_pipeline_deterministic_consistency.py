@@ -14,8 +14,11 @@ class TestPipelineDeterministicConsistency(PipelineDeterministicConsistencyScena
     def valid_config(self):
         return SolverConfig(
             g=9.81,
-            k_v_min=0.1, k_v_max=0.1, 
-            k_p_min=0.1, k_p_max=0.1
+            precision=1e-6,  # Field added to satisfy the updated SolverConfig interface
+            k_v_min=0.1, 
+            k_v_max=0.1, 
+            k_p_min=0.1, 
+            k_p_max=0.1
         )
 
     @pytest.fixture
