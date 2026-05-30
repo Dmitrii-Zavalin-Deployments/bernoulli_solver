@@ -3,7 +3,6 @@ import copy
 import pytest
 from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
 from src.containers.bernoulli_state import BernoulliState
-from src.config.config_loader import SolverConfig
 # Ensure this import matches your file path
 from tests.signatures.pipeline_round_trip_scenarios_signature import PipelineRoundTripScenariosTestSignature
 
