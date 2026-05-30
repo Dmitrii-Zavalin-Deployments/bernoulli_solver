@@ -43,12 +43,7 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
         missing_count = len(missing_fields)
         
         # 4. Enforce the exactly-one-missing invariant rules
-        if missing_count == 0:
-            raise ValidationError(
-                "Contract-Validation failed: Zero primary variables are missing. "
-                "The solver requires exactly one variable to be unfilled."
-            )
-        elif missing_count > 1:
+        if missing_count > 1:
             raise ValidationError(
                 f"Contract-Validation failed: More than one primary variable is missing: {missing_fields}. "
                 f"The solver requires exactly one missing variable to operate."
