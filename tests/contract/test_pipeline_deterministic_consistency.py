@@ -66,7 +66,7 @@ class TestPipelineDeterministicConsistency(PipelineDeterministicConsistencyScena
     def test_s5_computes_envelopes_correctly_for_fully_specified_state(self, result_state, fully_specified_input, valid_config):
         # S5 manual verification based on your interface spec
         v_char = max(abs(result_state.v1), abs(result_state.v2))
-        p_low = min(result_state.p1, result_state.p2)
+        min(result_state.p1, result_state.p2)
         
         expected_v_min = -valid_config.k_v_min * v_char
         assert math.isclose(result_state.v_min, expected_v_min)
