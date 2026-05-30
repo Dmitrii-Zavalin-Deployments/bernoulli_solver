@@ -50,7 +50,7 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
             )
             
         # Extract the singular valid missing variable name
-        missing_variable_name = next(iter(missing_fields))
+        missing_variable_name = next(iter(missing_fields), None)
         
         # Return the raw input completely unchanged along with the extracted string token
         return raw_input_dict, missing_variable_name
