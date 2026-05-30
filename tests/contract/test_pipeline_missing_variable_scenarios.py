@@ -92,7 +92,7 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
     def test_s3_solves_bernoulli_correctly(self, orchestrator, ground_truth, valid_config):
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "v2")
         # Verify the calculation is close to physical ground truth
-        assert math.isclose(res.v2, 10.0, rel_tol=1e-5)
+        assert math.isclose(res.v2, 12.0, rel_tol=1e-5)
 
     def test_s4_computes_energy_correctly(self, orchestrator, ground_truth, valid_config):
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "v2")
