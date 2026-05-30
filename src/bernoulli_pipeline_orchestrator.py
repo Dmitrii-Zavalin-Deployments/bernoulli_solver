@@ -78,10 +78,13 @@ class BernoulliPipelineOrchestrator:
         )
 
         # --- Step S3: Solve Missing Bernoulli Primary Variable ---
-        solved_state: BernoulliState = self.s3_solver.solve_missing_variable(
-            partial_state=partial_state, 
-            config=config
-        )
+        if missing_variable:
+            solved_state: BernoulliState = self.s3_solver.solve_missing_variable(
+                partial_state=partial_state, 
+                config=config
+            )
+        else:
+            solved_state = partial_state
 
         # --- Step S4: Compute Energy and Residuals ---
         state_with_energy: BernoulliState = self.s4_diagnician.compute_energy_and_residual(
