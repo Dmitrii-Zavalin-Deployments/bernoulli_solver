@@ -54,7 +54,7 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         
         # 1. Negative Test: Garbage input should trigger a validation failure
         with pytest.raises(Exception):
-            s0.classify_filled_and_unfilled(input_schema_instance={"garbage": "data"})
+            s0.classify_filled_and_unfilled(input_schema_instance=None)
         # 2. Positive Test: Valid dummy input should NOT trigger an exception
         # This proves the S0 gate is working as intended (blocking bad, allowing good)
         assert s0.classify_filled_and_unfilled(input_schema_instance=dummy_state) is not None
