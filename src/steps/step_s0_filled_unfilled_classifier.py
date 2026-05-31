@@ -30,3 +30,6 @@ class FilledUnfilledClassifier(FilledUnfilledClassifierInterface):
         unfilled_fields = missing_primary | derived_universe
         
         return filled_fields, unfilled_fields
+
+# Alias to satisfy contract tests expecting the prefixed class name without breaking the interface
+StepS0FilledUnfilledClassifier = FilledUnfilledClassifier
