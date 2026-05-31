@@ -12,7 +12,7 @@ import numpy as np
 from src.config.config_interface import SolverConfig
 from src.config.config_loader import load_and_validate_config
 from src.containers.bernoulli_state import BernoulliState
-from src.steps.step_s0_filled_unfilled_classifier import StepS0FilledUnfilledClassifier
+from src.steps.step_s0_filled_unfilled_classifier import FilledUnfilledClassifier
 from src.steps.step_s1_exactly_one_missing import StepS1ExactlyOneMissing
 from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialState
 from src.steps.step_s3_solve_missing_variable import StepS3SolveMissingVariable
@@ -43,7 +43,7 @@ class BernoulliPipelineOrchestrator:
         Statically instantiates the isolated components of the Minimal Step Chain.
         Enforces a clean composition foundation with clear step isolation.
         """
-        self.s0_classifier = StepS0FilledUnfilledClassifier()
+        self.s0_classifier = FilledUnfilledClassifier()
         self.s1_validator = StepS1ExactlyOneMissing()
         self.s2_constructor = StepS2ConstructPartialState()
         self.s3_solver = StepS3SolveMissingVariable()
