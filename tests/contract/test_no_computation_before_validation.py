@@ -54,10 +54,10 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         
         # 1. Negative Test: Garbage input should trigger a validation failure
         with pytest.raises(Exception):
-            s0.classify_filled_and_unfilled(raw_input={"garbage": "data"})
+            s0.classify_filled_and_unfilled(input_schema_instance={"garbage": "data"})
         # 2. Positive Test: Valid dummy input should NOT trigger an exception
         # This proves the S0 gate is working as intended (blocking bad, allowing good)
-        assert s0.classify_filled_and_unfilled(raw_input=dummy_state) is not None
+        assert s0.classify_filled_and_unfilled(input_schema_instance=dummy_state) is not None
 
     def test_validation_gate_is_global_and_non_bypassable(self, dummy_state):
         """
