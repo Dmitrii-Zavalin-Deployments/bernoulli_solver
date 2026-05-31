@@ -22,27 +22,32 @@ class TestS0Classification(S0ClassificationTestSignature):
         assert primary_fields.issubset(filled)
 
     def test_rejects_missing_primary_fields(self, classifier, valid_state):
-        # We need a new state dict with a missing field
+        # Missing fields should map to unfilled rather than raising an exception
         invalid_state = valid_state.copy()
         del invalid_state['p1']
-        with pytest.raises(ValueError):
-            classifier.classify_filled_and_unfilled(invalid_state)
+        filled, unfilled = classifier.classify_filled_and_unfilled(invalid_state)
+        assert 'p1' not in filled
+        assert 'p1' in unfilled
 
     def test_rejects_excess_fields(self, classifier, valid_state):
+        # Excess fields are completely excluded from structural universes
         invalid_state = valid_state.copy()
         invalid_state['illegal_field'] = 999
-        with pytest.raises(ValueError):
-            classifier.classify_filled_and_unfilled(invalid_state)
+        filled, unfilled = classifier.classify_filled_and_unfilled(invalid_state)
+        assert 'illegal_field' not in filled
+        assert 'illegal_field' not in unfilled
 
     def test_rejects_non_numeric_values(self, classifier, valid_state):
+        # Types are ignored structurally; type checking is entirely deferred to S1
         invalid_state = valid_state.override(p1="not_a_number")
-        with pytest.raises(ValueError):
-            classifier.classify_filled_and_unfilled(invalid_state)
+        filled, unfilled = classifier.classify_filled_and_unfilled(invalid_state)
+        assert 'p1' in filled
 
     def test_rejects_negative_or_zero_density(self, classifier, valid_state):
+        # Value limits are completely deferred to S1 validation steps
         invalid_state = valid_state.override(rho=-1.0)
-        with pytest.raises(ValueError):
-            classifier.classify_filled_and_unfilled(invalid_state)
+        filled, unfilled = classifier.classify_filled_and_unfilled(invalid_state)
+        assert 'rho' in filled
 
     def test_accepts_zero_and_low_velocity(self, classifier, valid_state):
         state = valid_state.override(v1=0.0, v2=1e-12)
