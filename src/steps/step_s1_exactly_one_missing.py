@@ -3,7 +3,6 @@ from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import
 
 class ValidationError(ValueError):
     """Exception raised for structural validation failures."""
-    pass
 
 class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
     """
