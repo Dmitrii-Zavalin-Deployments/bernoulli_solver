@@ -48,9 +48,9 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         Verify that intermediate steps (like S0) cannot be called 
         with malformed data.
         """
-        from src.steps.step_s0_filled_unfilled_classifier import StepS0FilledUnfilledClassifier
+        from src.steps.step_s0_filled_unfilled_classifier import FilledUnfilledClassifier
         
-        s0 = StepS0FilledUnfilledClassifier()
+        s0 = FilledUnfilledClassifier()
         
         # 1. Negative Test: Garbage input should trigger a validation failure
         with pytest.raises(Exception):
