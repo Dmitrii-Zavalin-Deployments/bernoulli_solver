@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from types import SimpleNamespace
 from src.bernoulli_pipeline_orchestrator import run_solver, BernoulliPipelineOrchestrator
 from tests.signatures.no_computation_before_validation_signature import NoComputationBeforeValidationTestSignature
