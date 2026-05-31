@@ -2,15 +2,26 @@ from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
 
 class BernoulliStateDummy(dict, BernoulliStateInterface):
     def __init__(self):
-        # Set all interface defaults immediately using dict's constructor
+        # 1. Initialize only primary variables into the dict
+        # This satisfies the 'StepS1ExactlyOneMissing' validator
         super().__init__({
             'p1': 1.0, 'p2': 1.0, 'v1': 1.0, 'v2': 1.0,
-            'h1': 1.0, 'h2': 1.0, 'rho': 1.0,
-            'energy': [0.0, 0.0], 'energy_imbalance': 0.0,
-            'p_min': 0.0, 'p_max': 0.0, 'v_min': 0.0, 'v_max': 0.0
+            'h1': 1.0, 'h2': 1.0, 'rho': 1.0
         })
+        # 2. Store extra fields as instance attributes (not dict keys)
+        self.energy = [0.0, 0.0]
+        self.energy_imbalance = 0.0
+        self.p_min = 0.0
+        self.p_max = 0.0
+        self.v_min = 0.0
+        self.v_max = 0.0
 
     def override(self, **kwargs):
-        """Allows overriding specific fields while maintaining object identity."""
-        self.update(kwargs)
+        """Overrides primary fields in dict, others in attributes."""
+        primary_fields = {'p1', 'p2', 'v1', 'v2', 'h1', 'h2', 'rho'}
+        for key, value in kwargs.items():
+            if key in primary_fields:
+                self[key] = value
+            else:
+                setattr(self, key, value)
         return self
