@@ -4,6 +4,7 @@ from typing import Dict, Any
 from tests.signatures.pipeline_cross_step_correctness_scenarios_signature import PipelineCrossStepCorrectnessScenariosTestSignature
 from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
 from src.config.config_loader import SolverConfig
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTestSignature):
     """
@@ -31,13 +32,16 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
 
     @pytest.fixture
     def baseline_input(self) -> Dict[str, Any]:
-        """Physics-compliant baseline for Bernoulli validation."""
-        return {
-            "p1": 101325.0, "v1": 10.0,
-            "p2": None,      "v2": 20.0,
-            "h1": 0.0,       "h2": 0.0,
-            "rho": 1.225
-        }
+        """Physics-compliant baseline for Bernoulli validation, utilizing the Dummy state."""
+        return BernoulliStateDummy().override(
+            p1=101325.0, 
+            v1=10.0,
+            p2=None,      
+            v2=20.0,
+            h1=0.0,       
+            h2=0.0,
+            rho=1.225
+        )
 
     @pytest.fixture
     def executed_state(self, orchestrator, baseline_input, config):
@@ -103,7 +107,7 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         """
         inp = copy.deepcopy(baseline_input)
         inp["p2"] = 101141.25 
-        inp["p1"] = None  # <--- Exactly one missing variable contract satisfied
+        inp["p1"] = None
         state = orchestrator.execute_pipeline(inp, config)
         assert state.energy_imbalance == pytest.approx(0.0, abs=1e-4)
 
@@ -114,7 +118,7 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         """
         inp = copy.deepcopy(baseline_input)
         inp["p2"] = 101141.25
-        inp["p1"] = None  # <--- Exactly one missing variable contract satisfied
+        inp["p1"] = None
         state = orchestrator.execute_pipeline(inp, config)
         assert state.p_max >= state.p_min
 
@@ -124,6 +128,8 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         assert baseline_input == snap
 
     def test_pipeline_output_alignment(self, executed_state):
-        keys = {'p1', 'p2', 'v1', 'v2', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max'}
-        for k in keys:
-            assert hasattr(executed_state, k)
+        dummy = BernoulliStateDummy()
+        for key in dummy.keys():
+            assert hasattr(executed_state, key)
+        for attr in ['energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max']:
+            assert hasattr(executed_state, attr)
