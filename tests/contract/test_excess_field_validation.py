@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import get_type_hints
 from src.containers.bernoulli_state import BernoulliState
 from tests.signatures.excess_field_validation_signature import ExcessFieldValidationTestSignature
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 INPUT_SCHEMA = BASE_DIR / "schema/bernoulli_input.schema.json"
@@ -22,7 +23,6 @@ class TestExcessFieldValidation(ExcessFieldValidationTestSignature):
         with open(INPUT_SCHEMA, 'r') as f:
             properties = json.load(f).get("properties", {})
         
-        # Identify any key in the schema NOT in the allowed primary set
         extra_fields = set(properties.keys()) - PRIMARY_FIELDS
         assert not extra_fields, f"CONSTITUTIONAL VIOLATION: Unauthorized input fields detected: {extra_fields}"
 
@@ -30,7 +30,6 @@ class TestExcessFieldValidation(ExcessFieldValidationTestSignature):
         with open(OUTPUT_SCHEMA, 'r') as f:
             properties = json.load(f).get("properties", {})
         
-        # Identify any key in the schema NOT in the allowed output set
         extra_fields = set(properties.keys()) - OUTPUT_FIELDS
         assert not extra_fields, f"CONSTITUTIONAL VIOLATION: Unauthorized output fields detected: {extra_fields}"
 
@@ -41,3 +40,27 @@ class TestExcessFieldValidation(ExcessFieldValidationTestSignature):
         # Identify any field in the class NOT in the allowed output set
         extra_fields = state_fields - OUTPUT_FIELDS
         assert not extra_fields, f"CONSTITUTIONAL VIOLATION: Unauthorized fields found in BernoulliState: {extra_fields}"
+
+    def test_dummy_integrity(self):
+        """
+        Uses the BernoulliStateDummy to ensure that actual object instances 
+        do not contain fields outside of our Constitutional Output Set.
+        """
+        dummy = BernoulliStateDummy()
+        
+        # 1. Check Dict keys (Primary fields)
+        dict_keys = set(dummy.keys())
+        
+        # 2. Check Instance attributes (Envelope fields)
+        # We filter out private/internal python attributes (starting with _)
+        instance_attrs = {
+            k for k in dir(dummy) 
+            if not k.startswith('_') 
+            and k not in dict_keys 
+            and not callable(getattr(dummy, k))
+        }
+        
+        actual_fields = dict_keys.union(instance_attrs)
+        extra_fields = actual_fields - OUTPUT_FIELDS
+        
+        assert not extra_fields, f"CONSTITUTIONAL VIOLATION: Dummy object contains unauthorized fields: {extra_fields}"
