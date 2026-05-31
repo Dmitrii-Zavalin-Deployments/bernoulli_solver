@@ -1,6 +1,5 @@
 import pytest
 import copy
-import math
 from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 from tests.signatures.s0_classification_edge_cases_signature import S0ClassificationEdgeCasesTestSignature
