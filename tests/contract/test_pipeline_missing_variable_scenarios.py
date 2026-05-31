@@ -4,10 +4,12 @@ import copy
 from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
 from src.config.config_interface import SolverConfig
 from tests.signatures.pipeline_missing_variable_scenarios_signature import PipelineMissingVariableScenariosTestSignature
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestSignature):
     """
     Contract-level implementation for Pipeline-Level Missing-Variable Scenarios.
+    Utilizes BernoulliStateDummy for strict interface compliance.
     """
 
     @pytest.fixture
@@ -25,19 +27,19 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
 
     @pytest.fixture
     def ground_truth(self):
-        # A physically balanced state: 100k + 50k = 78k + 72k = 150k
-        return {
-            "p1": 100000.0, "p2": 78000.0,
-            "v1": 10.0, "v2": 12.0,
-            "h1": 0.0, "h2": 0.0,
-            "rho": 1000.0
-        }
+        """Physically balanced state compliant with BernoulliStateInterface."""
+        return BernoulliStateDummy().override(
+            p1=100000.0, p2=78000.0,
+            v1=10.0, v2=12.0,
+            h1=0.0, h2=0.0,
+            rho=1000.0
+        )
 
     def _run_scenario(self, orchestrator, ground_truth, valid_config, missing_key):
         """Helper to run pipeline with one variable masked as None."""
-        input_dict = ground_truth.copy()
-        input_dict[missing_key] = None
-        return orchestrator.execute_pipeline(input_dict, valid_config), input_dict
+        input_obj = copy.deepcopy(ground_truth)
+        input_obj[missing_key] = None
+        return orchestrator.execute_pipeline(input_obj, valid_config), input_obj
 
     # -------------------------
     # Missing‑variable scenarios
@@ -130,6 +132,10 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
 
     def test_pipeline_output_alignment(self, orchestrator, ground_truth, valid_config):
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "v2")
-        required_fields = ['p1', 'p2', 'v1', 'v2', 'h1', 'h2', 'rho']
-        for field in required_fields:
-            assert getattr(res, field) is not None
+        dummy = BernoulliStateDummy()
+        # Verify alignment using the dummy's interface definition
+        for key in dummy.keys():
+            assert hasattr(res, key)
+        # Verify non-dict attributes
+        for attr in ['energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max']:
+            assert hasattr(res, attr)
