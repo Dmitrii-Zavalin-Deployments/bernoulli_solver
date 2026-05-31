@@ -1,5 +1,19 @@
 import pytest
 from tests.signatures.presence_validation_signature import PresenceValidationTestSignature
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
+
+@pytest.fixture
+def orchestrator():
+    return BernoulliPipelineOrchestrator()
+
+@pytest.fixture
+def ground_truth():
+    return BernoulliStateDummy(p1=1.0, p2=1.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0, rho=1.0)
+
+@pytest.fixture
+def valid_config():
+    return {"k_p_min": 0.1, "k_p_max": 0.1, "k_v_min": 0.1, "k_v_max": 0.1}
 
 class TestPipelinePresenceValidation(PresenceValidationTestSignature):
     """
