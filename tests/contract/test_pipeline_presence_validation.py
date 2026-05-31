@@ -23,6 +23,7 @@ def valid_config():
 class TestPipelinePresenceValidation(PresenceValidationTestSignature):
     """
     Implementation of presence validation tests for the Bernoulli pipeline.
+    Uses BernoulliStateDummy fixtures for contract enforcement.
     """
 
     @pytest.fixture
@@ -43,23 +44,30 @@ class TestPipelinePresenceValidation(PresenceValidationTestSignature):
         with pytest.raises(Exception): 
              orchestrator.execute_pipeline(invalid_input, valid_config)
 
-    def test_output_has_all_required_fields(self, orchestrator, ground_truth, valid_config):
+    def test_output_has_all_required_fields(self, orchestrator, ground_truth, valid_config, primary_fields, envelope_fields):
         input_state = ground_truth.override(p1=None)
         res = orchestrator.execute_pipeline(input_state, valid_config)
         
-        for field in ["p1", "p2", "v1", "v2", "h1", "h2", "rho"]:
-            assert hasattr(res, field) or field in res, f"Missing primary field: {field}"
+        # Check primary fields
+        for field in primary_fields:
+            # Handle both object attributes and dict keys
+            assert hasattr(res, field) or (isinstance(res, dict) and field in res), f"Missing primary field: {field}"
             
-        for field in ["p_min", "p_max", "v_min", "v_max"]:
-            value = getattr(res, field, None) or res.get(field)
+        # Check envelope fields
+        for field in envelope_fields:
+            value = getattr(res, field, None)
+            if value is None and isinstance(res, dict):
+                value = res.get(field)
             assert value is not None, f"Envelope field {field} is None or missing"
 
-    def test_no_optional_or_missing_fields_allowed(self, orchestrator, ground_truth, valid_config):
+    def test_no_optional_or_missing_fields_allowed(self, orchestrator, ground_truth, valid_config, primary_fields, envelope_fields):
         res = orchestrator.execute_pipeline(ground_truth.override(p1=None), valid_config)
         
-        all_fields = ["p1", "p2", "v1", "v2", "h1", "h2", "rho", 
-                      "p_min", "p_max", "v_min", "v_max", "energy", "energy_imbalance"]
+        # Combine lists dynamically to ensure future-proofing
+        all_fields = primary_fields + envelope_fields + ["energy", "energy_imbalance"]
         
         for field in all_fields:
-            value = getattr(res, field, None) if not isinstance(res, dict) else res.get(field)
+            value = getattr(res, field, None)
+            if value is None and isinstance(res, dict):
+                value = res.get(field)
             assert value is not None, f"Field {field} is missing or None in output"
