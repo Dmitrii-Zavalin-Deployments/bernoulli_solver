@@ -50,6 +50,24 @@ class BernoulliPipelineOrchestrator:
         self.s4_diagnician = StepS4ComputeEnergyResidual()
         self.s5_enveloper = StepS5ComputeMinMaxConstraints()
 
+    def _validate_boundaries(self, raw_input: Dict[str, Any]) -> None:
+        """
+        Pre-flight boundary check to enforce physical plausibility
+        and structural integrity before entering the step chain.
+        """
+        # 1. Check for None/Missing Values (Structural integrity)
+        required_keys = {"p1", "p2", "v1", "v2", "h1", "h2", "rho"}
+        for key in required_keys:
+            if key not in raw_input or raw_input[key] is None:
+                raise ValueError(f"Boundary validation failed: Field '{key}' is missing or None.")
+
+        # 2. Physical Constraints
+        if raw_input["p1"] < 0 or raw_input["p2"] < 0:
+            raise ValueError("Boundary validation failed: Negative pressure detected.")
+
+        if abs(raw_input["v1"]) > 1e6 or abs(raw_input["v2"]) > 1e6:
+            raise ValueError("Boundary validation failed: Velocity exceeds physical limits.")
+
     def execute_pipeline(self, raw_input: Dict[str, Any], config: SolverConfig) -> BernoulliState:
         """
         Executes the full chain sequentially.
@@ -58,6 +76,9 @@ class BernoulliPipelineOrchestrator:
         # Ensures that a missing config is caught before S1 validation occurs.
         if config is None:
             raise TypeError("Configuration object is mandatory for pipeline execution.")
+
+        # --- Guard Gate: Pre-Flight Boundary Validation ---
+        self._validate_boundaries(raw_input)
         
         # S0 & S1: Validation
         _, _ = self.s0_classifier.classify_filled_and_unfilled(input_schema_instance=raw_input)
