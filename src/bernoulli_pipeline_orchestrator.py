@@ -50,20 +50,21 @@ class BernoulliPipelineOrchestrator:
         self.s4_diagnician = StepS4ComputeEnergyResidual()
         self.s5_enveloper = StepS5ComputeMinMaxConstraints()
 
-      def _validate_boundaries(self, raw_input: Dict[str, Any]) -> None:
-          """
-          Pre-flight boundary check to enforce physical plausibility
-          before entering the step chain.
-          """
-          # Physical Constraints - Safely checked only if fields are provided and non-None
-          p1, p2 = raw_input.get("p1"), raw_input.get("p2")
-          if (p1 is not None and p1 < 0) or (p2 is not None and p2 < 0):
-              raise ValueError("Boundary validation failed: Negative pressure detected.")
+    def _validate_boundaries(self, raw_input):
+        """
+        Pre-flight boundary check to enforce physical plausibility
+        before entering the step chain.
+        """
+        # Physical Constraints - Safely checked only if fields are provided
+        p1 = raw_input.get("p1")
+        p2 = raw_input.get("p2")
+        if (p1 is not None and p1 < 0) or (p2 is not None and p2 < 0):
+            raise ValueError("Boundary validation failed: Negative pressure detected.")
 
-          v1, v2 = raw_input.get("v1"), raw_input.get("v2")
-          if (v1 is not None and abs(v1) > 1e6) or (v2 is not None and abs(v2) > 1e6):
-              raise ValueError("Boundary validation failed: Velocity exceeds physical limits.")
-
+        v1 = raw_input.get("v1")
+        v2 = raw_input.get("v2")
+        if (v1 is not None and abs(v1) > 1e6) or (v2 is not None and abs(v2) > 1e6):
+            raise ValueError("Boundary validation failed: Velocity exceeds physical limits.")
     def execute_pipeline(self, raw_input: Dict[str, Any], config: SolverConfig) -> BernoulliState:
         """
         Executes the full chain sequentially.
