@@ -1,6 +1,5 @@
 import pytest
 from tests.signatures.presence_validation_signature import PresenceValidationTestSignature
-from src.containers.bernoulli_state import BernoulliState
 
 class TestPipelinePresenceValidation(PresenceValidationTestSignature):
     """
