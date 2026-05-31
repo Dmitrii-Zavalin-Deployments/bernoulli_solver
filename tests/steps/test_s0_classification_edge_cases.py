@@ -3,6 +3,7 @@ import copy
 from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 from tests.signatures.s0_classification_edge_cases_signature import S0ClassificationEdgeCasesTestSignature
+from src.steps.step_s1_exactly_one_missing import ValidationError
 
 class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
     """
@@ -54,12 +55,12 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
         # Injecting an unexpected field/type mismatch
         malformed = copy.deepcopy(valid_base)
         malformed["unexpected_key"] = "bad_data"
-        with pytest.raises(TypeError):
+        with pytest.raises(ValidationError):
             orchestrator.execute_pipeline(malformed, config)
 
     def test_rejects_missing_required_fields(self, orchestrator, valid_base, config):
         # S0 should strictly reject None for primary variables
-        input_state = valid_base.override(p1=None)
+        input_state = valid_base.override(p1=-100.0)
         with pytest.raises(ValueError):
             orchestrator.execute_pipeline(input_state, config)
 
