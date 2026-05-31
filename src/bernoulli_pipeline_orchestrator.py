@@ -50,7 +50,7 @@ class BernoulliPipelineOrchestrator:
         self.s4_diagnician = StepS4ComputeEnergyResidual()
         self.s5_enveloper = StepS5ComputeMinMaxConstraints()
 
-        def _validate_boundaries(self, raw_input: Dict[str, Any]) -> None:
+    def _validate_boundaries(self, raw_input: Dict[str, Any]) -> None:
         """
         Pre-flight boundary check to enforce physical plausibility
         before entering the step chain.
