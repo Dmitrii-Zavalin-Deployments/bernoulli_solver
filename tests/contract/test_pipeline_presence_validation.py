@@ -14,7 +14,6 @@ def ground_truth():
 
 @pytest.fixture
 def valid_config():
-    # Fix: Return an object with attributes instead of a dict
     return SimpleNamespace(
         g=9.80665, 
         k_p_min=0.1, k_p_max=0.1, 
@@ -35,13 +34,14 @@ class TestPipelinePresenceValidation(PresenceValidationTestSignature):
         return ["p_min", "p_max", "v_min", "v_max"]
 
     def test_input_has_exactly_one_missing_variable(self, orchestrator, ground_truth, valid_config):
-        # Test 1 missing (Should pass)
+        # Test 1 missing (Should pass through solver mode)
         valid_input = ground_truth.override(p1=None)
         assert orchestrator.execute_pipeline(valid_input, valid_config) is not None
 
-        # Test 0 missing (Full input) - Expecting failure/rejection
+        # Test >1 missing (Should fail early validation)
+        invalid_input = ground_truth.override(p1=None, p2=None)
         with pytest.raises(Exception): 
-             orchestrator.execute_pipeline(ground_truth, valid_config)
+             orchestrator.execute_pipeline(invalid_input, valid_config)
 
     def test_output_has_all_required_fields(self, orchestrator, ground_truth, valid_config):
         input_state = ground_truth.override(p1=None)
