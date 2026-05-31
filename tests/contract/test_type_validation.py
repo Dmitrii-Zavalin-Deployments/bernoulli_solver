@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 from typing import get_type_hints, get_origin
+import pytest
 from src.containers.bernoulli_state import BernoulliState
 from tests.signatures.type_validation_signature import TypeValidationTestSignature
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 # Resolve paths to schema definitions
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -20,7 +22,8 @@ TYPE_MAPPING = {
 class TestTypeValidation(TypeValidationTestSignature):
     """
     Concrete implementation of the TypeValidationTestSignature.
-    This suite acts as the constitutional gatekeeper for BernoulliState types.
+    This suite acts as the constitutional gatekeeper for BernoulliState types,
+    dynamically verifying against the BernoulliStateDummy.
     """
 
     def test_input_schema_field_types(self):
@@ -58,14 +61,19 @@ class TestTypeValidation(TypeValidationTestSignature):
                 f"Type mismatch for output field '{field}': Expected {expected_type}, got {type_hints[field]}"
 
     def test_state_interface_type_completeness(self):
+        """
+        Dynamically verifies that BernoulliState implements the exact fields
+        defined by the BernoulliStateDummy interface.
+        """
         type_hints = get_type_hints(BernoulliState)
+        dummy = BernoulliStateDummy()
         
-        # Defined contract requirements
-        required_fields = {
-            "p1", "p2", "v1", "v2", "h1", "h2", "rho",
-            "energy", "energy_imbalance", 
-            "p_min", "p_max", "v_min", "v_max"
-        }
+        # Define fields from the dummy's structure
+        primary_fields = set(dummy.keys())
+        # Extra fields are instance attributes in the dummy
+        extra_fields = {'energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max'}
+        
+        required_fields = primary_fields | extra_fields
         
         # 1. Verify existence of all required fields
         for field in required_fields:
