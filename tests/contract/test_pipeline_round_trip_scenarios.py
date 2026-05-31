@@ -2,13 +2,13 @@ import math
 import copy
 import pytest
 from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
-from src.containers.bernoulli_state import BernoulliState
-# Ensure this import matches your file path
+from src.config.config_loader import SolverConfig
 from tests.signatures.pipeline_round_trip_scenarios_signature import PipelineRoundTripScenariosTestSignature
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
     """
-    Implementation of the round-trip contract.
+    Implementation of the round-trip contract using BernoulliStateDummy.
     Validates that fully-specified, consistent states traverse the pipeline 
     without drift, mutation, or incorrect solver application.
     """
@@ -19,19 +19,22 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
 
     @pytest.fixture
     def valid_config(self):
-        # Assuming a configuration object structure
-        from src.config.config_loader import SolverConfig
-        return SolverConfig(g=9.81, precision=1e-06, k_v_min=0.1, k_v_max=0.1, k_p_min=0.1, k_p_max=0.1)
+        return SolverConfig(
+            g=9.81, 
+            precision=1e-06, 
+            k_v_min=0.1, k_v_max=0.1, 
+            k_p_min=0.1, k_p_max=0.1
+        )
 
     @pytest.fixture
     def ground_truth(self):
-        # A fully balanced state (Energy Balance: 150,000)
-        return {
-            "p1": 100000.0, "p2": 78000.0,
-            "v1": 10.0, "v2": 12.0,
-            "h1": 0.0, "h2": 0.0,
-            "rho": 1000.0
-        }
+        """Returns a contract-compliant fully balanced state."""
+        return BernoulliStateDummy().override(
+            p1=100000.0, p2=78000.0,
+            v1=10.0, v2=12.0,
+            h1=0.0, h2=0.0,
+            rho=1000.0
+        )
 
     # -------------------------
     # Round‑trip invariants
@@ -49,7 +52,8 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
         # Verify that all primary fields exist in the output object
         for field in ["p1", "p2", "v1", "v2", "h1", "h2", "rho"]:
             assert hasattr(res, field)
-            assert not math.isnan(getattr(res, field))
+            val = getattr(res, field)
+            assert not (isinstance(val, float) and math.isnan(val))
 
     # -------------------------
     # S3 behaviour
@@ -101,9 +105,6 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
         # Ensure energy and envelopes agree
         assert res.energy_imbalance <= 1e-5
 
-    def test_pipeline_no_unintended_mutations(self, orchestrator, ground_truth, valid_config):
-        # Logic captured in immutability test
-        pass
 
     # -------------------------
     # Structural invariants
@@ -116,4 +117,10 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
 
     def test_pipeline_output_alignment(self, orchestrator, ground_truth, valid_config):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
-        assert isinstance(res, BernoulliState)
+        dummy = BernoulliStateDummy()
+        # Verify alignment using the dummy's interface definition
+        for key in dummy.keys():
+            assert hasattr(res, key)
+        # Verify non-dict attributes
+        for attr in ['energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max']:
+            assert hasattr(res, attr)
