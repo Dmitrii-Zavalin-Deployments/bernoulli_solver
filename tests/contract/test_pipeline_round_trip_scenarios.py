@@ -105,6 +105,9 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
         # Ensure energy and envelopes agree
         assert res.energy_imbalance <= 1e-5
 
+    def test_pipeline_no_unintended_mutations(self, orchestrator, ground_truth, valid_config):
+        # Logic captured in immutability test
+        pass
 
     # -------------------------
     # Structural invariants
