@@ -2,13 +2,13 @@ import pytest
 import copy
 from tests.signatures.s1_exactly_one_missing_edge_cases_signature import S1ExactlyOneMissingEdgeCasesTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
-from src.steps.step_s1_exactly_one_missing import S1ExactlyOneMissing
+from src.steps.step_s1_exactly_one_missing import StepS1ExactlyOneMissing
 
 class TestS1ExactlyOneMissingEdgeCases(S1ExactlyOneMissingEdgeCasesTestSignature):
 
     @pytest.fixture
     def classifier(self):
-        return S1ExactlyOneMissing()
+        return StepS1ExactlyOneMissing()
 
     @pytest.fixture
     def valid_state(self):
