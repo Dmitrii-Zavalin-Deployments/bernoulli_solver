@@ -1,5 +1,4 @@
 import pytest
-import math
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 from src.steps.step_s0_filled_unfilled_classifier import FilledUnfilledClassifier
 from src.interfaces.step_interfaces.s0_classification_scenarios_signature import S0ClassificationTestSignature
@@ -64,7 +63,7 @@ class TestS0Classification(S0ClassificationTestSignature):
     def test_classifies_diagnostic_fields(self, classifier, valid_state):
         # Even if provided, S0 must classify them as 'diagnostic' rather than 'primary'
         # Verification logic depends on your specific S0 return type
-        result = classifier.classify_filled_and_unfilled(valid_state)
+        classifier.classify_filled_and_unfilled(valid_state)
         # assert result.is_diagnostic('energy') 
 
     def test_consistency_passthrough(self, classifier, valid_state):
