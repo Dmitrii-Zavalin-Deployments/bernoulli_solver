@@ -23,34 +23,28 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
         # The canonical primary universe as mandated by Phase 1.1 and Section 2.2
         primary_universe = {"p1", "p2", "v1", "v2", "h1", "h2", "rho"}
         
-        # 1. Enforce Excess Field Validation: Ensure no unexpected fields exist
+        # 1. Excess Field Validation
         input_keys = set(raw_input_dict.keys())
         unexpected_keys = input_keys - primary_universe
         if unexpected_keys:
-            raise ValidationError(
-                f"Contract-Validation failed: Unexpected fields present in input: {unexpected_keys}. "
-                f"Excess or convenience fields are strictly prohibited."
-            )
-            
-        # 2. Determine which primary fields are structurally present and active
+            raise ValidationError(f"Unexpected fields: {unexpected_keys}")
+
+        # 2. Determine present/missing
         present_fields = {
             field for field in primary_universe 
             if field in raw_input_dict and raw_input_dict[field] is not None
         }
         
-        # 3. Determine missing primary variables
         missing_fields = primary_universe - present_fields
-        missing_count = len(missing_fields)
+
+        # --- NEW LOGIC: Enforce the "Exactly One Missing" Rule ---
+        if len(missing_fields) == 0:
+            raise ValidationError("Validation failed: Zero primary variables are missing.")
         
-        # 4. Enforce the exactly-one-missing invariant rules
-        if missing_count > 1:
-            raise ValidationError(
-                f"Contract-Validation failed: More than one primary variable is missing: {missing_fields}. "
-                f"The solver requires exactly one missing variable to operate."
-            )
-            
-        # Extract the singular valid missing variable name
-        missing_variable_name = next(iter(missing_fields), None)
+        if len(missing_fields) > 1:
+            raise ValidationError(f"Validation failed: Too many missing variables: {missing_fields}")
         
-        # Return the raw input completely unchanged along with the extracted string token
-        return raw_input_dict, missing_variable_name
+        # If we reach here, exactly one is missing
+        missing_variable = list(missing_fields)[0]
+        
+        return raw_input_dict, missing_variable
