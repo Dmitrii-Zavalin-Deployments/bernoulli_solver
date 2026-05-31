@@ -3,7 +3,7 @@ from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import
 
 class ValidationError(ValueError):
     """
-    Project-specific validation exception raised when the structural structural 
+    Project-specific validation exception raised when the structural 
     invariants of the input stream fail to pass the S1 gatekeeper requirements.
     """
 
@@ -37,14 +37,22 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
         
         missing_fields = primary_universe - present_fields
 
-        # --- NEW LOGIC: Enforce the "Exactly One Missing" Rule ---
+        # 3. Dual-Path Validation Logic
+        # Path A: Identity Path (0 missing) - Allowed for round-trip testing
+        # Path B: Solver Path (1 missing) - Allowed if missing variable is not a required input
+        
         if len(missing_fields) == 0:
-            raise ValidationError("Validation failed: Zero primary variables are missing.")
-        
-        if len(missing_fields) > 1:
+            missing_variable = ""
+            
+        elif len(missing_fields) == 1:
+            missing_variable = list(missing_fields)[0]
+            # Required primary variables cannot be omitted
+            required_inputs = {"p1", "v1", "h1", "rho"}
+            if missing_variable in required_inputs:
+                raise ValidationError(f"Validation failed: Required primary input variable '{missing_variable}' is missing.")
+                
+        else:
+            # Too many missing variables
             raise ValidationError(f"Validation failed: Too many missing variables: {missing_fields}")
-        
-        # If we reach here, exactly one is missing
-        missing_variable = list(missing_fields)[0]
         
         return raw_input_dict, missing_variable
