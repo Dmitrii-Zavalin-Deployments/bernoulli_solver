@@ -6,7 +6,6 @@ class ValidationError(ValueError):
     Project-specific validation exception raised when the structural 
     invariants of the input stream fail to pass the S1 gatekeeper requirements.
     """
-    pass
 
 class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
     """
