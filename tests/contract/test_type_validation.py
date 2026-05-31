@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 from typing import get_type_hints, get_origin
-import pytest
 from src.containers.bernoulli_state import BernoulliState
 from tests.signatures.type_validation_signature import TypeValidationTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
