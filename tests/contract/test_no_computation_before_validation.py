@@ -1,5 +1,6 @@
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+from types import SimpleNamespace
 from src.bernoulli_pipeline_orchestrator import run_solver, BernoulliPipelineOrchestrator
 from tests.signatures.no_computation_before_validation_signature import NoComputationBeforeValidationTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
@@ -53,11 +54,10 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         
         # 1. Negative Test: Garbage input should trigger a validation failure
         with pytest.raises(Exception):
-            s0.classify_fields(raw_input={"garbage": "data"})
-            
+            s0.classify_filled_and_unfilled(raw_input={"garbage": "data"})
         # 2. Positive Test: Valid dummy input should NOT trigger an exception
         # This proves the S0 gate is working as intended (blocking bad, allowing good)
-        assert s0.classify_fields(raw_input=dummy_state) is not None
+        assert s0.classify_filled_and_unfilled(raw_input=dummy_state) is not None
 
     def test_validation_gate_is_global_and_non_bypassable(self, dummy_state):
         """
@@ -66,15 +66,11 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         """
         orchestrator = BernoulliPipelineOrchestrator()
         
-        # Attempting to bypass by passing None/Empty should fail
+        # 1. Negative Test: Bypassing config requirement should fail
         with pytest.raises(TypeError):
             orchestrator.execute_pipeline(raw_input={}, config=None)
             
-        # Passing the Dummy state should pass the initial Type Check 
-        # (Assuming the orchestrator checks input types/interfaces)
-        # If this succeeds, it proves the orchestrator is 'Validation-First'
-        try:
-            orchestrator.execute_pipeline(dummy_state, config=None)
-        except Exception as e:
-            # We catch specific validation errors, but we should NOT get a TypeError/AttributeError
-            assert not isinstance(e, (TypeError, AttributeError))
+        # 2. Positive Test: Valid config should proceed
+        valid_config = SimpleNamespace(g=9.8, k_p_min=0.1, k_p_max=0.1, k_v_min=0.1, k_v_max=0.1)
+        result = orchestrator.execute_pipeline(dummy_state, config=valid_config)
+        assert result is not None
