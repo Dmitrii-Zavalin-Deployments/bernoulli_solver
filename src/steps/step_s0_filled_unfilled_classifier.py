@@ -1,7 +1,7 @@
 from typing import Set, Tuple
 from src.interfaces.step_interfaces.step_s0_filled_unfilled_classifier_interface import FilledUnfilledClassifierInterface
 
-class StepS0FilledUnfilledClassifier(FilledUnfilledClassifierInterface):
+class FilledUnfilledClassifier(FilledUnfilledClassifierInterface):
     """
     Concrete implementation of the FilledUnfilledClassifier step.
     Inherits explicitly from FilledUnfilledClassifierInterface to ensure
