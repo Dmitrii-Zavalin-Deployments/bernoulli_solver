@@ -1,7 +1,7 @@
 import pytest
 from src.steps.step_s1_exactly_one_missing import StepS1ExactlyOneMissing, ValidationError
 from tests.signatures.s1_exactly_one_missing_test_signature import S1ExactlyOneMissingTestSignature
-from tests.dummies.bernoulli_state_dummy import BernoulliStateDummy
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestStepS1ExactlyOneMissing(S1ExactlyOneMissingTestSignature):
     """
