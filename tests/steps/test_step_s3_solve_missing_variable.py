@@ -88,7 +88,7 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
     def test_rejects_negative_density_solution(self, s3_step, dummy, config):
         """S3 must reject negative rho results."""
         # Use inputs that result in a negative rho value
-        state = dummy.override(p1=10.0, p2=20.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0).get_s1_compliant_state("rho")
+        state = dummy.override(p1=10.0, p2=20.0, v1=1.0, v2=1.0, h1=1.0, h2=2.0).get_s1_compliant_state("rho")
         # Fix: Update regex to match actual error message
         with pytest.raises(ValueError, match="non-physical fluid density"):
             s3_step.solve_missing_variable(state, config)
