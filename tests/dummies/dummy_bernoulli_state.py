@@ -27,13 +27,10 @@ class BernoulliStateDummy(dict, BernoulliStateInterface):
                 setattr(self, key, value)
         return self
 
-    def get_s1_compliant_state(self):
-        """
-        Returns a copy of this state with exactly one primary variable removed.
-        Does not mutate the original object.
-        """
+    def get_s1_compliant_state(self, missing_key="h1"):
+        """Removes the specified key to satisfy S1 gatekeeper."""
+        import copy
         state_copy = copy.deepcopy(self)
-        # Remove 'p1' to satisfy the S1 requirement
-        if "p1" in state_copy:
-            del state_copy["p1"]
+        if missing_key in state_copy:
+            del state_copy[missing_key]
         return state_copy
