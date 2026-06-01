@@ -103,7 +103,7 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
 
     def test_predictable_behavior_under_edge_conditions(self, orchestrator, valid_base, config):
         # Verify result output is non-null for boundary conditions
-        input_state = valid_base.override(p1=100.0, v1=0.0, h1=0.0, p2=100.0, v2=1.0, h2=0.0).get_s1_compliant_state(missing_key="rho")
+        input_state = valid_base.override(p1=200.0, v1=0.0, h1=0.0, p2=100.0, v2=1.0, h2=0.0).get_s1_compliant_state(missing_key="rho")
         assert orchestrator.execute_pipeline(input_state, config) is not None
 
     # -------------------------

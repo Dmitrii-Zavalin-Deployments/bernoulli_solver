@@ -61,10 +61,8 @@ class TestStepS1ExactlyOneMissing(S1ExactlyOneMissingTestSignature):
         S1 must ignore missing diagnostic/derived fields when counting missing variables:
             energy, energy_imbalance, p_min, p_max, v_min, v_max.
         """
-        dummy = BernoulliStateDummy()
-        # Ensure diagnostics are missing
-        dummy.energy = None 
-        dummy.p1 = None
+        dummy = BernoulliStateDummy().get_s1_compliant_state(missing_key="p1")
+        dummy.energy = None
         
         # Should still succeed (0 missing primaries)
         # Note: Depending on your strictness, you might change this test 
