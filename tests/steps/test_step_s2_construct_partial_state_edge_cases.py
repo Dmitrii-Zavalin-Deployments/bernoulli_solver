@@ -107,7 +107,7 @@ class TestS2PartialStateEdgeCases(S2PartialStateEdgeCasesTestSignature):
     def test_predictable_behavior_under_edge_conditions(self, s2_step, dummy, sentinel):
         """S2 must remain predictable near pathological boundaries (Finite check)."""
         # This confirms that our sanity gate rejects NaNs even in extreme conditions
-        state = dummy.override(h1=float('inf')).get_s1_compliant_state(missing_key="rho")
+        _ = dummy.override(h1=float('inf')).get_s1_compliant_state(missing_key="rho")
         
         # Note: If h1 was not in the ['p1', 'p2', 'v1', 'v2', 'rho'] list, 
         # this won't trigger the gate, but the logic remains robust.
