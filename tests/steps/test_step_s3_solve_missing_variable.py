@@ -35,43 +35,43 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
         # Let's set everything to 1.0, solve for P1.
         state = dummy.override(p2=1.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0, rho=1.0).get_s1_compliant_state("p1")
         result = s3_step.solve_missing_variable(state, config)
-        assert math.isclose(result['p1'], 1.0)
+        assert math.isclose(result.p1, 1.0)
 
     def test_solves_missing_p2(self, s3_step, dummy, config):
         """S3 must correctly solve for p2."""
         state = dummy.override(p1=1.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0, rho=1.0).get_s1_compliant_state("p2")
         result = s3_step.solve_missing_variable(state, config)
-        assert math.isclose(result['p2'], 1.0)
+        assert math.isclose(result.p2, 1.0)
 
     def test_solves_missing_v1(self, s3_step, dummy, config):
         """S3 must correctly solve for v1."""
         state = dummy.override(p1=1.0, p2=1.0, v2=1.0, h1=1.0, h2=1.0, rho=1.0).get_s1_compliant_state("v1")
         result = s3_step.solve_missing_variable(state, config)
-        assert math.isclose(result['v1'], 1.0)
+        assert math.isclose(result.v1, 1.0)
 
     def test_solves_missing_v2(self, s3_step, dummy, config):
         """S3 must correctly solve for v2."""
         state = dummy.override(p1=1.0, p2=1.0, v1=1.0, h1=1.0, h2=1.0, rho=1.0).get_s1_compliant_state("v2")
         result = s3_step.solve_missing_variable(state, config)
-        assert math.isclose(result['v2'], 1.0)
+        assert math.isclose(result.v2, 1.0)
 
     def test_solves_missing_h1(self, s3_step, dummy, config):
         """S3 must correctly solve for h1."""
         state = dummy.override(p1=1.0, p2=1.0, v1=1.0, v2=1.0, h2=1.0, rho=1.0).get_s1_compliant_state("h1")
         result = s3_step.solve_missing_variable(state, config)
-        assert math.isclose(result['h1'], 1.0)
+        assert math.isclose(result.h1, 1.0)
 
     def test_solves_missing_h2(self, s3_step, dummy, config):
         """S3 must correctly solve for h2."""
         state = dummy.override(p1=1.0, p2=1.0, v1=1.0, v2=1.0, h1=1.0, rho=1.0).get_s1_compliant_state("h2")
         result = s3_step.solve_missing_variable(state, config)
-        assert math.isclose(result['h2'], 1.0)
+        assert math.isclose(result.h2, 1.0)
 
     def test_solves_missing_rho(self, s3_step, dummy, config):
         """S3 must correctly solve for rho."""
         state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0).get_s1_compliant_state("rho")
         result = s3_step.solve_missing_variable(state, config)
-        assert result['rho'] > 0
+        assert result.rho > 0
 
     # ---------------------------------------------------------
     # Physics & math correctness
@@ -94,7 +94,7 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
         """S3 must apply consistent sign conventions."""
         state = dummy.override(p2=10.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0, rho=1.0).get_s1_compliant_state("p1")
         result = s3_step.solve_missing_variable(state, config)
-        assert result['p1'] == 10.0
+        assert result.p1 == 10.0
 
     def test_correct_use_of_g_and_rho(self, s3_step, dummy, config):
         """S3 must use g and rho consistently."""
