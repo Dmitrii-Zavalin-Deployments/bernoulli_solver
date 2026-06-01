@@ -3,6 +3,7 @@ from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import
 
 class ValidationError(ValueError):
     """Structural validation failure."""
+    pass
 
 class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
     """
@@ -34,12 +35,11 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
         
         missing_fields = primary_universe - present_fields
 
-        # 3. Validation Logic
-        # Allow 0 missing (for full-input tests) or 1 missing (for solver tests)
+        missing_variable = ""
         if len(missing_fields) == 0:
-            return raw_input_dict, ""
+            missing_variable = ""
         elif len(missing_fields) == 1:
-            return raw_input_dict, list(missing_fields)[0]
+            missing_variable = list(missing_fields)[0]
         else:
             # Too many missing variables
             raise ValidationError(f"Validation failed: Too many missing variables: {missing_fields}")
