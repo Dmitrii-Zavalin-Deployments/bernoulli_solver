@@ -2,10 +2,8 @@ from typing import Dict, Any, Tuple
 from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import StepS1ExactlyOneMissingInterface
 
 class ValidationError(ValueError):
-    """
-    Project-specific validation exception raised when the structural 
-    invariants of the input stream fail to pass the S1 gatekeeper requirements.
-    """
+    """Structural validation failure."""
+    pass
 
 class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
     """
@@ -23,13 +21,13 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
         # The canonical primary universe as mandated by Phase 1.1 and Section 2.2
         primary_universe = {"p1", "p2", "v1", "v2", "h1", "h2", "rho"}
         
-        # 1. Excess Field Validation
+        # 1. Check for unexpected fields
         input_keys = set(raw_input_dict.keys())
         unexpected_keys = input_keys - primary_universe
         if unexpected_keys:
             raise ValidationError(f"Unexpected fields: {unexpected_keys}")
 
-        # 2. Determine present/missing (handles both absent keys and explicit None values)
+        # 2. Determine missing fields (Handles absent keys AND None values)
         present_fields = {
             field for field in primary_universe 
             if field in raw_input_dict and raw_input_dict[field] is not None
@@ -37,19 +35,12 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
         
         missing_fields = primary_universe - present_fields
 
-        # 3. Dual-Path Validation Logic
-        # Path A: Identity Path (0 missing) - Allowed for round-trip testing
-        # Path B: Solver Path (1 missing) - Allowed if missing variable is not a required input
+        # 3. Validation Logic
+        # Allow 0 missing (for full-input tests) or 1 missing (for solver tests)
         if len(missing_fields) == 0:
-            missing_variable = ""
-            
+            return raw_input_dict, ""
         elif len(missing_fields) == 1:
-            missing_variable = list(missing_fields)[0]
-            # Required primary variables cannot be omitted
-            required_inputs = {"p1", "v1", "h1", "rho"}
-            if missing_variable in required_inputs:
-                raise ValidationError(f"Validation failed: Required primary input variable '{missing_variable}' is missing.")
-                
+            return raw_input_dict, list(missing_fields)[0]
         else:
             # Too many missing variables
             raise ValidationError(f"Validation failed: Too many missing variables: {missing_fields}")
