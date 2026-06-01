@@ -50,7 +50,7 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
 
     def test_handles_tiny_delta_h_or_v(self, orchestrator, valid_base, config):
         # Extremely small delta should be accepted (classification, not computation)
-        input_state = valid_base.override(h1=1.0, h2=1.000000000001)
+        input_state = valid_base.override(h1=1.0, h2=1.000000000001).get_s1_compliant_state(missing_key="p1")
         assert orchestrator.execute_pipeline(input_state, config) is not None
 
     def test_rejects_malformed_input_structures(self, orchestrator, valid_base, config):
@@ -79,7 +79,7 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
         assert orchestrator.execute_pipeline(input_state, config) is not None
 
     def test_flat_line_delta_h_zero(self, orchestrator, valid_base, config):
-        input_state = valid_base.override(h1=0.0, h2=0.0)
+        input_state = valid_base.override(h1=0.0, h2=0.0).get_s1_compliant_state(missing_key="p1")
         assert orchestrator.execute_pipeline(input_state, config) is not None
 
     def test_other_degenerate_configurations(self, orchestrator, valid_base, config):
@@ -98,12 +98,12 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
 
     def test_near_cancellation_scenarios(self, orchestrator, valid_base, config):
         # p1 ≈ p2, h1 ≈ h2
-        input_state = valid_base.override(p1=100.0, p2=100.0000001, h1=10.0, h2=10.0000001)
+        input_state = valid_base.override(p1=100.0, p2=100.0000001, h1=10.0, h2=10.0000001).get_s1_compliant_state(missing_key="v1")
         assert orchestrator.execute_pipeline(input_state, config) is not None
 
     def test_predictable_behavior_under_edge_conditions(self, orchestrator, valid_base, config):
         # Verify result output is non-null for boundary conditions
-        input_state = valid_base.override(p1=100.0, v1=0.0, h1=0.0, p2=100.0, v2=0.0, h2=0.0)
+        input_state = valid_base.override(p1=100.0, v1=0.0, h1=0.0, p2=100.0, v2=0.0, h2=0.0).get_s1_compliant_state(missing_key="rho")
         assert orchestrator.execute_pipeline(input_state, config) is not None
 
     # -------------------------
