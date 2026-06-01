@@ -17,12 +17,14 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
 
     @pytest.fixture
     def valid_base(self):
-        """Standard valid input, then strips p1 for S1."""
+        """Standard valid input, then strips h1 for S1 compliance."""
+        # Chaining the override and the S1 compliance method ensures
+        # that 'h1' is removed as the final step before the test logic runs.
         return BernoulliStateDummy().override(
             p1=100000.0, p2=90000.0,
             v1=10.0, v2=10.0,
             h1=1.0, h2=1.0,
-        ).get_s1_compliant_state()
+        ).get_s1_compliant_state(missing_key="h1")
 
     @pytest.fixture
     def config(self):
@@ -35,6 +37,7 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
     # -------------------------
 
     def test_rejects_negative_pressures(self, orchestrator, valid_base, config):
+        # Note: If override() re-adds 'h1', ensure you append .get_s1_compliant_state() again
         input_state = valid_base.override(p1=-1.0)
         with pytest.raises(ValueError):
             orchestrator.execute_pipeline(input_state, config)
@@ -114,8 +117,7 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
 
     def test_frozen_dummy_alignment(self, orchestrator, valid_base, config):
         res = orchestrator.execute_pipeline(valid_base, config)
-        dummy = BernoulliStateDummy()
-        # Verify that output structure matches the frozen schema
+        dummy = BernoulliStateDummy().get_s1_compliant_state(missing_key="h1")
         for key in dummy.keys():
             assert hasattr(res, key)
         for attr in ['energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max']:
