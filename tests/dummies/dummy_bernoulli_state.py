@@ -1,3 +1,5 @@
+import copy
+import math
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
 
 class BernoulliStateDummy(dict, BernoulliStateInterface):
@@ -16,6 +18,16 @@ class BernoulliStateDummy(dict, BernoulliStateInterface):
         self.v_min = 0.0
         self.v_max = 0.0
 
+    def __getattr__(self, name):
+        """Bridges dictionary keys to object attributes for S3 compatibility."""
+        if name in self:
+            return self[name]
+        # If an expected primary field was deleted for S1 compliance, 
+        # return NaN so that S3's math.isnan(getattr(...)) detects it perfectly.
+        if name in {'p1', 'p2', 'v1', 'v2', 'h1', 'h2', 'rho'}:
+            return float('nan')
+        raise AttributeError(f"'BernoulliStateDummy' object has no attribute '{name}'")
+
     def override(self, **kwargs):
         """Overrides primary fields in dict, others in attributes."""
         primary_fields = {'p1', 'p2', 'v1', 'v2', 'h1', 'h2', 'rho'}
@@ -27,8 +39,7 @@ class BernoulliStateDummy(dict, BernoulliStateInterface):
         return self
 
     def get_s1_compliant_state(self, missing_key="h1"):
-        """Removes the specified key to satisfy S1 gatekeeper."""
-        import copy
+        """Removes the specified key to satisfy S1 gatekeeper requirements."""
         state_copy = copy.deepcopy(self)
         if missing_key in state_copy:
             del state_copy[missing_key]
