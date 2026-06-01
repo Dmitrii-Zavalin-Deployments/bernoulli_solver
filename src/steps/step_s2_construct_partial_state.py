@@ -22,6 +22,12 @@ class StepS2ConstructPartialState(StepS2ConstructPartialStateInterface):
         isolated missing primary variable and all diagnostic/execution-derived fields 
         to the uniform unfilled sentinel state.
         """
+        # [Validation Gate]
+        if validated_input_dict.get("p1", 0) < 0 or validated_input_dict.get("p2", 0) < 0:
+            raise ValueError("negative pressure detected")
+        if abs(validated_input_dict.get("v1", 0)) > 1e10 or abs(validated_input_dict.get("v2", 0)) > 1e10:
+            raise ValueError("extreme velocity detected")
+
         # Canonical primary variables universe
         primary_fields = ["p1", "p2", "v1", "v2", "h1", "h2", "rho"]
         
