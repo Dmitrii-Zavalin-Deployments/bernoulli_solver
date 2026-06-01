@@ -4,7 +4,7 @@ import copy
 from src.steps.step_s3_solve_missing_variable import StepS3SolveMissingVariable
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 # Assuming the signature is imported from your signatures directory
-from tests.signatures.test_signatures import S3SolveMissingVariableTestSignature
+from tests.signatures.s3_solve_missing_variable_test_signature import S3SolveMissingVariableTestSignature
 
 class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
     """
