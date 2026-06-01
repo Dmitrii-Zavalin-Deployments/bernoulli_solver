@@ -28,13 +28,12 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
 
     @pytest.fixture
     def ground_truth(self):
-        """Returns a contract-compliant fully balanced state."""
+        """Returns a contract-compliant fully balanced state, then strips p1 for S1."""
         return BernoulliStateDummy().override(
             p1=100000.0, p2=78000.0,
             v1=10.0, v2=12.0,
             h1=0.0, h2=0.0,
-            rho=1000.0
-        )
+        ).get_s1_compliant_state()
 
     # -------------------------
     # Round‑trip invariants

@@ -17,13 +17,12 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
 
     @pytest.fixture
     def valid_base(self):
-        """Standard valid input used as a starting point for edge-case mutations."""
+        """Standard valid input, then strips p1 for S1."""
         return BernoulliStateDummy().override(
             p1=100000.0, p2=90000.0,
             v1=10.0, v2=10.0,
             h1=1.0, h2=1.0,
-            rho=1000.0
-        )
+        ).get_s1_compliant_state()
 
     @pytest.fixture
     def config(self):
