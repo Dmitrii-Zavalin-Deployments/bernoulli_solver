@@ -9,7 +9,7 @@ class StepS4ComputeEnergyResidual(StepS4ComputeEnergyResidualInterface):
     a 100% structural match to the project constitution.
     """
 
-    def compute_energy_residual(self, solved_state: BernoulliState, config: Any) -> BernoulliState:
+    def compute_energy_and_residual(self, solved_state: BernoulliState, config: Any) -> BernoulliState:
         """
         Computes total energy terms (E1, E2) and the energy_imbalance diagnostic value.
         
