@@ -2,7 +2,7 @@ import pytest
 import math
 import copy
 from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialState
-from tests.signatures.test_signatures import S2PartialStateEdgeCasesTestSignature
+from tests.signatures.s2_construct_partial_state_test_signature import S2PartialStateEdgeCasesTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestS2PartialStateEdgeCases(S2PartialStateEdgeCasesTestSignature):
