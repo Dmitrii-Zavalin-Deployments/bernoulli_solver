@@ -64,10 +64,6 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
 
     def test_solves_missing_rho(self, s3_step, dummy):
         """S3 must correctly solve for rho."""
-        # Using values where rho is easily solvable (e.g., p1=p2, h1=h2, v1=v2)
-        state = dummy.override(p1=10.0, p2=10.0, v1=2.0, v2=2.0, h1=5.0, h2=5.0).get_s1_compliant_state("rho")
-        # NOTE: If p/h/v are identical, rho cancels out. 
-        # Set distinct values to ensure rho is calculable.
         state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0).get_s1_compliant_state("rho")
         result = s3_step.solve_missing_variable(state, None)
         assert result['rho'] > 0
@@ -92,7 +88,6 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
 
     def test_correct_sign_conventions(self, s3_step, dummy):
         """S3 must apply consistent sign conventions."""
-        # Verify sign for P1 vs P2
         state = dummy.override(p2=10.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0, rho=1.0).get_s1_compliant_state("p1")
         result = s3_step.solve_missing_variable(state, None)
         # Should result in p1 = 10.0
@@ -100,10 +95,7 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
 
     def test_correct_use_of_g_and_rho(self, s3_step, dummy):
         """S3 must use g and rho consistently."""
-        # Ensure g is not hardcoded but used from config/context
         state = dummy.override(p1=1.0, p2=1.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0, rho=1.0).get_s1_compliant_state("rho")
-        # Test sensitivity to different rho if we were solving for other fields? 
-        # For this test, just ensure solving for a field dependent on g/rho works.
         result = s3_step.solve_missing_variable(state, None)
         assert 'rho' in result
 
