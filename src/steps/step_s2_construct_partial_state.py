@@ -1,3 +1,4 @@
+import math
 from typing import Dict, Any
 from src.interfaces.step_interfaces.step_s2_construct_partial_state_interface import StepS2ConstructPartialStateInterface
 from src.containers.bernoulli_state import BernoulliState
@@ -22,11 +23,14 @@ class StepS2ConstructPartialState(StepS2ConstructPartialStateInterface):
         isolated missing primary variable and all diagnostic/execution-derived fields 
         to the uniform unfilled sentinel state.
         """
-        # [Validation Gate]
-        if validated_input_dict.get("p1", 0) < 0 or validated_input_dict.get("p2", 0) < 0:
-            raise ValueError("negative pressure detected")
-        if abs(validated_input_dict.get("v1", 0)) > 1e10 or abs(validated_input_dict.get("v2", 0)) > 1e10:
-            raise ValueError("extreme velocity detected")
+        # [Validation Gate - Computational Sanity Check]
+        # Ensures all active primary variables are mathematically finite, 
+        # protecting the solver from NaNs and Inf while allowing physical extremes.
+        for key in ["p1", "p2", "v1", "v2", "rho"]:
+            if missing_variable_name != key and validated_input_dict.get(key) is not None:
+                val = validated_input_dict[key]
+                if not math.isfinite(val):
+                    raise ValueError(f"Invalid input: {key} must be a finite number (got {val})")
 
         # Canonical primary variables universe
         primary_fields = ["p1", "p2", "v1", "v2", "h1", "h2", "rho"]
