@@ -1,7 +1,6 @@
 import pytest
 import copy
 import math
-from typing import Any
 from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialState
 from tests.dummies.bernoulli_state_dummy import BernoulliStateDummy
 
