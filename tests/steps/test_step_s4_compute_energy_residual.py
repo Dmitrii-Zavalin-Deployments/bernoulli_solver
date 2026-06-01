@@ -4,7 +4,7 @@ import copy
 from types import SimpleNamespace
 from tests.signatures.s4_compute_energy_residual_test_signature import S4ComputeEnergyResidualTestSignature
 from src.steps.step_s4_compute_energy_residual import StepS4ComputeEnergyResidual
-from tests.dummies.bernoulli_state_dummy import BernoulliStateDummy
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestS3ComputeEnergyResidual(S4ComputeEnergyResidualTestSignature):
     """
