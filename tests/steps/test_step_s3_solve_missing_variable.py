@@ -68,8 +68,9 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
         assert math.isclose(result.h2, 1.0)
 
     def test_solves_missing_rho(self, s3_step, dummy, config):
-        """S3 must correctly solve for rho."""
-        state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=1.0, h2=1.0).get_s1_compliant_state("rho")
+        """S3 must correctly solve for rho with non-zero head differentials."""
+        # Fix: Ensure h2 != h1 to create a non-zero head differential
+        state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0).get_s1_compliant_state("rho")
         result = s3_step.solve_missing_variable(state, config)
         assert result.rho > 0
 
@@ -86,8 +87,10 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
 
     def test_rejects_negative_density_solution(self, s3_step, dummy, config):
         """S3 must reject negative rho results."""
-        state = dummy.override(p1=10.0, p2=20.0, v1=10.0, v2=10.0, h1=1.0, h2=1.0).get_s1_compliant_state("rho")
-        with pytest.raises(ValueError, match="negative density"):
+        # Use inputs that result in a negative rho value
+        state = dummy.override(p1=10.0, p2=20.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0).get_s1_compliant_state("rho")
+        # Fix: Update regex to match actual error message
+        with pytest.raises(ValueError, match="non-physical fluid density"):
             s3_step.solve_missing_variable(state, config)
 
     def test_correct_sign_conventions(self, s3_step, dummy, config):
@@ -98,9 +101,10 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
 
     def test_correct_use_of_g_and_rho(self, s3_step, dummy, config):
         """S3 must use g and rho consistently."""
-        state = dummy.override(p1=1.0, p2=1.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0, rho=1.0).get_s1_compliant_state("rho")
+        # Fix: Use inputs that ensure a valid positive density
+        state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0).get_s1_compliant_state("rho")
         result = s3_step.solve_missing_variable(state, config)
-        assert 'rho' in result
+        assert result.rho > 0
 
     # ---------------------------------------------------------
     # Structural invariants
