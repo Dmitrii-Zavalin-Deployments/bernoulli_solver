@@ -70,7 +70,7 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
     def test_solves_missing_rho(self, s3_step, dummy, config):
         """S3 must correctly solve for rho with non-zero head differentials."""
         # Fix: Ensure h2 != h1 to create a non-zero head differential
-        state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0).get_s1_compliant_state("rho")
+        state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=1.0, h2=2.0).get_s1_compliant_state("rho")
         result = s3_step.solve_missing_variable(state, config)
         assert result.rho > 0
 
@@ -102,7 +102,7 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
     def test_correct_use_of_g_and_rho(self, s3_step, dummy, config):
         """S3 must use g and rho consistently."""
         # Fix: Use inputs that ensure a valid positive density
-        state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=2.0, h2=1.0).get_s1_compliant_state("rho")
+        state = dummy.override(p1=20.0, p2=10.0, v1=1.0, v2=1.0, h1=1.0, h2=2.0).get_s1_compliant_state("rho")
         result = s3_step.solve_missing_variable(state, config)
         assert result.rho > 0
 
