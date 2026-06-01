@@ -64,6 +64,7 @@ class TestStepS1ExactlyOneMissing(S1ExactlyOneMissingTestSignature):
         dummy = BernoulliStateDummy()
         # Ensure diagnostics are missing
         dummy.energy = None 
+        dummy.p1 = None
         
         # Should still succeed (0 missing primaries)
         # Note: Depending on your strictness, you might change this test 
