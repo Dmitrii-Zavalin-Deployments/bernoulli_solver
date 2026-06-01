@@ -7,7 +7,7 @@ from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 @pytest.fixture
 def dummy_state():
-    return BernoulliStateDummy()
+    return BernoulliStateDummy().get_s1_compliant_state() # Passes S1 validation
 
 class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignature):
     """

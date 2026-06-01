@@ -31,12 +31,10 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
             field for field in primary_universe 
             if field in raw_input_dict and raw_input_dict[field] is not None
         }
-        
         missing_fields = primary_universe - present_fields
 
-        # 3. Validation Logic (Defined explicitly to avoid scoping issues)
-        missing_variable = ""
-        
+        # 3. Validation Logic (Strict Enforcement)
+        # Interface requires raising error if zero OR >1 are missing
         if len(missing_fields) == 0:
             raise ValidationError("Validation failed: No missing variables.")
         elif len(missing_fields) == 1:

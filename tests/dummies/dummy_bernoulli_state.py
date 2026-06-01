@@ -1,3 +1,4 @@
+import copy
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
 
 class BernoulliStateDummy(dict, BernoulliStateInterface):
@@ -25,3 +26,14 @@ class BernoulliStateDummy(dict, BernoulliStateInterface):
             else:
                 setattr(self, key, value)
         return self
+
+    def get_s1_compliant_state(self):
+        """
+        Returns a copy of this state with exactly one primary variable removed.
+        Does not mutate the original object.
+        """
+        state_copy = copy.deepcopy(self)
+        # Remove 'p1' to satisfy the S1 requirement
+        if "p1" in state_copy:
+            del state_copy["p1"]
+        return state_copy
