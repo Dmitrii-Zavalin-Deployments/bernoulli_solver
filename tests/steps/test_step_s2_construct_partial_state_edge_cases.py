@@ -1,9 +1,7 @@
 import pytest
 import copy
-from typing import Any
 from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialState
 # Assuming BernoulliStateDummy is available in your path or included above
-from tests.dummies.bernoulli_state_dummy import BernoulliStateDummy
 
 class TestS2PartialStateEdgeCases:
     """
