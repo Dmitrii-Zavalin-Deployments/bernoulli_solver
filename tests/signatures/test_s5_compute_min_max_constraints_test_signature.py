@@ -1,128 +1,67 @@
-class S5ConstraintEnvelopesEdgeCasesTestSignature:
+class S5ComputeMinMaxConstraintsTestSignature:
     """
-    Contract‑level signature for S5 – Constraint Envelopes (Edge‑Case Tests Only).
+    Contract‑level signature for S5 – Compute Constraint Envelopes.
 
-    This signature defines the REQUIRED edge‑case test scenarios for the S5 step,
-    corresponding to Phase 4.2 Per‑step Edge Cases.
+    This signature defines the REQUIRED test signatures for the S5 step.
+    It does NOT contain implementations. Each method represents a test
+    that MUST be implemented during Phase 5.
 
-    These tests focus on malformed inputs, degenerate states, pathological
-    configurations, and precision‑sensitive behaviour. They are distinct from the
-    4.1 scenario tests.
-
-    S5 EDGE‑CASE PURPOSE:
-        - Validate S5 behaviour under malformed, extreme, or degenerate inputs.
-        - Ensure S5 rejects invalid states without producing envelopes.
-        - Ensure S5 remains numerically stable and predictable near edge boundaries.
+    S5 PURPOSE:
+        - Receive the BernoulliState produced by S4 (with energy diagnostics).
+        - Compute the physical constraint envelopes:
+              v_min, v_max, p_min, p_max
+          using the four looseness coefficients:
+              k_v_min, k_v_max, k_p_min, k_p_max.
+        - Produce a NEW BernoulliState with these envelope fields populated.
 
     S5 MUST NOT:
-        - Modify or mutate the input.
-        - Solve missing variables (S3’s job).
-        - Compute energy or energy_imbalance (S4’s job).
-        - Perform classification or missing‑field counting.
+        - Modify or mutate the input state.
+        - Solve any missing variable (S3’s responsibility).
+        - Compute energy or energy_imbalance (S4’s responsibility).
+        - Validate types, ranges, or physical plausibility.
+        - Infer or modify any primary variables.
 
-    GLOBAL 4.2 EDGE‑CASE CATEGORIES APPLIED TO S5:
-
-        Sensitivity Gates:
-            - Negative pressures.
-            - Extreme velocities.
-            - Tiny Δh or Δv (degenerate geometry).
-            - Malformed inputs (wrong types, wrong shapes).
-            - Missing fields.
-
-        Physics & Math Gates:
-            - Zero velocity at one station.
-            - Equal pressures.
-            - Flat‑line cases (Δh = 0).
-            - Other degenerate configurations.
-            - Envelope formulas near cancellation.
-
-        Consistency Gates:
-            - Precision drift in residuals.
-            - Near‑cancellation scenarios.
-            - Any situation where envelope construction must remain predictable
-              and analytically verifiable despite edge‑case behaviour.
+    SCOPE OF TEST SIGNATURES:
+        These signatures cover ONLY:
+            - correct computation of v_min, v_max, p_min, p_max,
+            - correct use of looseness coefficients,
+            - structural invariants (immutability, dummy alignment).
+        No physics ranges, no scenario logic, and no validation logic may appear here.
     """
 
-    # -------------------------
-    # Sensitivity edge cases
-    # -------------------------
+    # ---------------------------------------------------------
+    # Envelope computation
+    # ---------------------------------------------------------
 
-    def test_rejects_negative_pressures(self):
-        """S5 must reject states containing negative pressures."""
+    def test_computes_correct_v_min(self):
+        """S5 must compute v_min = -k_v_min * max(|v1|, |v2|)."""
         raise NotImplementedError
 
-    def test_rejects_extreme_velocities(self):
-        """S5 must reject velocities far outside engineering plausibility."""
+    def test_computes_correct_v_max(self):
+        """S5 must compute v_max =  k_v_max * max(|v1|, |v2|)."""
         raise NotImplementedError
 
-    def test_handles_tiny_delta_h_or_v(self):
-        """S5 must remain stable when Δh or Δv is extremely small."""
+    def test_computes_correct_p_min(self):
+        """S5 must compute p_min = min(p1, p2) - k_p_min * |p1 - p2|."""
         raise NotImplementedError
 
-    def test_rejects_malformed_input_structures(self):
-        """S5 must reject malformed inputs: wrong types, wrong shapes, missing keys."""
+    def test_computes_correct_p_max(self):
+        """S5 must compute p_max = max(p1, p2) + k_p_max * |p1 - p2|."""
         raise NotImplementedError
 
-    def test_rejects_missing_required_fields(self):
-        """S5 must reject states missing required primary variables."""
-        raise NotImplementedError
-
-    # -------------------------
-    # Physics & math edge cases
-    # -------------------------
-
-    def test_zero_velocity_station(self):
-        """S5 must compute envelopes correctly when v1=0 or v2=0 without instability."""
-        raise NotImplementedError
-
-    def test_equal_pressures(self):
-        """S5 must compute envelopes correctly when p1 == p2."""
-        raise NotImplementedError
-
-    def test_flat_line_delta_h_zero(self):
-        """S5 must compute envelopes correctly when h1 == h2 (Δh = 0)."""
-        raise NotImplementedError
-
-    def test_other_degenerate_configurations(self):
-        """S5 must behave correctly under other degenerate but admissible configurations."""
-        raise NotImplementedError
-
-    def test_envelope_near_cancellation(self):
-        """S5 must handle envelope formulas when energy_imbalance ≈ 0 without instability."""
-        raise NotImplementedError
-
-    # -------------------------
-    # Consistency edge cases
-    # -------------------------
-
-    def test_precision_drift_in_inputs(self):
-        """S5 must remain deterministic when inputs contain tiny floating‑point drift."""
-        raise NotImplementedError
-
-    def test_near_cancellation_scenarios(self):
-        """S5 must compute envelopes correctly when values nearly cancel (p1≈p2, v1≈v2)."""
-        raise NotImplementedError
-
-    def test_predictable_behavior_under_edge_conditions(self):
-        """
-        S5 must remain predictable and analytically verifiable even when constructing
-        envelopes near pathological boundaries.
-        """
-        raise NotImplementedError
-
-    # -------------------------
+    # ---------------------------------------------------------
     # Structural invariants
-    # -------------------------
+    # ---------------------------------------------------------
 
-    def test_input_immutability_under_edge_cases(self):
-        """S5 must not mutate the input state under any edge‑case condition."""
+    def test_input_immutability(self):
+        """S5 must not mutate the input state."""
         raise NotImplementedError
 
     def test_frozen_dummy_alignment(self):
         """
-        S5 output must match the frozen dummy structure even for edge‑case inputs:
+        S5 output must match the frozen dummy structure for:
             - p_min, p_max, v_min, v_max,
             - correct field ordering,
-            - correct UNFILLED semantics for any non‑S5 fields.
+            - UNFILLED semantics for all non‑S5 fields.
         """
         raise NotImplementedError
