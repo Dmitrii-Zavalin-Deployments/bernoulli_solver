@@ -2,7 +2,7 @@ import pytest
 import copy
 import math
 from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialState
-from tests.dummies.bernoulli_state_dummy import BernoulliStateDummy
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestS2PartialStateEdgeCases:
     """
