@@ -37,14 +37,16 @@ def test_execute_pipeline_identity_path(orchestrator, mock_config):
                         # Assert that S4 was called, confirming execution flow
                         assert mock_s4.called
 
-@patch("pathlib.Path.exists", return_value=True) # Fixed: Mocking filesystem existence
+@patch("pathlib.Path.exists", return_value=True)
 @patch("src.bernoulli_pipeline_orchestrator.load_and_validate_config")
-@patch("builtins.open", new_callable=mock_open, read_data='{"p1": 100, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}')
+# Ensure the mock_open data matches the structure with a null (None) value
+@patch("builtins.open", new_callable=mock_open, read_data='{"p1": null, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}')
 @patch("jsonschema.validate")
 @patch("json.load")
 def test_run_solver_full_path(mock_json_load, mock_validate, mock_file, mock_config_loader, mock_exists):
     """Covers lines 164-195 (Run solver success path)."""
-    mock_json_load.return_value = {"p1": 100, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}
+    # Fix: Set one value to None to satisfy StepS1ExactlyOneMissing
+    mock_json_load.return_value = {"p1": None, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}
     
     # We use a dummy path
     result = run_solver("input.json")
