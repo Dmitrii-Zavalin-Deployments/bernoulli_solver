@@ -22,9 +22,12 @@ from src.steps.step_s5_compute_min_max_constraints import StepS5ComputeMinMaxCon
 # Rule 5: Force global arithmetic trapping for deterministic stability
 np.seterr(all="raise")
 
-# Configure Logger to align with professional execution standards
-logger = logging.getLogger("BernoulliSolver.Main")
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# Configure Logger
+logger = logging.getLogger("BernoulliSolver")
+logging.basicConfig(
+    level=logging.INFO, 
+    format="%(asctime)s - [%(levelname)s] - %(name)s: %(message)s"
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,61 +46,65 @@ class BernoulliPipelineOrchestrator:
         Statically instantiates the isolated components of the Minimal Step Chain.
         Enforces a clean composition foundation with clear step isolation.
         """
+        logger.info("Initializing BernoulliPipelineOrchestrator components...")
         self.s0_classifier = FilledUnfilledClassifier()
         self.s1_validator = StepS1ExactlyOneMissing()
         self.s2_constructor = StepS2ConstructPartialState()
         self.s3_solver = StepS3SolveMissingVariable()
         self.s4_diagnician = StepS4ComputeEnergyResidual()
         self.s5_enveloper = StepS5ComputeMinMaxConstraints()
+        logger.info("Pipeline components ready.")
 
     def _validate_boundaries(self, raw_input: Dict[str, Any]) -> None:
         """
         Pre-flight boundary check to enforce physical plausibility
         before entering the step chain.
         """
-        # Physical Constraints - Safely checked only if fields are provided and non-None
+        logger.debug("Running pre-flight boundary validation.")
         p1, p2 = raw_input.get("p1"), raw_input.get("p2")
         if (p1 is not None and p1 < 0) or (p2 is not None and p2 < 0):
-            raise ValueError("Boundary validation failed: Negative pressure detected.")
+            logger.error("Boundary validation failed: Negative pressure detected.")
+            raise ValueError("Negative pressure detected.")
 
         v1, v2 = raw_input.get("v1"), raw_input.get("v2")
         if (v1 is not None and abs(v1) > 1e6) or (v2 is not None and abs(v2) > 1e6):
-            raise ValueError("Boundary validation failed: Velocity exceeds physical limits.")
+            logger.error("Boundary validation failed: Velocity exceeds physical limits.")
+            raise ValueError("Velocity exceeds physical limits.")
 
     def execute_pipeline(self, raw_input: Dict[str, Any], config: SolverConfig) -> BernoulliState:
-        """
-        Executes the full chain sequentially.
-        """
-        # --- Guard Clause: Fail-Fast for missing configuration ---
-        # Ensures that a missing config is caught before S1 validation occurs.
+        logger.info("Starting pipeline execution.")
+        
         if config is None:
-            raise TypeError("Configuration object is mandatory for pipeline execution.")
+            logger.critical("Pipeline execution aborted: Config object is None.")
+            raise TypeError("Configuration object is mandatory.")
 
-        # --- Guard Gate: Pre-Flight Boundary Validation ---
         self._validate_boundaries(raw_input)
         
-        # S0 & S1: Validation
+        # S0 & S1
+        logger.info("Step S0/S1: Classifying and validating input variables.")
         _, _ = self.s0_classifier.classify_filled_and_unfilled(input_schema_instance=raw_input)
         validated_input, missing_variable = self.s1_validator.enforce_exactly_one_missing(
             raw_input_dict=raw_input
         )
+        logger.info(f"S1 Validation complete. Missing variable identified: {missing_variable}")
 
-        # S2: Construct State
+        # S2
+        logger.info("Step S2: Constructing partial state container.")
         partial_state: BernoulliState = self.s2_constructor.construct_partial_state(
             validated_input_dict=validated_input, 
             missing_variable_name=missing_variable,
             unfilled_sentinel=float('nan') 
         )
 
-        # S3: Solve or Identity Path
+        # S3
         if missing_variable:
+            logger.info("Step S3: Solving for missing variable.")
             solved_state: BernoulliState = self.s3_solver.solve_missing_variable(
                 partial_state=partial_state, 
                 config=config
             )
         else:
-            # IDENTITY PATH: Manual construction of BernoulliState
-            # Ensure we calculate energy and bounds for downstream S4/S5 consistency
+            logger.info("Step S3: Identity path (no missing variables).")
             p1, p2 = partial_state.p1, partial_state.p2
             v1, v2 = partial_state.v1, partial_state.v2
             h1, h2 = partial_state.h1, partial_state.h2
@@ -115,18 +122,21 @@ class BernoulliPipelineOrchestrator:
                 v_min=min(v1, v2), v_max=max(v1, v2)
             )
 
-        # S4: Compute Energy and Residuals
+        # S4
+        logger.info("Step S4: Computing energy residuals.")
         state_with_energy: BernoulliState = self.s4_diagnician.compute_energy_and_residual(
             solved_state=solved_state, 
             config=config
         )
 
-        # S5: Compute Min/Max Constraints Envelopes ---
+        # S5
+        logger.info("Step S5: Applying constraint envelopes.")
         final_state: BernoulliState = self.s5_enveloper.compute_min_max_constraints(
             state_with_energy=state_with_energy, 
             config=config
         )
 
+        logger.info("Pipeline execution successfully completed.")
         return final_state
 
 
@@ -138,6 +148,8 @@ def run_solver(input_path: str) -> str:
     if not full_input_path.is_absolute():
         full_input_path = BASE_DIR / input_path
     
+    logger.info(f"Loading input file: {full_input_path.name}")
+    
     required_paths = {
         "Input File": full_input_path,
         "Config File": BASE_DIR / "src/config/config.json",
@@ -147,7 +159,7 @@ def run_solver(input_path: str) -> str:
 
     for label, path in required_paths.items():
         if not path.exists():
-            logger.critical(f"ENVIRONMENT ANOMALY: {label} not found at {path}")
+            logger.critical(f"Missing dependency: {label} not found at {path}")
             raise FileNotFoundError(f"Missing dependency: {label} at {path}")
 
     config = load_and_validate_config(str(required_paths["Config File"]))
@@ -161,8 +173,9 @@ def run_solver(input_path: str) -> str:
 
     try:
         jsonschema.validate(instance=raw_input, schema=input_schema)
+        logger.info("Input JSON schema validation passed.")
     except jsonschema.exceptions.ValidationError as e:
-        logger.error(f"!!! INPUT CONTRACT VIOLATION: {e.message}")
+        logger.error(f"Input schema validation failed: {e.message}")
         raise
 
     orchestrator = BernoulliPipelineOrchestrator()
@@ -175,23 +188,25 @@ def run_solver(input_path: str) -> str:
     jsonschema.validate(instance=output_dict, schema=output_schema)
 
     output_file_path = full_input_path.parent / "bernoulli_solver_output.json"
+    
     with open(output_file_path, "w", encoding="utf-8") as f:
         json.dump(output_dict, f, indent=2)
-        
+    
+    logger.info(f"Pipeline artifacts saved to: {output_file_path}")
     return str(output_file_path)
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 src/bernoulli_pipeline_orchestrator.py <input_json_path>")
+        logger.error("Execution failed: Input path argument missing.")
         sys.exit(1)
     try:
         output_json_path = run_solver(sys.argv[1])
-        print(f"Pipeline complete. Output JSON written to: {output_json_path}")
+        logger.info(f"Run successful. Output written to {output_json_path}")
         sys.exit(0)
-    except Exception as e:
-        print(f"FATAL PIPELINE ERROR: {str(e)}", file=sys.stderr)
-        traceback.print_exc()
+    except Exception:
+        # logger.exception automatically prints the stack trace for CI/CD logs
+        logger.exception("FATAL PIPELINE ERROR: Unhandled exception during execution.")
         sys.exit(1)
 
 
