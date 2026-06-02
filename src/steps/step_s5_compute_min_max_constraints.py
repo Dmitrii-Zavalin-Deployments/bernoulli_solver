@@ -1,6 +1,6 @@
 from typing import Any
 from src.interfaces.step_interfaces.step_s5_compute_min_max_constraints_interface import StepS5ComputeMinMaxConstraintsInterface
-from src.containers.bernoulli_state import BernoulliState
+from src.containers.bernoulli_state_with_energy.import BernoulliState
 
 class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
     """
@@ -10,7 +10,7 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
     a 100% structural match to the project constitution.
     """
 
-    def compute_min_max_constraints(self, state: BernoulliState, config: Any) -> BernoulliState:
+    def compute_min_max_constraints(self, state_with_energy.with_energy: BernoulliState, config: Any) -> BernoulliState:
         """
         Computes loose but truthful physical boundary constraint parameters using 
         four independent tuning coefficients provided in the configuration.
@@ -19,8 +19,8 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
         fully populated, leaving all upstream primary and diagnostic fields unchanged.
         """
         # 1. Extract inputs
-        p1, p2 = state.p1, state.p2
-        v1, v2 = state.v1, state.v2
+        p1, p2 = state_with_energy.p1, state_with_energy.p2
+        v1, v2 = state_with_energy.v1, state_with_energy.v2
         
         # 2. Extract coefficients
         k_v_min, k_v_max = config.k_v_min, config.k_v_max
@@ -38,7 +38,7 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
         
         # 5. Return immutable state
         return BernoulliState(
-            p1=p1, p2=p2, v1=v1, v2=v2, h1=state.h1, h2=state.h2, rho=state.rho,
-            energy=state.energy, energy_imbalance=state.energy_imbalance,
+            p1=p1, p2=p2, v1=v1, v2=v2, h1=state_with_energy.h1, h2=state_with_energy.h2, rho=state_with_energy.rho,
+            energy=state_with_energy.energy, energy_imbalance=state_with_energy.energy_imbalance,
             p_min=p_min, p_max=p_max, v_min=v_min, v_max=v_max
         )
