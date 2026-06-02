@@ -39,16 +39,26 @@ def test_execute_pipeline_identity_path(orchestrator, mock_config):
 
 @patch("pathlib.Path.exists", return_value=True)
 @patch("src.bernoulli_pipeline_orchestrator.load_and_validate_config")
-# Ensure the mock_open data matches the structure with a null (None) value
 @patch("builtins.open", new_callable=mock_open, read_data='{"p1": null, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}')
 @patch("jsonschema.validate")
 @patch("json.load")
 def test_run_solver_full_path(mock_json_load, mock_validate, mock_file, mock_config_loader, mock_exists):
     """Covers lines 164-195 (Run solver success path)."""
-    # Fix: Set one value to None to satisfy StepS1ExactlyOneMissing
+    
+    # 1. Properly mock the configuration object with required numeric attributes
+    mock_config = MagicMock()
+    mock_config.g = 9.81
+    mock_config.precision = 0.001
+    mock_config.k_v_min = 0.0
+    mock_config.k_v_max = 100.0
+    mock_config.k_p_min = 0.0
+    mock_config.k_p_max = 1000.0
+    mock_config_loader.return_value = mock_config
+
+    # 2. Mock input data with one null value to satisfy S1
     mock_json_load.return_value = {"p1": None, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}
     
-    # We use a dummy path
+    # Run the solver
     result = run_solver("input.json")
     
     assert "bernoulli_solver_output.json" in result
