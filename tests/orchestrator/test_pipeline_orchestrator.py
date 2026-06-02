@@ -91,13 +91,13 @@ def test_validate_boundaries_error(orchestrator):
 @patch("src.bernoulli_pipeline_orchestrator.jsonschema.validate")
 @patch("src.bernoulli_pipeline_orchestrator.load_and_validate_config")
 @patch("pathlib.Path.exists", return_value=True)
-@patch("builtins.open", new_callable=mock_open)
+# FIX: Added read_data to satisfy json.load(f)
+@patch("builtins.open", new_callable=mock_open, read_data='{"p1": 100, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}')
 def test_run_solver_schema_validation_error(mock_file, mock_exists, mock_config, mock_validate):
     """
     Covers lines 176-178: Input schema validation failure.
-    Forces jsonschema to raise a ValidationError.
     """
-    # Simulate a validation failure
+    # Simulate a validation failure during the schema check (line 174)
     mock_validate.side_effect = jsonschema.exceptions.ValidationError("Schema mismatch")
 
     with pytest.raises(jsonschema.exceptions.ValidationError):
