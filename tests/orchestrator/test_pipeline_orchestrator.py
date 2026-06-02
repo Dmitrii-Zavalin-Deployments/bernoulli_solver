@@ -1,4 +1,5 @@
 import pytest
+import jsonschema
 import sys
 from unittest.mock import patch, MagicMock, mock_open
 from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator, run_solver, main
@@ -86,3 +87,29 @@ def test_validate_boundaries_error(orchestrator):
     """Covers error handling in validation logic."""
     with pytest.raises(ValueError, match="Negative pressure"):
         orchestrator._validate_boundaries({"p1": -10})
+
+@patch("src.bernoulli_pipeline_orchestrator.jsonschema.validate")
+@patch("src.bernoulli_pipeline_orchestrator.load_and_validate_config")
+@patch("pathlib.Path.exists", return_value=True)
+@patch("builtins.open", new_callable=mock_open)
+def test_run_solver_schema_validation_error(mock_file, mock_exists, mock_config, mock_validate):
+    """
+    Covers lines 176-178: Input schema validation failure.
+    Forces jsonschema to raise a ValidationError.
+    """
+    # Simulate a validation failure
+    mock_validate.side_effect = jsonschema.exceptions.ValidationError("Schema mismatch")
+
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        run_solver("dummy_path.json")
+
+@patch("sys.argv", ["bernoulli_solver"]) # Missing the required input path argument
+def test_main_missing_argument():
+    """
+    Covers lines 200-201: Main execution failure due to missing argument.
+    """
+    with pytest.raises(SystemExit) as cm:
+        main()
+    
+    # Assert that system exited with code 1
+    assert cm.value.code == 1
