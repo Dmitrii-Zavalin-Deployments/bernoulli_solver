@@ -1,22 +1,17 @@
 from typing import Any
 from src.interfaces.step_interfaces.step_s5_compute_min_max_constraints_interface import StepS5ComputeMinMaxConstraintsInterface
-from src.containers.bernoulli_state_with_energy.import BernoulliState
+from src.containers.bernoulli_state import BernoulliState
 
 class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
     """
     Concrete implementation of Step S5: Compute the Bernoulli-derived physical 
     constraint envelopes required by the Navier–Stokes solver.
-    Inherits explicitly from StepS5ComputeMinMaxConstraintsInterface to guarantee 
-    a 100% structural match to the project constitution.
     """
 
-    def compute_min_max_constraints(self, state_with_energy.with_energy: BernoulliState, config: Any) -> BernoulliState:
+    def compute_min_max_constraints(self, state_with_energy: BernoulliState, config: Any) -> BernoulliState:
         """
-        Computes loose but truthful physical boundary constraint parameters using 
-        four independent tuning coefficients provided in the configuration.
-        
-        Returns a brand NEW BernoulliState instance with all constraint bounds 
-        fully populated, leaving all upstream primary and diagnostic fields unchanged.
+        Computes physical boundary constraint parameters using independent tuning coefficients.
+        Accepts 'state_with_energy' parameter exactly as mandated by the pipeline contract.
         """
         # 1. Extract inputs
         p1, p2 = state_with_energy.p1, state_with_energy.p2
@@ -26,11 +21,11 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
         k_v_min, k_v_max = config.k_v_min, config.k_v_max
         k_p_min, k_p_max = config.k_p_min, config.k_p_max
         
-        # 3. Compute common differentials
+        # 3. Compute scales
         p_diff = abs(p1 - p2)
         v_max_abs = max(abs(v1), abs(v2))
         
-        # 4. Compute Constraints (matching test signature formulas)
+        # 4. Compute Constraints
         v_min = -k_v_min * v_max_abs
         v_max =  k_v_max * v_max_abs
         p_min = min(p1, p2) - k_p_min * p_diff
@@ -38,7 +33,9 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
         
         # 5. Return immutable state
         return BernoulliState(
-            p1=p1, p2=p2, v1=v1, v2=v2, h1=state_with_energy.h1, h2=state_with_energy.h2, rho=state_with_energy.rho,
-            energy=state_with_energy.energy, energy_imbalance=state_with_energy.energy_imbalance,
+            p1=p1, p2=p2, v1=v1, v2=v2, 
+            h1=state_with_energy.h1, h2=state_with_energy.h2, rho=state_with_energy.rho,
+            energy=state_with_energy.energy, 
+            energy_imbalance=state_with_energy.energy_imbalance,
             p_min=p_min, p_max=p_max, v_min=v_min, v_max=v_max
         )
