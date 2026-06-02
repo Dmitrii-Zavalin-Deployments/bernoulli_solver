@@ -46,14 +46,14 @@ class TestS5ComputeMinMaxConstraints(S5ComputeMinMaxConstraintsTestSignature):
 
     def test_computes_correct_p_min(self, s5_step, dummy, config):
         """S5 must compute p_min = min(p1, p2) - k_p_min * |p1 - p2|."""
-        state = dummy.override(p1=10.0, p2=20.0)
+        state = dummy.override(energy_imbalance=0.1).override(p1=10.0, p2=20.0)
         result = s5_step.compute_min_max_constraints(state, config)
         # min(10, 20) - 0.3 * |10 - 20| = 10.0 - 3.0 = 7.0
         assert result.p_min == 7.0
 
     def test_computes_correct_p_max(self, s5_step, dummy, config):
         """S5 must compute p_max = max(p1, p2) + k_p_max * |p1 - p2|."""
-        state = dummy.override(p1=10.0, p2=20.0)
+        state = dummy.override(energy_imbalance=0.1).override(p1=10.0, p2=20.0)
         result = s5_step.compute_min_max_constraints(state, config)
         # max(10, 20) + 0.4 * |10 - 20| = 20.0 + 4.0 = 24.0
         assert result.p_max == 24.0
