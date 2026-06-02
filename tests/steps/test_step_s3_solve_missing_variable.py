@@ -123,3 +123,37 @@ class TestS3SolveMissingVariable(S3SolveMissingVariableTestSignature):
         result = s3_step.solve_missing_variable(state, config)
         assert hasattr(result, 'energy')
         assert result.energy == [0.0, 0.0]
+
+    # ---------------------------------------------------------
+    # Exception & Edge Case Coverage
+    # ---------------------------------------------------------
+
+    def test_rejects_when_no_variables_missing(self, s3_step, dummy, config):
+        """Covers line 25: Ensures error when no UNFILLED variables exist."""
+        # Setup: All fields filled
+        state = dummy.override(p1=1, p2=1, v1=1, v2=1, h1=1, h2=1, rho=1)
+        # Note: Depending on your dummy implementation, ensure this creates a full state
+        with pytest.raises(ValueError, match="No UNFILLED primary variables detected"):
+            s3_step.solve_missing_variable(state, config)
+
+    def test_rejects_negative_radicand_v1(self, s3_step, dummy, config):
+        """Covers line 43: v1 radicand < 0."""
+        # Force high p1, low p2 -> negative radicand in formula
+        state = dummy.override(p1=10000, p2=0, v2=0, h1=0, h2=0, rho=1.0).get_s1_compliant_state("v1")
+        with pytest.raises(ValueError, match="Non-physical negative radicand"):
+            s3_step.solve_missing_variable(state, config)
+
+    def test_rejects_negative_radicand_v2(self, s3_step, dummy, config):
+        """Covers line 48: v2 radicand < 0."""
+        # Force high p2, low p1 -> negative radicand in formula
+        state = dummy.override(p1=0, p2=10000, v1=0, h1=0, h2=0, rho=1.0).get_s1_compliant_state("v2")
+        with pytest.raises(ValueError, match="Non-physical negative radicand"):
+            s3_step.solve_missing_variable(state, config)
+
+    def test_rejects_rho_zero_denominator(self, s3_step, dummy, config):
+        """Covers line 57: Kinetic/potential differentials cancel out (rho)."""
+        # Force v1==v2 and h1==h2 to trigger zero denominator
+        state = dummy.override(p1=20, p2=10, v1=1, v2=1, h1=1, h2=1).get_s1_compliant_state("rho")
+        # Matches the wrapped exception in the try/except block (lines 62-66)
+        with pytest.raises(ValueError, match="Numerical solver failure at field 'rho'"):
+            s3_step.solve_missing_variable(state, config)
