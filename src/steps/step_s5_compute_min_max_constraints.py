@@ -9,6 +9,10 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
     """
 
     def compute_min_max_constraints(self, state_with_energy: BernoulliState, config: Any) -> BernoulliState:
+        """
+        Computes physical boundary constraint parameters using independent tuning coefficients.
+        Accepts 'state_with_energy' parameter exactly as mandated by the pipeline contract.
+        """
         # 1. Extract inputs
         p1, p2 = state_with_energy.p1, state_with_energy.p2
         v1, v2 = state_with_energy.v1, state_with_energy.v2
