@@ -11,7 +11,7 @@ fi
 # 2. Path Resolution
 # We look for the zip in the testing-input-output folder where the solver usually outputs
 BASE_WORK_DIR=$(pwd)
-DEFAULT_ZIP="${BASE_WORK_DIR}/data/testing-input-output/navier_stokes_output.zip"
+DEFAULT_ZIP="${BASE_WORK_DIR}/data/testing-input-output/bernoulli_solver_output.json"
 export LOCAL_ZIP_PATH="${1:-$DEFAULT_ZIP}"
 
 # 3. Validation
