@@ -22,7 +22,11 @@ def test_execute_pipeline_identity_path(orchestrator, mock_config):
     # Mocking steps to return valid data without solving for a missing variable
     with patch.object(orchestrator.s0_classifier, 'classify_filled_and_unfilled', return_value=(None, None)):
         with patch.object(orchestrator.s1_validator, 'enforce_exactly_one_missing', return_value=(raw_input, None)):
-            with patch.object(orchestrator.s2_constructor, 'construct_partial_state', return_value=BernoulliState(p1=100, p2=50, v1=10, v2=5, h1=0, h2=0, rho=1.0)):
+            # Fixed: Initialized all required fields for BernoulliState
+            with patch.object(orchestrator.s2_constructor, 'construct_partial_state', 
+                              return_value=BernoulliState(p1=100, p2=50, v1=10, v2=5, h1=0, h2=0, rho=1.0,
+                                                          energy=[100.0, 100.0], energy_imbalance=0.0,
+                                                          p_min=50.0, p_max=100.0, v_min=5.0, v_max=10.0)):
                 with patch.object(orchestrator.s4_diagnician, 'compute_energy_and_residual') as mock_s4:
                     with patch.object(orchestrator.s5_enveloper, 'compute_min_max_constraints') as mock_s5:
                         
@@ -33,13 +37,14 @@ def test_execute_pipeline_identity_path(orchestrator, mock_config):
                         # Assert that S4 was called, confirming execution flow
                         assert mock_s4.called
 
+@patch("pathlib.Path.exists", return_value=True) # Fixed: Mocking filesystem existence
 @patch("src.bernoulli_pipeline_orchestrator.load_and_validate_config")
-@patch("builtins.open", new_callable=mock_open, read_data='{"p1": 100}')
+@patch("builtins.open", new_callable=mock_open, read_data='{"p1": 100, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}')
 @patch("jsonschema.validate")
 @patch("json.load")
-def test_run_solver_full_path(mock_json_load, mock_validate, mock_file, mock_config_loader):
+def test_run_solver_full_path(mock_json_load, mock_validate, mock_file, mock_config_loader, mock_exists):
     """Covers lines 164-195 (Run solver success path)."""
-    mock_json_load.return_value = {"p1": 100}
+    mock_json_load.return_value = {"p1": 100, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}
     
     # We use a dummy path
     result = run_solver("input.json")
