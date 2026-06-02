@@ -1,6 +1,8 @@
 from typing import List
+from dataclasses import dataclass
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
 
+@dataclass(init=False)
 class BernoulliState(BernoulliStateInterface):
     """
     The concrete Sovereign Container.
