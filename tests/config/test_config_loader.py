@@ -38,7 +38,7 @@ def test_load_config_success(tmp_path):
     # Update this dictionary to match your SolverConfig fields exactly
     valid_data = {
         "g": 9.81, 
-        # Add all other required fields here as defined in SolverConfig
+        "precision": 0.001, "k_v_min": 0.0, "k_v_max": 100.0, "k_p_min": 0.0, "k_p_max": 1000.0,
     }
     config_file.write_text(json.dumps(valid_data))
     
