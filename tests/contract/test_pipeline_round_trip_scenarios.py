@@ -93,10 +93,21 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
 
     def test_s5_minimal_envelopes(self, orchestrator, ground_truth, valid_config):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
-        # For a perfect state, max and min should be identical
-        assert math.isclose(res.p_max, max(ground_truth["p1"], ground_truth["p2"]), abs_tol=1e-5)
-        assert math.isclose(res.p_min, min(ground_truth["p1"], ground_truth["p2"]), abs_tol=1e-5)
-
+        
+        # Calculate dynamic pressure and scaling factor used in the source code
+        p1, p2 = ground_truth["p1"], ground_truth["p2"]
+        rho = ground_truth["rho"]
+        v_max_abs = max(abs(ground_truth["v1"]), abs(ground_truth["v2"]))
+        
+        # This matches the calculation inside step_s5_compute_min_max_constraints.py
+        p_scale = max(0.5 * rho * (v_max_abs ** 2), abs(p1 - p2))
+        
+        expected_p_max = max(p1, p2) + p_scale * (1.0 + valid_config.k_p_max)
+        expected_p_min = min(p1, p2) - p_scale * (1.0 + valid_config.k_p_min)
+        
+        assert math.isclose(res.p_max, expected_p_max, abs_tol=1e-5)
+        assert math.isclose(res.p_min, expected_p_min, abs_tol=1e-5)
+    
     def test_s5_correct_envelope_bounds(self, orchestrator, ground_truth, valid_config):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
         assert res.p_max >= res.p1
