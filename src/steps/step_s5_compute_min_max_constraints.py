@@ -10,36 +10,51 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
 
     def compute_min_max_constraints(self, state_with_energy: BernoulliState, config: Any) -> BernoulliState:
         """
-        Computes physical boundary constraint parameters using independent tuning coefficients.
+        Computes physical boundary constraint parameters using physics-informed 
+        tuning coefficients (Stagnation, Cavitation, Constriction, and Recirculation).
         Accepts 'state_with_energy' parameter exactly as mandated by the pipeline contract.
         """
         # 1. Extract inputs
         p1, p2 = state_with_energy.p1, state_with_energy.p2
         v1, v2 = state_with_energy.v1, state_with_energy.v2
+        rho = state_with_energy.rho
         imbalance = state_with_energy.energy_imbalance
         
-        # 2. Compute common scaling bases
-        p_diff = abs(p1 - p2)
+        # 2. Compute Characteristic Scales
         v_max_abs = max(abs(v1), abs(v2))
         
-        # 3. Velocity Envelopes: Always computed using configuration coefficients
-        # This resolves the test failures where v_min/v_max were falling into the wrong logic branch.
-        v_min = -config.k_v_min * v_max_abs
-        v_max =  config.k_v_max * v_max_abs
+        # The true driver of pressure variation inside a fluid domain is Dynamic Pressure.
+        dynamic_pressure = 0.5 * rho * (v_max_abs ** 2)
         
-        # 4. Pressure Envelopes: Imbalance-aware contract gating
-        # Only use minimal envelopes (no buffer) if the system is perfectly balanced (imbalance == 0).
-        if imbalance == 0.0:
-            p_min = min(p1, p2)
-            p_max = max(p1, p2)
-        else:
-            p_min = min(p1, p2) - config.k_p_min * p_diff
-            p_max = max(p1, p2) + config.k_p_max * p_diff
+        # Base static boundaries
+        p_low = min(p1, p2)
+        p_high = max(p1, p2)
+        p_diff = abs(p1 - p2)
+        
+        # We use the maximum of dynamic pressure or static differential as our envelope scaler.
+        # This protects against pure hydrostatic flows (v=0) where dynamic pressure is 0.
+        p_scale = max(dynamic_pressure, p_diff)
+        
+        # 3. Velocity Envelopes
+        # (1.0 + k) explicitly builds a multiplier ON TOP of the maximum boundary velocity.
+        # config.k_v_max represents internal geometric constriction (e.g., flow doubling in speed).
+        v_max = v_max_abs * (1.0 + config.k_v_max)
+        
+        # config.k_v_min represents recirculation/eddy strength. 
+        # A negative multiplier ensures a deep enough envelope for backward flow.
+        v_min = -v_max_abs * (1.0 + config.k_v_min)
+        
+        # 4. Pressure Envelopes (Physics-Grounded)
+        # Stagnation Limit: Flow hits a wall, converting kinetic energy into pressure.
+        p_max = p_high + p_scale * (1.0 + config.k_p_max)
+        
+        # Cavitation Limit (Venturi): Flow accelerates through a constriction, dropping pressure.
+        p_min = p_low - p_scale * (1.0 + config.k_p_min)
         
         # 5. Return fresh sovereign container
         return BernoulliState(
             p1=p1, p2=p2, v1=v1, v2=v2, 
-            h1=state_with_energy.h1, h2=state_with_energy.h2, rho=state_with_energy.rho,
+            h1=state_with_energy.h1, h2=state_with_energy.h2, rho=rho,
             energy=state_with_energy.energy, 
             energy_imbalance=imbalance,
             p_min=p_min, p_max=p_max, v_min=v_min, v_max=v_max
