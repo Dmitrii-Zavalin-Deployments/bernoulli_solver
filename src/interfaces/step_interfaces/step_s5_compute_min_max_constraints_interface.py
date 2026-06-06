@@ -13,7 +13,27 @@ class StepS5ComputeMinMaxConstraintsInterface:
 
     These coefficients allow the developer to tune the constraint envelope
     to minimize false positives and false negatives in Navier–Stokes.
-    All four must be explicitly provided; no defaults or symmetry are assumed.
+
+    PHYSICS THEORY & NAVIER-STOKES INTEGRATION:
+    The constraint envelopes calculated here define a 'Numerical Sandbox' 
+    essential for CFD stability:
+    
+    1. Boundary Layer Displacement (v_max): 
+       Accounts for effective area reduction in pipes, allowing core flow 
+       acceleration without hitting artificial ceiling bounds.
+       
+    2. Turbulent Recirculation (v_min): 
+       **Critical for Stability.** By allowing negative velocity components 
+       (eddies/vortices), we prevent numerical crashes in geometries with 
+       expansions or obstacles.
+       
+    3. Startup Transients/Water Hammer (p_max): 
+       Provides a pressure buffer to absorb the high-frequency numerical 
+       shockwaves inherent in transient CFD initialization.
+       
+    4. Venturi & Bernoulli Effects (p_min): 
+       Ensures adequate headroom for pressure drops during flow acceleration 
+       through constrictions, preventing premature numerical clamping.
 
     S5 computes:
 
@@ -21,15 +41,12 @@ class StepS5ComputeMinMaxConstraintsInterface:
         V_char = max(|v1|, |v2|)
         P_low  = min(p1, p2)
         P_high = max(p1, p2)
-        ΔP     = |p1 - p2|
+        p_scale = max(0.5 * rho * V_char^2, |p1 - p2|)
 
-        # Velocity envelope
-        v_min = -k_v_min * V_char
-        v_max =  k_v_max * V_char
-
-        # Pressure envelope
-        p_min = P_low  - k_p_min * ΔP
-        p_max = P_high + k_p_max * ΔP
+        v_min = -V_char * (1.0 + k_v_min)
+        v_max =  V_char * (1.0 + k_v_max)
+        p_min = P_low  - p_scale * (1.0 + k_p_min)
+        p_max = P_high + p_scale * (1.0 + k_p_max)
 
     Purpose:
         - Provide Navier–Stokes with hard physical envelopes that are
@@ -81,19 +98,13 @@ class StepS5ComputeMinMaxConstraintsInterface:
                 and diagnostic energy fields.
 
             config: SolverConfig
-                Must contain:
-                    k_v_min, k_v_max, k_p_min, k_p_max
+                Must contain: k_v_min, k_v_max, k_p_min, k_p_max.
                 No defaults are assumed.
 
         Returns:
             new_state: BernoulliState
-                A new state with:
-                    - p_min
-                    - p_max
-                    - v_min
-                    - v_max
-                computed and populated using the four independent
-                looseness coefficients.
+                A new state with p_min, p_max, v_min, v_max computed
+                using the logic defined in the Physics Theory header.
 
         This method performs no mutation of the input state.
         """
