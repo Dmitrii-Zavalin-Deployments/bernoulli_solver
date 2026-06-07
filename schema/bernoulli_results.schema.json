@@ -1,0 +1,45 @@
+{
+  "$id": "bernoulli_output.schema.json",
+  "title": "Bernoulli Solver Output Schema",
+  "type": "object",
+  "additionalProperties": false,
+
+  "properties": {
+    "p1":  { "type": "number" },
+    "p2":  { "type": "number" },
+    "v1":  { "type": "number" },
+    "v2":  { "type": "number" },
+    "h1":  { "type": "number" },
+    "h2":  { "type": "number" },
+    "rho": { "type": "number" },
+
+    "energy": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "Specific mechanical energy at stations 1 and 2: [E1, E2]."
+    },
+
+    "energy_imbalance": {
+      "type": "number",
+      "description": "Difference between E1 and E2 (Bernoulli energy imbalance)."
+    },
+
+    "p_min": { "type": "number" },
+    "p_max": { "type": "number" },
+    "v_min": { "type": "number" },
+    "v_max": { "type": "number" }
+  },
+
+  "required": [
+    "p1", "p2",
+    "v1", "v2",
+    "h1", "h2",
+    "rho",
+    "energy",
+    "energy_imbalance",
+    "p_min", "p_max",
+    "v_min", "v_max"
+  ]
+}
