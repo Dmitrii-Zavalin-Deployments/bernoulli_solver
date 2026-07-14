@@ -209,55 +209,61 @@ jobs:
           sudo apt-get install -y libgl1 xvfb libglu1-mesa
 
       - name: 🚀 Execute Bernoulli Solver Engine (with Live Profiling)
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
         run: |
-          # Initialize background performance tracker to capture accurate trends
+          # Initialize background performance tracker
           rm -f /tmp/cpu_track.log /tmp/memory_profile.log
-          
-          echo "Starting asynchronous background compute metrics sampler..."
+          echo "Starting background compute metrics sampler..."
           while true; do
-            # Evaluates active utilization delta (user + system space) every second
             top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' >> /tmp/cpu_track.log 2>/dev/null || true
             sleep 1
           done &
           SAMPLER_PID=$!
+
+          # 1. DIAGNOSTIC: Verify working directory
+          echo "DEBUG: Current Directory: $(pwd)"
+          echo "DEBUG: GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+
+          # 2. DIAGNOSTIC: Verify Input File existence
+          TARGET_FILE=$(ls data/testing-input-output/bernoulli_solver_input.json 2>/dev/null | head -n 1)
+          INPUT_FILE=${TARGET_FILE:+"$(basename "$TARGET_FILE")"}
+          echo "DEBUG: INPUT_FILE variable: '${INPUT_FILE}'"
           
-          # Deterministically locate the baseline input target within workspace parameters context
-          TARGET_FILE=$(ls data/testing-input-output/bernoulli_solver_input.json 2>/dev/null | head -n 1); INPUT_FILE=${TARGET_FILE:+"$(basename "$TARGET_FILE")"}
           if [ -z "$INPUT_FILE" ]; then
-            echo "❌ CRITICAL ERROR: Explicit parameter contract violation. No input JSON file located in data/testing-input-output/."
+            echo "❌ CRITICAL ERROR: No input JSON file located."
             exit 1
           fi
+
+          # 3. DIAGNOSTIC: Print the EXACT command before execution
+          CMD="/usr/bin/time -v xvfb-run --auto-servernum python src/main.py --input_output_folder '${GITHUB_WORKSPACE}/data/testing-input-output/' --input_file_name '$INPUT_FILE' --output_file_name 'bernoulli_solver_output.json'"
+          echo "DEBUG: Executing command: $CMD"
+
+          # 4. EXECUTION: Run with set -x for verbose tracing
+          set -x
+          eval $CMD 2> /tmp/memory_profile.log
+          set +x
           
-          # # Run core execution module under verbose tool monitoring to record Peak Resident Set Size (RSS)
-          # /usr/bin/time -v xvfb-run --auto-servernum python src/main.py \
-          #   --input_output_folder "${GITHUB_WORKSPACE}/data/testing-input-output/" \
-          #   --input_file_name "$INPUT_FILE" \
-          #   --output_file_name "bernoulli_solver_output.json" 2> /tmp/memory_profile.log || {
-          #       echo "❌ Python execution failed. Dumping stderr log:"
-          #       cat /tmp/memory_profile.log
-          #       exit 1
-          # }
-          
-          # Unwind profile monitoring immediately post-execution 
+          # 5. ERROR HANDLING: If it fails, cat the logs immediately
+          if [ $? -ne 0 ]; then
+              echo "❌ Python execution failed. Dumping stderr log:"
+              cat /tmp/memory_profile.log
+              exit 1
+          fi
+
+          # Unwind profile monitoring
           kill $SAMPLER_PID
           
-          # Standardize and isolate peak payload metric thresholds
+          # Metrics parsing (Standard logic)
           PEAK_CPU=$(sort -n /tmp/cpu_track.log | tail -n 1)
-          if [ -z "$PEAK_CPU" ]; then PEAK_CPU="0.0"; fi
+          [ -z "$PEAK_CPU" ] && PEAK_CPU="0.0"
           
-          # Parse Peak Memory footprint values from verbose execution dump
           MAX_RSS_KB=$(grep "Maximum resident set size" /tmp/memory_profile.log | awk '{print $6}')
-          if [ -z "$MAX_RSS_KB" ]; then
-            MAX_RSS_MB=$(free -m | awk '/Mem:/ { print $3 }')
-          else
-            MAX_RSS_MB=$((MAX_RSS_KB / 1024))
-          fi
+          [ -z "$MAX_RSS_KB" ] && MAX_RSS_MB=$(free -m | awk '/Mem:/ { print $3 }') || MAX_RSS_MB=$((MAX_RSS_KB / 1024))
           TOTAL_MEM_MB=$(free -m | awk '/Mem:/ { print $2 }')
           
-          # Inject peak thresholds directly into environment runtime variables context
           echo "PEAK_COMPUTE_LOAD=${PEAK_CPU}%" >> $GITHUB_ENV
           echo "PEAK_MEM_USAGE=${MAX_RSS_MB}/${TOTAL_MEM_MB}MB" >> $GITHUB_ENV
-          echo "✅ Profiler teardown clean. Peak CPU: ${PEAK_CPU}%, Peak Memory: ${MAX_RSS_MB}/${TOTAL_MEM_MB}MB"
+          echo "✅ Profiler teardown clean."
 
       - name: 🔍 Post-Execution Artifact Verification
         run: |
