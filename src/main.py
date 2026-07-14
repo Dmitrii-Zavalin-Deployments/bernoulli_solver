@@ -135,7 +135,7 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
             logger.critical(f"Missing dependency: {label} not found at {path}")
             raise FileNotFoundError(f"Missing dependency: {label} at {path}")
 
-    # Load Config (loads parsed Dataclass contract)
+    # Load Config (Strict load of parsed Dataclass contract)
     config = load_and_validate_config(str(required_paths["Config File"]))
     logger.info("Configuration loaded and validated.")
 
@@ -154,15 +154,11 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
         logger.error(f"Input schema validation failed: {e.message}")
         raise
 
-    # Load raw configuration file to capture fields omitted by the contract interface
-    with open(required_paths["Config File"], "r", encoding="utf-8") as f:
-        raw_config = json.load(f)
-
     # Execute
     orchestrator = BernoulliPipelineOrchestrator()
     final_state = orchestrator.execute_pipeline(raw_input, config)
 
-    # Export (Correctly nested under inputs, config, and results schema boundaries)
+    # Export (No extra injections required as config and output schema are fully aligned)
     try:
         config_dict = asdict(config)
     except TypeError:
@@ -175,27 +171,6 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
             "k_p_min": config.k_p_min,
             "k_p_max": config.k_p_max,
         } if hasattr(config, "g") else {}
-
-    # --- Strict Non-Default Policy ---
-    # Fetch units from config file or raw input. Raise error immediately if not provided by user.
-    units = raw_config.get("units") or raw_input.get("units")
-    if units is None:
-        logger.error("Non-default validation failed: 'units' is completely missing.")
-        raise KeyError("Missing required metadata field 'units' in configuration or input files.")
-    config_dict["units"] = units
-
-    # Fetch input_mode or derive dynamically from user inputs. Raise error if calculation fails.
-    input_mode = raw_config.get("input_mode") or raw_input.get("input_mode")
-    if input_mode is None:
-        missing_vars = [k for k in ["p1", "p2", "v1", "v2"] if k not in raw_input or raw_input[k] is None]
-        if len(missing_vars) == 1:
-            input_mode = f"solve_{missing_vars[0]}"
-        elif len(missing_vars) == 0:
-            input_mode = "identity"
-        else:
-            logger.error("Non-default validation failed: Cannot safely derive 'input_mode' from multiple/missing targets.")
-            raise ValueError("Missing 'input_mode' and cannot safely derive execution targets from raw inputs.")
-    config_dict["input_mode"] = input_mode
 
     output_dict = {
         "inputs": raw_input,

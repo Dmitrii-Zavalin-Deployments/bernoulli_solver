@@ -56,26 +56,16 @@
         "k_p_max": {
           "type": "number",
           "description": "Upper bound for pressure validity range derived from environmental constraints."
-        },
-
-        "units": {
-          "type": "string",
-          "description": "Unit system used for all input and output quantities (e.g., 'SI', 'imperial')."
-        },
-
-        "input_mode": {
-          "type": "string",
-          "description": "Indicates which primary variable was missing and solved for (e.g., 'solve_p1', 'solve_v2')."
         }
       },
 
       "required": [
         "g",
         "precision",
-        "k_v_min", "k_v_max",
-        "k_p_min", "k_p_max",
-        "units",
-        "input_mode"
+        "k_v_min",
+        "k_v_max",
+        "k_p_min",
+        "k_p_max"
       ]
     },
 
@@ -110,7 +100,7 @@
         "p_max": { "type": "number", "description": "Maximum allowable pressure based on environmental constraints." },
         "v_min": { "type": "number", "description": "Minimum allowable velocity based on environmental constraints." },
         "v_max": { "type": "number", "description": "Maximum allowable velocity based on environmental constraints." }
-      },
+  },
 
       "required": [
         "p1", "p2",
