@@ -58,11 +58,6 @@
           "description": "Upper bound for pressure validity range derived from environmental constraints."
         },
 
-        "solver_version": {
-          "type": "string",
-          "description": "Version identifier of the Bernoulli solver implementation used to generate this output."
-        },
-
         "units": {
           "type": "string",
           "description": "Unit system used for all input and output quantities (e.g., 'SI', 'imperial')."
@@ -79,7 +74,6 @@
         "precision",
         "k_v_min", "k_v_max",
         "k_p_min", "k_p_max",
-        "solver_version",
         "units",
         "input_mode"
       ]

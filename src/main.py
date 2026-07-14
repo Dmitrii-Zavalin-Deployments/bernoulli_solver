@@ -165,6 +165,13 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
         # Fallback if config isn't declared a Dataclass (safeguard)
         config_dict = {"g": config.g} if hasattr(config, "g") else {}
 
+    # Inject metadata required by your revised schema
+    config_dict["units"] = "SI"
+    
+    # Determine which variable was solved for (was missing in the inputs)
+    missing_vars = [k for k in ["p1", "p2", "v1", "v2"] if k not in raw_input or raw_input[k] is None]
+    config_dict["input_mode"] = f"solve_{missing_vars[0]}" if missing_vars else "identity"
+
     output_dict = {
         "inputs": raw_input,
         "config": config_dict,
