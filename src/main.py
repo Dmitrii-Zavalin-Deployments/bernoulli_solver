@@ -176,13 +176,22 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
 def main():
     setup_logging()
     
+    # Log raw arguments using the logger
+    logger.info(f"CLI arguments received -> {sys.argv}")
+    
     parser = argparse.ArgumentParser(description="Bernoulli Pipeline Orchestrator")
-    # Strict "No-Default" Policy Enforcement
     parser.add_argument("--input_output_folder", required=True, help="Path to input/output folder")
     parser.add_argument("--input_file_name", required=True, help="Input JSON file name")
     parser.add_argument("--output_file_name", required=True, help="Output JSON file name")
     
-    args = parser.parse_args()
+    try:
+        # We try to parse arguments
+        args = parser.parse_args()
+    except SystemExit as e:
+        # If argparse fails (exit code 2), we capture it in our logs first
+        logger.error(f"CLI Argument parsing failed. Ensure all required arguments are passed. SystemExit code: {e.code}")
+        # Re-raise the exit to maintain the correct exit code behavior
+        sys.exit(e.code)
 
     try:
         output_json_path = run_solver(
@@ -195,7 +204,6 @@ def main():
     except Exception:
         logger.exception("FATAL PIPELINE ERROR")
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
