@@ -158,8 +158,19 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
     orchestrator = BernoulliPipelineOrchestrator()
     final_state = orchestrator.execute_pipeline(raw_input, config)
 
-    # Export
-    output_dict = asdict(final_state)
+    # Export (Correctly nested under inputs, config, and results schema boundaries)
+    try:
+        config_dict = asdict(config)
+    except TypeError:
+        # Fallback if config isn't declared a Dataclass (safeguard)
+        config_dict = {"g": config.g} if hasattr(config, "g") else {}
+
+    output_dict = {
+        "inputs": raw_input,
+        "config": config_dict,
+        "results": asdict(final_state)
+    }
+
     with open(required_paths["Output Schema"], "r", encoding="utf-8") as f:
         output_schema = json.load(f)
     
