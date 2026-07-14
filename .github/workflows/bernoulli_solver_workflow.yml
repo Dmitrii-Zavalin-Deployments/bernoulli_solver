@@ -17,6 +17,7 @@ jobs:
   #       shell: bash
   #   env:
   #     PYTHONPATH: ${{ github.workspace }}
+  #     NODE_NO_WARNINGS: "1"
   #     FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   #     # Define the 'Gold Standard' test command here (e.g. # pytest -s tests/ -vv --cov=src --cov-report=term-missing)
   #     TEST_COMMAND: "pytest -s tests/ -vv --cov=src --cov-report=term-missing"
@@ -44,7 +45,6 @@ jobs:
   #       uses: actions/setup-python@v5
   #       with:
   #         python-version: "3.10"
-  #         cache: 'pip'
 
   #     - name: 📦 Provision Environment Layers (Pip)
   #       run: |
@@ -170,6 +170,7 @@ jobs:
         shell: bash
     env:
       PYTHONPATH: ${{ github.workspace }}
+      NODE_NO_WARNINGS: "1" # Silences punycode & runtime deprecation warning noise
 
     steps:
       - name: 🗂️ Checkout Repository
@@ -194,7 +195,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          cache: 'pip'
+          # 'cache: pip' removed to stop false positive cache clean failures when using requirements.sh
 
       - name: 📦 Provision Environment Layers (Pip)
         run: |
