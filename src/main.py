@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import sys
@@ -139,15 +140,19 @@ class BernoulliPipelineOrchestrator:
         return final_state
 
 
-def run_solver(input_path: str) -> str:
+def run_solver(input_output_folder: str, input_file_name: str, output_file_name: str) -> str:
     """
-    Main execution routine with explicit pre-flight environment verification.
+    Main execution routine mapping absolute or relative workspace folders into runtime contexts.
     """
-    full_input_path = Path(input_path)
-    if not full_input_path.is_absolute():
-        full_input_path = BASE_DIR / input_path
+    folder_path = Path(input_output_folder)
+    if not folder_path.is_absolute():
+        folder_path = BASE_DIR / folder_path
     
-    logger.info(f"Loading input file: {full_input_path.name}")
+    full_input_path = folder_path / input_file_name
+    full_output_path = folder_path / output_file_name
+    
+    logger.info(f"Using workspace folder: {folder_path}")
+    logger.info(f"Target Input Spec: {full_input_path.name}")
     
     required_paths = {
         "Input File": full_input_path,
@@ -185,22 +190,45 @@ def run_solver(input_path: str) -> str:
         output_schema = json.load(f)
     
     jsonschema.validate(instance=output_dict, schema=output_schema)
-
-    output_file_path = full_input_path.parent / "bernoulli_solver_output.json"
     
-    with open(output_file_path, "w", encoding="utf-8") as f:
+    with open(full_output_path, "w", encoding="utf-8") as f:
         json.dump(output_dict, f, indent=2)
     
-    logger.info(f"Pipeline artifacts saved to: {output_file_path}")
-    return str(output_file_path)
+    logger.info(f"Pipeline artifacts saved to: {full_output_path}")
+    return str(full_output_path)
 
 
 def main():
-    if len(sys.argv) < 2:
-        logger.error("Execution failed: Input path argument missing.")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="Explicit execution harness mapping CI validation criteria into local workflows."
+    )
+    parser.add_argument(
+        "--input_output_folder",
+        type=str,
+        required=True,
+        help="Path to workspace target folder containing experimental datasets"
+    )
+    parser.add_argument(
+        "--input_file_name",
+        type=str,
+        required=True,
+        help="Name of the target raw parameters definition JSON instance"
+    )
+    parser.add_argument(
+        "--output_file_name",
+        type=str,
+        required=True,
+        help="Output path template target identifier"
+    )
+    
+    args = parser.parse_args()
+
     try:
-        output_json_path = run_solver(sys.argv[1])
+        output_json_path = run_solver(
+            input_output_folder=args.input_output_folder,
+            input_file_name=args.input_file_name,
+            output_file_name=args.output_file_name
+        )
         logger.info(f"Run successful. Output written to {output_json_path}")
         sys.exit(0)
     except Exception:
