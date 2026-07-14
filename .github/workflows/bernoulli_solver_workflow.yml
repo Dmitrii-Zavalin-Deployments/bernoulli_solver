@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash
     env:
       PYTHONPATH: ${{ github.workspace }}
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -40,15 +40,13 @@ jobs:
           # Ensure Git Notes are rewritten and preserved
           git config --global notes.rewriteRef "refs/notes/*"
 
-      - name: 🐍 Set up Conda Environment
-        uses: conda-incubator/setup-miniconda@v3
+      - name: 🐍 Set up Python Environment
+        uses: actions/setup-python@v5
         with:
-          auto-update-conda: true
           python-version: "3.10"
-          channels: conda-forge,defaults
-          channel-priority: strict
+          cache: 'pip'
 
-      - name: 📦 Provision Environment Layers (Conda + Pip)
+      - name: 📦 Provision Environment Layers (Pip)
         run: |
           chmod +x requirements.sh
           ./requirements.sh
@@ -169,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash
     env:
       PYTHONPATH: ${{ github.workspace }}
 
@@ -192,15 +190,13 @@ jobs:
           # Ensure Git Notes are rewritten and preserved
           git config --global notes.rewriteRef "refs/notes/*"
 
-      - name: 🐍 Set up Conda Environment
-        uses: conda-incubator/setup-miniconda@v3
+      - name: 🐍 Set up Python Environment
+        uses: actions/setup-python@v5
         with:
-          auto-update-conda: true
           python-version: "3.10"
-          channels: conda-forge,defaults
-          channel-priority: strict
+          cache: 'pip'
 
-      - name: 📦 Provision Environment Layers (Conda + Pip)
+      - name: 📦 Provision Environment Layers (Pip)
         run: |
           chmod +x requirements.sh
           ./requirements.sh
