@@ -222,7 +222,7 @@ jobs:
           SAMPLER_PID=$!
           
           # Deterministically locate the baseline input target within workspace parameters context
-          INPUT_FILE=$(basename $(ls data/testing-input-output/bernoulli_solver_input.json 2>/dev/null | head -n 1))
+          TARGET_FILE=$(ls data/testing-input-output/bernoulli_solver_input.json 2>/dev/null | head -n 1); INPUT_FILE=${TARGET_FILE:+"$(basename "$TARGET_FILE")"}
           if [ -z "$INPUT_FILE" ]; then
             echo "❌ CRITICAL ERROR: Explicit parameter contract violation. No input JSON file located in data/testing-input-output/."
             exit 1
