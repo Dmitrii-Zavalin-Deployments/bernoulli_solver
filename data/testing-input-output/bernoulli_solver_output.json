@@ -13,9 +13,7 @@
     "k_v_min": 0.15,
     "k_v_max": 0.25,
     "k_p_min": 0.12,
-    "k_p_max": 0.18,
-    "units": "SI",
-    "input_mode": "solve_v2"
+    "k_p_max": 0.18
   },
   "results": {
     "p1": 101325.0,
