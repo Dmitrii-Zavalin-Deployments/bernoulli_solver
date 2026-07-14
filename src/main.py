@@ -174,17 +174,21 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
 
 
 def main():
-    setup_logging() # Initialize logging config
+    setup_logging()
     
     parser = argparse.ArgumentParser(description="Bernoulli Pipeline Orchestrator")
-    parser.add_argument("--input_output_folder", required=True)
-    parser.add_argument("--input_file_name", required=True)
-    parser.add_argument("--output_file_name", required=True)
+    # Strict "No-Default" Policy Enforcement
+    parser.add_argument("--input_output_folder", required=True, help="Path to input/output folder")
+    parser.add_argument("--input_file_name", required=True, help="Input JSON file name")
+    parser.add_argument("--output_file_name", required=True, help="Output JSON file name")
+    
     args = parser.parse_args()
 
     try:
         output_json_path = run_solver(
-            args.input_output_folder, args.input_file_name, args.output_file_name
+            args.input_output_folder, 
+            args.input_file_name, 
+            args.output_file_name
         )
         logger.info(f"Run successful. Output: {output_json_path}")
         sys.exit(0)
