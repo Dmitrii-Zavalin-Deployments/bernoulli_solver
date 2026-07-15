@@ -2,7 +2,7 @@ import pytest
 import jsonschema
 import sys
 from unittest.mock import patch, MagicMock, mock_open
-from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator, run_solver, main
+from src.main import BernoulliPipelineOrchestrator, run_solver, main
 from src.containers.bernoulli_state import BernoulliState
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def test_execute_pipeline_identity_path(orchestrator, mock_config):
                         assert mock_s4.called
 
 @patch("pathlib.Path.exists", return_value=True)
-@patch("src.bernoulli_pipeline_orchestrator.load_and_validate_config")
+@patch("src.main.load_and_validate_config")
 @patch("builtins.open", new_callable=mock_open, read_data='{"p1": null, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}')
 @patch("jsonschema.validate")
 @patch("json.load")
@@ -65,7 +65,7 @@ def test_run_solver_full_path(mock_json_load, mock_validate, mock_file, mock_con
     assert "bernoulli_solver_output.json" in result
     assert mock_config_loader.called
 
-@patch("src.bernoulli_pipeline_orchestrator.run_solver")
+@patch("src.main.run_solver")
 def test_main_success(mock_run_solver):
     """Covers lines 199-205 (Main success path)."""
     with patch.object(sys, 'argv', ['script.py', 'input.json']):
@@ -73,7 +73,7 @@ def test_main_success(mock_run_solver):
             main()
         assert e.value.code == 0
 
-@patch("src.bernoulli_pipeline_orchestrator.run_solver")
+@patch("src.main.run_solver")
 def test_main_failure(mock_run_solver):
     """Covers lines 199, 206-209 (Main failure path)."""
     mock_run_solver.side_effect = Exception("Fatal failure")
@@ -88,8 +88,8 @@ def test_validate_boundaries_error(orchestrator):
     with pytest.raises(ValueError, match="Negative pressure"):
         orchestrator._validate_boundaries({"p1": -10})
 
-@patch("src.bernoulli_pipeline_orchestrator.jsonschema.validate")
-@patch("src.bernoulli_pipeline_orchestrator.load_and_validate_config")
+@patch("src.main.jsonschema.validate")
+@patch("src.main.load_and_validate_config")
 @patch("pathlib.Path.exists", return_value=True)
 # FIX: Added read_data to satisfy json.load(f)
 @patch("builtins.open", new_callable=mock_open, read_data='{"p1": 100, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}')

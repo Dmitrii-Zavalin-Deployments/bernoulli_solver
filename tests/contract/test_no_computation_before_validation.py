@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from types import SimpleNamespace
-from src.bernoulli_pipeline_orchestrator import run_solver, BernoulliPipelineOrchestrator
+from src.main import run_solver, BernoulliPipelineOrchestrator
 from tests.signatures.no_computation_before_validation_signature import NoComputationBeforeValidationTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
@@ -15,7 +15,7 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
     Enforces the 'Validation-First' constitutional rule.
     """
 
-    @patch("src.bernoulli_pipeline_orchestrator.BernoulliPipelineOrchestrator")
+    @patch("src.main.BernoulliPipelineOrchestrator")
     def test_solver_refuses_execution_if_validation_fails(self, mock_orchestrator):
         """
         Verify that if we provide a non-existent path or bad JSON, 
@@ -28,7 +28,7 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
             
         mock_orchestrator.assert_not_called()
 
-    @patch("src.bernoulli_pipeline_orchestrator.BernoulliPipelineOrchestrator")
+    @patch("src.main.BernoulliPipelineOrchestrator")
     def test_solver_requires_successful_validation_before_execution(self, mock_orchestrator_class, dummy_state):
         """
         Verify that execution only proceeds if the input is valid.

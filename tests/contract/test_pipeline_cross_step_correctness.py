@@ -2,7 +2,7 @@ import pytest
 import copy
 from typing import Dict, Any
 from tests.signatures.pipeline_cross_step_correctness_scenarios_signature import PipelineCrossStepCorrectnessScenariosTestSignature
-from src.bernoulli_pipeline_orchestrator import BernoulliPipelineOrchestrator
+from src.main import BernoulliPipelineOrchestrator
 from src.config.config_loader import SolverConfig
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
