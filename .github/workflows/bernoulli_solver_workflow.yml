@@ -221,50 +221,85 @@ jobs:
           done &
           SAMPLER_PID=$!
 
-          # 1. DIAGNOSTIC: Verify working directory
-          echo "DEBUG: Current Directory: $(pwd)"
-          echo "DEBUG: GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+          # ====================================================================
+          # 1. PRE-EXECUTION DIAGNOSTIC GROUP
+          # ====================================================================
+          echo "::group::🔍 [DIAGNOSTICS] Pre-Execution Environment Verification"
+          echo "📂 Working Directory : $(pwd)"
+          echo "🌐 GITHUB_WORKSPACE   : ${GITHUB_WORKSPACE}"
 
-          # 2. DIAGNOSTIC: Verify Input File existence
+          # Verify Input File existence
           TARGET_FILE=$(ls data/testing-input-output/bernoulli_solver_input.json 2>/dev/null | head -n 1)
           INPUT_FILE=${TARGET_FILE:+"$(basename "$TARGET_FILE")"}
-          echo "DEBUG: INPUT_FILE variable: '${INPUT_FILE}'"
+          echo "📄 Target Input File : '${INPUT_FILE}'"
           
           if [ -z "$INPUT_FILE" ]; then
-            echo "❌ CRITICAL ERROR: No input JSON file located."
+            echo "::endgroup::"
+            echo "::error title=Missing Input File::❌ CRITICAL ERROR: No input JSON file located at data/testing-input-output/bernoulli_solver_input.json"
+            kill $SAMPLER_PID 2>/dev/null || true
             exit 1
           fi
+          echo "::endgroup::"
 
-          # 3. DIAGNOSTIC: Print the EXACT command before execution
+          # ====================================================================
+          # 2. RUNTIME PIPELINE EXECUTION GROUP
+          # ====================================================================
+          echo "::group::⚙️ [RUN] Bernoulli Pipeline Execution Tracing"
           CMD="/usr/bin/time -v xvfb-run --auto-servernum python src/main.py --input_output_folder '${GITHUB_WORKSPACE}/data/testing-input-output/' --input_file_name '$INPUT_FILE' --output_file_name 'bernoulli_solver_output.json'"
-          echo "DEBUG: Executing command: $CMD"
-
-          # 4. EXECUTION: Run with set -x for verbose tracing
-          set -x
-          eval $CMD 2> /tmp/memory_profile.log
-          set +x
           
-          # 5. ERROR HANDLING: If it fails, cat the logs immediately
-          if [ $? -ne 0 ]; then
-              echo "❌ Python execution failed. Dumping stderr log:"
-              cat /tmp/memory_profile.log
-              exit 1
-          fi
+          echo "📟 Executing Command:"
+          echo "    $CMD"
+          echo "------------------------------------------------------------------------"
 
+          # Temporarily disable standard shell exit 'set -e' to handle failure elegantly
+          set +e
+          eval $CMD 2> /tmp/memory_profile.log
+          EXEC_CODE=$?
+          set -e
+          
+          echo "------------------------------------------------------------------------"
+          if [ $EXEC_CODE -ne 0 ]; then
+              echo "::endgroup::"
+              echo "::error title=Pipeline Execution Failed::❌ Main script failed with exit code $EXEC_CODE. Dumping error logs..."
+              
+              # Sub-grouping the failure logs to prevent giant walls of unreadable text
+              echo "::group::💥 [CRASH DUMP] Standard Error Details"
+              cat /tmp/memory_profile.log
+              echo "::endgroup::"
+              
+              kill $SAMPLER_PID 2>/dev/null || true
+              exit $EXEC_CODE
+          fi
+          echo "✔ Pipeline calculation finalized successfully."
+          echo "::endgroup::"
+
+          # ====================================================================
+          # 3. PERFORMANCE METRICS COMPILATION GROUP
+          # ====================================================================
+          echo "::group::📊 [METRICS] Computational Resource Utilization Summary"
+          
           # Unwind profile monitoring
-          kill $SAMPLER_PID
+          kill $SAMPLER_PID 2>/dev/null || true
           
           # Metrics parsing (Standard logic)
           PEAK_CPU=$(sort -n /tmp/cpu_track.log | tail -n 1)
           [ -z "$PEAK_CPU" ] && PEAK_CPU="0.0"
           
           MAX_RSS_KB=$(grep "Maximum resident set size" /tmp/memory_profile.log | awk '{print $6}')
-          [ -z "$MAX_RSS_KB" ] && MAX_RSS_MB=$(free -m | awk '/Mem:/ { print $3 }') || MAX_RSS_MB=$((MAX_RSS_KB / 1024))
+          if [ -z "$MAX_RSS_KB" ]; then
+              MAX_RSS_MB=$(free -m | awk '/Mem:/ { print $3 }')
+          else
+              MAX_RSS_MB=$((MAX_RSS_KB / 1024))
+          fi
           TOTAL_MEM_MB=$(free -m | awk '/Mem:/ { print $2 }')
           
           echo "PEAK_COMPUTE_LOAD=${PEAK_CPU}%" >> $GITHUB_ENV
           echo "PEAK_MEM_USAGE=${MAX_RSS_MB}/${TOTAL_MEM_MB}MB" >> $GITHUB_ENV
-          echo "✅ Profiler teardown clean."
+          
+          echo "📈 Peak CPU Load   : ${PEAK_CPU}%"
+          echo "💾 Memory Profile  : ${MAX_RSS_MB} MB / ${TOTAL_MEM_MB} MB"
+          echo "🧹 Profiler teardown clean."
+          echo "::endgroup::"
 
       - name: 🔍 Post-Execution Artifact Verification
         run: |
