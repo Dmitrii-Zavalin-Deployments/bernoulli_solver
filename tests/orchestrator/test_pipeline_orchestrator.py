@@ -59,8 +59,8 @@ def test_run_solver_full_path(mock_json_load, mock_validate, mock_file, mock_con
     # 2. Mock input data with one null value to satisfy S1
     mock_json_load.return_value = {"p1": None, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}
     
-    # Run the solver
-    result = run_solver("input.json")
+    # Fixed: Passed 3 positional arguments to match signature: run_solver(folder, input, output)
+    result = run_solver(".", "input.json", "bernoulli_solver_output.json")
     
     assert "bernoulli_solver_output.json" in result
     assert mock_config_loader.called
@@ -68,7 +68,14 @@ def test_run_solver_full_path(mock_json_load, mock_validate, mock_file, mock_con
 @patch("src.main.run_solver")
 def test_main_success(mock_run_solver):
     """Covers lines 199-205 (Main success path)."""
-    with patch.object(sys, 'argv', ['script.py', 'input.json']):
+    # Fixed: Replaced plain filename positional args with the explicit flags required by ArgumentParser
+    cli_args = [
+        'script.py', 
+        '--input_output_folder', '.', 
+        '--input_file_name', 'input.json', 
+        '--output_file_name', 'bernoulli_solver_output.json'
+    ]
+    with patch.object(sys, 'argv', cli_args):
         with pytest.raises(SystemExit) as e:
             main()
         assert e.value.code == 0
@@ -78,7 +85,14 @@ def test_main_failure(mock_run_solver):
     """Covers lines 199, 206-209 (Main failure path)."""
     mock_run_solver.side_effect = Exception("Fatal failure")
     
-    with patch.object(sys, 'argv', ['script.py', 'input.json']):
+    # Fixed: Replaced plain filename positional args with the explicit flags required by ArgumentParser
+    cli_args = [
+        'script.py', 
+        '--input_output_folder', '.', 
+        '--input_file_name', 'input.json', 
+        '--output_file_name', 'bernoulli_solver_output.json'
+    ]
+    with patch.object(sys, 'argv', cli_args):
         with pytest.raises(SystemExit) as e:
             main()
         assert e.value.code == 1
@@ -100,8 +114,9 @@ def test_run_solver_schema_validation_error(mock_file, mock_exists, mock_config,
     # Simulate a validation failure during the schema check (line 174)
     mock_validate.side_effect = jsonschema.exceptions.ValidationError("Schema mismatch")
 
+    # Fixed: Passed 3 positional arguments to match signature: run_solver(folder, input, output)
     with pytest.raises(jsonschema.exceptions.ValidationError):
-        run_solver("dummy_path.json")
+        run_solver(".", "dummy_path.json", "bernoulli_solver_output.json")
 
 @patch("sys.argv", ["bernoulli_solver"]) # Missing the required input path argument
 def test_main_missing_argument():
@@ -111,5 +126,5 @@ def test_main_missing_argument():
     with pytest.raises(SystemExit) as cm:
         main()
     
-    # Assert that system exited with code 1
-    assert cm.value.code == 1
+    # Fixed: Assert that system exited with code 2, since argparse defaults to 2 on missing required fields
+    assert cm.value.code == 2
