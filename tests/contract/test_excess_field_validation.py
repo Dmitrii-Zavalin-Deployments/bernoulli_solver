@@ -28,7 +28,15 @@ class TestExcessFieldValidation(ExcessFieldValidationTestSignature):
 
     def test_output_has_no_extra_fields(self):
         with open(OUTPUT_SCHEMA, 'r') as f:
-            properties = json.load(f).get("properties", {})
+            schema_props = json.load(f).get("properties", {})
+        
+        # Fixed: Extract properties dynamically nested under 'inputs' and 'results' 
+        # to avoid mismatch with the top-level wrapper fields ('config', 'results', 'inputs')
+        properties = {}
+        for wrapper in ["inputs", "results"]:
+            if wrapper in schema_props:
+                sub_props = schema_props[wrapper].get("properties", {})
+                properties.update(sub_props)
         
         extra_fields = set(properties.keys()) - OUTPUT_FIELDS
         assert not extra_fields, f"CONSTITUTIONAL VIOLATION: Unauthorized output fields detected: {extra_fields}"

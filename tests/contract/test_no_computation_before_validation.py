@@ -24,7 +24,8 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         invalid_path = "non_existent_file.json"
         
         with pytest.raises(FileNotFoundError):
-            run_solver(invalid_path)
+            # Fixed: Supply correct 3-argument signature (work_dir, input_path, output_path)
+            run_solver(".", invalid_path, "bernoulli_solver_output.json")
             
         mock_orchestrator.assert_not_called()
 

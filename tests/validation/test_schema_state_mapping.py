@@ -24,10 +24,17 @@ class TestSchemaStateMapping(SchemaStateMappingTestSignature):
         with open("schema/bernoulli_output.schema.json", "r") as f:
             output_schema = json.load(f)
 
-        # Assuming schemas are structured with 'properties'; 
-        # fallback to the root dictionary if 'properties' key is missing.
-        input_fields = set(input_schema.get("properties", input_schema).keys())
-        output_fields = set(output_schema.get("properties", output_schema).keys())
+        # Input schema is flat
+        input_fields = set(input_schema.get("properties", {}).keys())
+        
+        # Fixed: Extract and flatten output properties nested under 'inputs' and 'results'
+        output_fields = set()
+        out_props = output_schema.get("properties", {})
+        for wrapper in ["inputs", "results"]:
+            if wrapper in out_props:
+                sub_props = out_props[wrapper].get("properties", {})
+                output_fields.update(sub_props.keys())
+                
         return input_fields, output_fields
 
     def test_all_schema_fields_map_to_state_fields(self, state_interface_fields, schema_fields):

@@ -47,7 +47,15 @@ class TestTypeValidation(TypeValidationTestSignature):
             schema = json.load(f)
         
         type_hints = get_type_hints(BernoulliState)
-        properties = schema.get("properties", {})
+        schema_props = schema.get("properties", {})
+
+        # Fixed: Extract properties dynamically nested under 'inputs' and 'results'
+        # to avoid mismatch with structural wrapper fields.
+        properties = {}
+        for wrapper in ["inputs", "results"]:
+            if wrapper in schema_props:
+                sub_props = schema_props[wrapper].get("properties", {})
+                properties.update(sub_props)
 
         for field, schema_def in properties.items():
             assert field in type_hints, f"Schema field '{field}' is missing from BernoulliState definition."
