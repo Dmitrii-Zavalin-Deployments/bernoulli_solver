@@ -1,6 +1,6 @@
 import pytest
 import json
-from src.config.config_loader import load_and_validate_config
+from config.config_loader import load_and_validate_config
 
 def test_load_config_file_not_found():
     """Validates branch: Lines 13-17 (FileNotFoundError)."""

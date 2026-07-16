@@ -29,7 +29,7 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
     @pytest.fixture
     def config(self):
         # Dummy config for orchestration
-        from src.config.config_loader import SolverConfig
+        from config.config_loader import SolverConfig
         return SolverConfig(g=9.81, precision=1e-6, k_v_min=0.1, k_v_max=0.1, k_p_min=0.1, k_p_max=0.1)
 
     # -------------------------

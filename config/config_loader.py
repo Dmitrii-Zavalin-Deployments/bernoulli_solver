@@ -1,6 +1,6 @@
 import json
 import os
-from src.config.config_interface import SolverConfig
+from config.config_interface import SolverConfig
 
 def load_and_validate_config(config_path: str = "config/config.json") -> SolverConfig:
     """

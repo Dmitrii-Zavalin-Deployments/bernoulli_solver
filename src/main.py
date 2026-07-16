@@ -10,8 +10,8 @@ import jsonschema
 import numpy as np
 
 # Import your custom modules
-from src.config.config_interface import SolverConfig
-from src.config.config_loader import load_and_validate_config
+from config.config_interface import SolverConfig
+from config.config_loader import load_and_validate_config
 from src.containers.bernoulli_state import BernoulliState
 from src.steps.step_s0_filled_unfilled_classifier import FilledUnfilledClassifier
 from src.steps.step_s1_exactly_one_missing import StepS1ExactlyOneMissing
@@ -124,7 +124,7 @@ def run_solver(input_output_folder: str, input_file_name: str, output_file_name:
     
     required_paths = {
         "Input File": full_input_path,
-        "Config File": BASE_DIR / "src/config/config.json",
+        "Config File": BASE_DIR / "config/config.json",
         "Input Schema": BASE_DIR / "schema/bernoulli_input.schema.json",
         "Output Schema": BASE_DIR / "schema/bernoulli_output.schema.json"
     }
