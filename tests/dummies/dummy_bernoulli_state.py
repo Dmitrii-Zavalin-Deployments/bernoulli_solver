@@ -9,13 +9,22 @@ class BernoulliStateDummy(dict, BernoulliStateInterface):
             'p1': 1.0, 'p2': 1.0, 'v1': 1.0, 'v2': 1.0,
             'h1': 1.0, 'h2': 1.0, 'rho': 1.0
         })
+        
         # 2. Store extra fields as instance attributes (not dict keys)
         self.energy = [0.0, 0.0]
         self.energy_imbalance = 0.0
-        self.p_min = 0.0
-        self.p_max = 0.0
-        self.v_min = 0.0
-        self.v_max = 0.0
+        
+        # New structure per Sovereign Container schema
+        self.initial_conditions = {
+            "velocity": [1.0, 0.0, 0.0], 
+            "pressure": 1.0
+        }
+        self.physical_constraints = {
+            "min_pressure": 0.0, 
+            "max_pressure": 0.0,
+            "min_velocity": 0.0, 
+            "max_velocity": 0.0
+        }
 
     def __getattr__(self, name):
         """Bridges dictionary keys to object attributes for S3 compatibility."""
