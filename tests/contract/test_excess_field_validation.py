@@ -11,7 +11,7 @@ OUTPUT_SCHEMA = BASE_DIR / "schema/bernoulli_output.schema.json"
 
 # Defined Constitutional Sets
 PRIMARY_FIELDS = {"p1", "p2", "v1", "v2", "h1", "h2", "rho"}
-OUTPUT_FIELDS = PRIMARY_FIELDS | {"energy", "energy_imbalance", "p_min", "p_max", "v_min", "v_max"}
+OUTPUT_FIELDS = PRIMARY_FIELDS | {"energy", "energy_imbalance", "initial_conditions", "physical_constraints"}
 
 class TestExcessFieldValidation(ExcessFieldValidationTestSignature):
     """

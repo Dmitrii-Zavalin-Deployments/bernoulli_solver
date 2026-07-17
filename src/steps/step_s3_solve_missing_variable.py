@@ -1,6 +1,6 @@
 import math
 import logging
-from typing import Any
+from typing import Any, Dict
 from src.interfaces.step_interfaces.step_s3_solve_missing_variable_interface import StepS3SolveMissingVariableInterface
 from src.containers.bernoulli_state import BernoulliState
 
@@ -65,9 +65,15 @@ class StepS3SolveMissingVariable(StepS3SolveMissingVariableInterface):
             logger.error(error_msg, exc_info=True) 
             raise ValueError(error_msg) from e
 
+        # Construct the Sovereign Container
+        # We propagate existing constraints and update initial conditions with solved values
         return BernoulliState(
             p1=p1, p2=p2, v1=v1, v2=v2, h1=h1, h2=h2, rho=rho,
-            energy=partial_state.energy, energy_imbalance=partial_state.energy_imbalance,
-            p_min=partial_state.p_min, p_max=partial_state.p_max,
-            v_min=partial_state.v_min, v_max=partial_state.v_max
+            energy=partial_state.energy, 
+            energy_imbalance=partial_state.energy_imbalance,
+            initial_conditions={
+                "velocity": [v1, 0.0, 0.0],
+                "pressure": p1
+            },
+            physical_constraints=partial_state.physical_constraints
         )

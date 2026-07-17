@@ -83,7 +83,7 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
     # S5 Implementations
     # -------------------------
     def test_s5_correct_envelope_computation(self, executed_state):
-        assert all(getattr(executed_state, attr) is not None for attr in ['p_min', 'p_max', 'v_min', 'v_max'])
+        assert all(getattr(executed_state, attr) is not None for attr in ['initial_conditions', 'physical_constraints'])
 
     def test_s5_envelopes_match_expected_values(self, executed_state):
         assert executed_state.p_min <= executed_state.p_max
@@ -131,5 +131,5 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         dummy = BernoulliStateDummy()
         for key in dummy.keys():
             assert hasattr(executed_state, key)
-        for attr in ['energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max']:
+        for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:
             assert hasattr(executed_state, attr)

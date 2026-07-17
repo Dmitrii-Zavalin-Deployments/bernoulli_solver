@@ -103,5 +103,5 @@ class TestPipelineDeterministicConsistency(PipelineDeterministicConsistencyScena
         for key in dummy.keys():
             assert hasattr(result_state, key)
         # Verify non-dict attributes
-        for attr in ['energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max']:
+        for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:
             assert hasattr(result_state, attr)

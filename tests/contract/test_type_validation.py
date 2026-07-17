@@ -78,7 +78,7 @@ class TestTypeValidation(TypeValidationTestSignature):
         # Define fields from the dummy's structure
         primary_fields = set(dummy.keys())
         # Extra fields are instance attributes in the dummy
-        extra_fields = {'energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max'}
+        extra_fields = {'energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints'}
         
         required_fields = primary_fields | extra_fields
         

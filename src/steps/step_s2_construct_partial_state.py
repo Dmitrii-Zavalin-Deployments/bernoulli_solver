@@ -54,6 +54,19 @@ class StepS2ConstructPartialState(StepS2ConstructPartialStateInterface):
         assigned_values["v_min"] = unfilled_sentinel
         assigned_values["v_max"] = unfilled_sentinel
 
+        # Define the structural dictionaries for the Sovereign Container
+        physical_constraints = {
+            "min_pressure": assigned_values["p_min"],
+            "max_pressure": assigned_values["p_max"],
+            "min_velocity": assigned_values["v_min"],
+            "max_velocity": assigned_values["v_max"]
+        }
+
+        initial_conditions = {
+            "velocity": [assigned_values["v1"], 0.0, 0.0],
+            "pressure": assigned_values["p1"]
+        }
+
         # Return the pristine, logic-free Sovereign Container
         return BernoulliState(
             p1=assigned_values["p1"],
@@ -65,8 +78,6 @@ class StepS2ConstructPartialState(StepS2ConstructPartialStateInterface):
             rho=assigned_values["rho"],
             energy=assigned_values["energy"],
             energy_imbalance=assigned_values["energy_imbalance"],
-            p_min=assigned_values["p_min"],
-            p_max=assigned_values["p_max"],
-            v_min=assigned_values["v_min"],
-            v_max=assigned_values["v_max"]
+            initial_conditions=initial_conditions,
+            physical_constraints=physical_constraints
         )

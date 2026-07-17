@@ -32,7 +32,7 @@ class TestPipelinePresenceValidation(PresenceValidationTestSignature):
 
     @pytest.fixture
     def envelope_fields(self):
-        return ["p_min", "p_max", "v_min", "v_max"]
+        return ["initial_conditions", "physical_constraints"]
 
     def test_input_has_exactly_one_missing_variable(self, orchestrator, ground_truth, valid_config):
         # Test 1 missing (Should pass through solver mode)

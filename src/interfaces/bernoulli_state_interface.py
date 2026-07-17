@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Any
 
 class BernoulliStateInterface:
     """
@@ -14,13 +14,11 @@ class BernoulliStateInterface:
     h1: float
     h2: float
     rho: float
+    initial_conditions: Dict[str, Any]
+    physical_constraints: Dict[str, Any]
 
     # Energy bookkeeping (S4)
     energy: List[float]          # [E1, E2]
     energy_imbalance: float      # E1 - E2
 
     # Constraint export (S5)
-    p_min: float
-    p_max: float
-    v_min: float
-    v_max: float
