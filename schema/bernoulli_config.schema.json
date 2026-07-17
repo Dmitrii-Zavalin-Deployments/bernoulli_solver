@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bernoulli Solver Config Schema",
+  "type": "object",
+  "properties": {
+    "g": {
+      "type": "number",
+      "description": "Gravitational acceleration in m/s^2."
+    },
+    "precision": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Numerical precision threshold for residuals and rounding limits."
+    },
+    "k_v_min": {
+      "type": "number",
+      "description": "Looseness factor for minimum velocity bound."
+    },
+    "k_v_max": {
+      "type": "number",
+      "description": "Looseness factor for maximum velocity bound."
+    },
+    "k_p_min": {
+      "type": "number",
+      "description": "Looseness factor for minimum pressure bound."
+    },
+    "k_p_max": {
+      "type": "number",
+      "description": "Looseness factor for maximum pressure bound."
+    }
+  },
+  "required": [
+    "g",
+    "precision",
+    "k_v_min",
+    "k_v_max",
+    "k_p_min",
+    "k_p_max"
+  ],
+  "additionalProperties": true
+}
