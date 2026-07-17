@@ -47,8 +47,9 @@ class StepS4ComputeEnergyResidual(StepS4ComputeEnergyResidualInterface):
             rho=rho,
             energy=energy_list,
             energy_imbalance=energy_imbalance,
-            p_min=solved_state.p_min,
-            p_max=solved_state.p_max,
-            v_min=solved_state.v_min,
-            v_max=solved_state.v_max
+            initial_conditions={
+                "velocity": [v1, 0.0, 0.0],
+                "pressure": p1
+            },
+            physical_constraints=solved_state.physical_constraints
         )

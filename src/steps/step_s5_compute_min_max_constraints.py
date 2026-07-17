@@ -51,11 +51,20 @@ class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
         # Cavitation Limit (Venturi): Flow accelerates through a constriction, dropping pressure.
         p_min = p_low - p_scale * (1.0 + config.k_p_min)
         
-        # 5. Return fresh sovereign container
+        # 5. Return fresh sovereign container with nested constraint dictionaries
         return BernoulliState(
             p1=p1, p2=p2, v1=v1, v2=v2, 
             h1=state_with_energy.h1, h2=state_with_energy.h2, rho=rho,
             energy=state_with_energy.energy, 
             energy_imbalance=imbalance,
-            p_min=p_min, p_max=p_max, v_min=v_min, v_max=v_max
+            initial_conditions={
+                "velocity": [v1, 0.0, 0.0],
+                "pressure": p1
+            },
+            physical_constraints={
+                "min_pressure": p_min,
+                "max_pressure": p_max,
+                "min_velocity": v_min,
+                "max_velocity": v_max
+            }
         )
