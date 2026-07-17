@@ -3,7 +3,6 @@ import copy
 from typing import Dict, Any
 from tests.signatures.pipeline_cross_step_correctness_scenarios_signature import PipelineCrossStepCorrectnessScenariosTestSignature
 from src.main import BernoulliPipelineOrchestrator
-from config.config_loader import SolverConfig
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
 class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTestSignature):

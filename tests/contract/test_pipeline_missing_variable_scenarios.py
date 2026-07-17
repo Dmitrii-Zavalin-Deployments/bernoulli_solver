@@ -2,7 +2,6 @@ import pytest
 import math
 import copy
 from src.main import BernoulliPipelineOrchestrator
-from config.config_interface import SolverConfig
 from tests.signatures.pipeline_missing_variable_scenarios_signature import PipelineMissingVariableScenariosTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 

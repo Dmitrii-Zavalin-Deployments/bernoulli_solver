@@ -10,7 +10,6 @@ import jsonschema
 import numpy as np
 
 # Import your custom modules
-from config.config_interface import SolverConfig
 from config.config_loader import load_and_validate_config
 from src.containers.bernoulli_state import BernoulliState
 from src.steps.step_s0_filled_unfilled_classifier import FilledUnfilledClassifier

@@ -2,7 +2,6 @@ import math
 import copy
 import pytest
 from src.main import BernoulliPipelineOrchestrator
-from config.config_loader import SolverConfig
 from tests.signatures.pipeline_round_trip_scenarios_signature import PipelineRoundTripScenariosTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 

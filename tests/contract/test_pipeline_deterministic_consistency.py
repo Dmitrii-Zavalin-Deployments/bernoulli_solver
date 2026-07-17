@@ -2,7 +2,6 @@ import pytest
 import copy
 import math
 from src.main import BernoulliPipelineOrchestrator
-from config.config_interface import SolverConfig
 from tests.signatures.pipeline_deterministic_consistency_scenarios_signature import PipelineDeterministicConsistencyScenariosTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
