@@ -103,7 +103,7 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
 
     def test_s5_computes_envelopes_correctly(self, orchestrator, ground_truth, valid_config):
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "v2")
-        assert res.v_min <= res.v_max
+        assert res.physical_constraints["min_velocity"] <= res.v_max
 
     # -------------------------
     # Round‑trip scenarios
@@ -116,7 +116,7 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
     def test_round_trip_minimal_envelopes(self, orchestrator, ground_truth, valid_config):
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "v2")
         # Ensure envelopes aren't absurdly large
-        assert res.p_max >= res.p_min
+        assert res.physical_constraints["max_pressure"] >= res.physical_constraints["min_pressure"]
 
     def test_round_trip_no_unintended_mutations(self, orchestrator, ground_truth, valid_config):
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "p1")

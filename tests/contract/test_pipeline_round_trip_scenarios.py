@@ -105,12 +105,12 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
         expected_p_max = max(p1, p2) + p_scale * (1.0 + valid_config.k_p_max)
         expected_p_min = min(p1, p2) - p_scale * (1.0 + valid_config.k_p_min)
         
-        assert math.isclose(res.p_max, expected_p_max, abs_tol=1e-5)
-        assert math.isclose(res.p_min, expected_p_min, abs_tol=1e-5)
+        assert math.isclose(res.physical_constraints["max_pressure"], expected_p_max, abs_tol=1e-5)
+        assert math.isclose(res.physical_constraints["min_pressure"], expected_p_min, abs_tol=1e-5)
     
     def test_s5_correct_envelope_bounds(self, orchestrator, ground_truth, valid_config):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
-        assert res.p_max >= res.p1
+        assert res.physical_constraints["max_pressure"] >= res.p1
 
     # -------------------------
     # Cross‑step coherence

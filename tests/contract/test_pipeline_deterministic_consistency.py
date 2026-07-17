@@ -77,7 +77,7 @@ class TestPipelineDeterministicConsistency(PipelineDeterministicConsistencyScena
         # Optional: Add the same logic for v_max, p_min, and p_max to be consistent
         expected_v_max = v_char * (1.0 + valid_config.k_v_max)
         
-        assert math.isclose(result_state.v_min, expected_v_min)
+        assert math.isclose(result_state.physical_constraints["min_velocity"], expected_v_min)
         assert math.isclose(result_state.v_max, expected_v_max)
 
     def test_round_trip_zero_energy_imbalance(self, result_state):
@@ -86,7 +86,7 @@ class TestPipelineDeterministicConsistency(PipelineDeterministicConsistencyScena
 
     def test_round_trip_minimal_envelopes(self, result_state):
         # Assuming k_v_min/max are small, verify envelopes are within reasonable bounds
-        assert result_state.v_min <= 0 <= result_state.v_max
+        assert result_state.physical_constraints["min_velocity"] <= 0 <= result_state.v_max
 
     def test_round_trip_no_unintended_mutations(self, result_state, fully_specified_input):
         # Ensure result fields are not just mutated references

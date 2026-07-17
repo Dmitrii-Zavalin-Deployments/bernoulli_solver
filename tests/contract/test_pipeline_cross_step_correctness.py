@@ -86,16 +86,16 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         assert all(getattr(executed_state, attr) is not None for attr in ['initial_conditions', 'physical_constraints'])
 
     def test_s5_envelopes_match_expected_values(self, executed_state):
-        assert executed_state.p_min <= executed_state.p_max
+        assert executed_state.physical_constraints["min_pressure"] <= executed_state.physical_constraints["max_pressure"]
 
     def test_s5_envelopes_consistent_with_s4_energy(self, executed_state):
-        assert executed_state.p_min <= executed_state.p1 <= executed_state.p_max
+        assert executed_state.physical_constraints["min_pressure"] <= executed_state.p1 <= executed_state.physical_constraints["max_pressure"]
 
     # -------------------------
     # Coherence & Invariants
     # -------------------------
     def test_pipeline_cross_step_consistency(self, executed_state):
-        assert executed_state.p_min <= executed_state.p2 <= executed_state.p_max
+        assert executed_state.physical_constraints["min_pressure"] <= executed_state.p2 <= executed_state.physical_constraints["max_pressure"]
 
     def test_pipeline_no_unintended_mutations(self, executed_state, baseline_input):
         assert executed_state.p1 == baseline_input["p1"]
@@ -120,7 +120,7 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         inp["p2"] = 101141.25
         inp["p1"] = None
         state = orchestrator.execute_pipeline(inp, config)
-        assert state.p_max >= state.p_min
+        assert state.physical_constraints["max_pressure"] >= state.physical_constraints["min_pressure"]
 
     def test_pipeline_input_immutability(self, orchestrator, baseline_input, config):
         snap = copy.deepcopy(baseline_input)
