@@ -15,7 +15,8 @@ TYPE_MAPPING = {
     "number": float,
     "integer": int,
     "array": list,
-    "string": str
+    "string": str,
+    "object": dict  # Fixed: Added mapping for object-typed fields
 }
 
 class TestTypeValidation(TypeValidationTestSignature):
@@ -49,7 +50,7 @@ class TestTypeValidation(TypeValidationTestSignature):
         type_hints = get_type_hints(BernoulliState)
         schema_props = schema.get("properties", {})
 
-        # Fixed: Extract properties dynamically nested under 'inputs' and 'results'
+        # Extract properties dynamically nested under 'inputs' and 'results'
         # to avoid mismatch with structural wrapper fields.
         properties = {}
         for wrapper in ["inputs", "results"]:
@@ -61,7 +62,7 @@ class TestTypeValidation(TypeValidationTestSignature):
             assert field in type_hints, f"Schema field '{field}' is missing from BernoulliState definition."
             
             expected_type = TYPE_MAPPING.get(schema_def["type"])
-            # Normalize generic types (e.g., List[float]) to their origin (list)
+            # Normalize generic types (e.g., Dict[str, Any]) to their origin (dict)
             actual_type = get_origin(type_hints[field]) or type_hints[field]
             
             assert actual_type == expected_type, \

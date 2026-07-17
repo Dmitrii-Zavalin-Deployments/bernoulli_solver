@@ -82,6 +82,9 @@ class TestS5ComputeMinMaxConstraints(S5ComputeMinMaxConstraintsTestSignature):
         assert result.energy == [100.0, 50.0]
         assert result.energy_imbalance == 50.0
         
-        # Verify new fields exist
-        assert hasattr(result, 'p_min')
-        assert hasattr(result, 'v_max')
+        # Fixed: Verify new dictionary structural containers exist and are valid types
+        for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:
+            assert hasattr(result, attr)
+            
+        assert isinstance(result.initial_conditions, dict)
+        assert isinstance(result.physical_constraints, dict)

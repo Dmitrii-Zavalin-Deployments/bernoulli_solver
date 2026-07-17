@@ -75,7 +75,15 @@ class TestS3ComputeEnergyResidual(S4ComputeEnergyResidualTestSignature):
 
     def test_frozen_dummy_alignment(self, s4_step, dummy, config):
         """S4 output must match structure and preserve metadata."""
-        state = dummy.override(p_min=0.5, v_max=100.0)
+        # Fixed: Passed structured dictionary mapping to match the new class structure
+        state = dummy.override(
+            physical_constraints={
+                "min_pressure": 0.5,
+                "max_pressure": 1000.0,
+                "min_velocity": 0.0,
+                "max_velocity": 100.0
+            }
+        )
         result = s4_step.compute_energy_and_residual(state, config)
         
         # Verify metadata (not computed by S4, but preserved)
@@ -85,3 +93,10 @@ class TestS3ComputeEnergyResidual(S4ComputeEnergyResidualTestSignature):
         # Verify structure: energy must be a list of two floats
         assert isinstance(result.energy, list)
         assert len(result.energy) == 2
+        
+        # Verify new structural container fields are present and valid
+        for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:
+            assert hasattr(result, attr)
+            
+        assert isinstance(result.initial_conditions, dict)
+        assert isinstance(result.physical_constraints, dict)

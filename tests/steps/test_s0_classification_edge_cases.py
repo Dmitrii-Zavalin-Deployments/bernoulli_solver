@@ -120,5 +120,10 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
         dummy = BernoulliStateDummy().get_s1_compliant_state(missing_key="h1")
         for key in dummy.keys():
             assert hasattr(res, key)
-        for attr in ['energy', 'energy_imbalance', 'p_min', 'p_max', 'v_min', 'v_max']:
+            
+        # Fixed: Checking structure compatibility against dictionary constraints
+        for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:
             assert hasattr(res, attr)
+            
+        assert isinstance(res.initial_conditions, dict)
+        assert isinstance(res.physical_constraints, dict)
