@@ -20,7 +20,7 @@ jobs:
       NODE_NO_WARNINGS: "1"
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       # Define the 'Gold Standard' test command here (e.g. # pytest -s tests/ -vv --cov=src --cov-report=term-missing)
-      TEST_COMMAND: "pytest -s tests/ -vv --cov=src --cov-report=term-missing"
+      TEST_COMMAND: "pytest -s tests/ -vv --cov=src --cov=config --cov-report=term-missing"
     
     steps:
       - name: 🗂️ Checkout Repository
