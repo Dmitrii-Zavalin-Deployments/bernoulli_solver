@@ -2,6 +2,7 @@ import pytest
 import math
 import copy
 from src.steps.step_s3_solve_missing_variable import StepS3SolveMissingVariable
+from config.config_loader import SolverConfig
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 from tests.signatures.s3_solve_missing_variable_test_signature import S3SolveMissingVariableTestSignature
 
