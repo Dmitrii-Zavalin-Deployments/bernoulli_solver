@@ -1,17 +1,38 @@
 {
-  "$id": "bernoulli_output.schema.json",
-  "title": "Bernoulli Solver Output Schema",
+  "$id": "bernoulli_results.schema.json",
+  "title": "Bernoulli Solver Results Schema",
   "type": "object",
   "additionalProperties": false,
 
   "properties": {
-    "p1":  { "type": "number" },
-    "p2":  { "type": "number" },
-    "v1":  { "type": "number" },
-    "v2":  { "type": "number" },
-    "h1":  { "type": "number" },
-    "h2":  { "type": "number" },
-    "rho": { "type": "number" },
+    "rho": { 
+      "type": "number",
+      "description": "Fluid density."
+    },
+    "h1": { 
+      "type": "number",
+      "description": "Elevation head at station 1."
+    },
+    "h2": { 
+      "type": "number",
+      "description": "Elevation head at station 2."
+    },
+    "p1": { 
+      "type": "number",
+      "description": "Static pressure at station 1."
+    },
+    "p2": { 
+      "type": "number",
+      "description": "Static pressure at station 2."
+    },
+    "v1": { 
+      "type": "number",
+      "description": "Fluid velocity at station 1."
+    },
+    "v2": { 
+      "type": "number",
+      "description": "Fluid velocity at station 2."
+    },
 
     "energy": {
       "type": "array",
@@ -20,26 +41,55 @@
       "maxItems": 2,
       "description": "Specific mechanical energy at stations 1 and 2: [E1, E2]."
     },
-
     "energy_imbalance": {
       "type": "number",
       "description": "Difference between E1 and E2 (Bernoulli energy imbalance)."
     },
 
-    "p_min": { "type": "number" },
-    "p_max": { "type": "number" },
-    "v_min": { "type": "number" },
-    "v_max": { "type": "number" }
+    "initial_conditions": {
+      "type": "object",
+      "required": ["velocity", "pressure"],
+      "properties": {
+        "velocity": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "3D velocity vector: [vx, vy, vz]"
+        },
+        "pressure": { 
+          "type": "number" 
+        }
+      }
+    },
+
+    "physical_constraints": {
+      "type": "object",
+      "required": ["min_velocity", "max_velocity", "min_pressure", "max_pressure"],
+      "properties": {
+        "min_velocity": { 
+          "type": "number",
+          "description": "Minimum fluid velocity boundary envelope computed via looseness coefficients."
+        },
+        "max_velocity": { 
+          "type": "number",
+          "description": "Maximum fluid velocity boundary envelope computed via looseness coefficients."
+        },
+        "min_pressure": { 
+          "type": "number",
+          "description": "Minimum fluid pressure boundary envelope computed via looseness coefficients."
+        },
+        "max_pressure": { 
+          "type": "number",
+          "description": "Maximum fluid pressure boundary envelope computed via looseness coefficients."
+        }
+      }
+    }
   },
 
   "required": [
-    "p1", "p2",
-    "v1", "v2",
-    "h1", "h2",
-    "rho",
-    "energy",
-    "energy_imbalance",
-    "p_min", "p_max",
-    "v_min", "v_max"
+    "rho", "h1", "h2", 
+    "energy", "energy_imbalance", 
+    "initial_conditions", "physical_constraints"
   ]
 }

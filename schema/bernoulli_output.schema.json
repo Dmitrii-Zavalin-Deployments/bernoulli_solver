@@ -3,62 +3,73 @@
   "title": "Bernoulli Solver Output Schema",
   "type": "object",
   "additionalProperties": false,
-
   "properties": {
-
     "inputs": {
       "type": "object",
       "description": "Primary Bernoulli input variables echoed back exactly as received by the solver.",
       "additionalProperties": false,
       "properties": {
-        "p1":  { "type": "number", "description": "Inlet pressure at station 1." },
-        "p2":  { "type": "number", "description": "Outlet pressure at station 2." },
-        "v1":  { "type": "number", "description": "Inlet velocity at station 1." },
-        "v2":  { "type": "number", "description": "Outlet velocity at station 2." },
-        "h1":  { "type": "number", "description": "Elevation head at station 1." },
-        "h2":  { "type": "number", "description": "Elevation head at station 2." },
-        "rho": { "type": "number", "description": "Fluid density used in the computation." }
+        "p1": {
+          "type": "number",
+          "description": "Inlet pressure at station 1."
+        },
+        "p2": {
+          "type": "number",
+          "description": "Outlet pressure at station 2."
+        },
+        "v1": {
+          "type": "number",
+          "description": "Inlet velocity at station 1."
+        },
+        "v2": {
+          "type": "number",
+          "description": "Outlet velocity at station 2."
+        },
+        "h1": {
+          "type": "number",
+          "description": "Elevation head at station 1."
+        },
+        "h2": {
+          "type": "number",
+          "description": "Elevation head at station 2."
+        },
+        "rho": {
+          "type": "number",
+          "description": "Fluid density used in the computation."
+        }
       },
       "required": []
     },
-
     "config": {
       "type": "object",
       "description": "Physics‑relevant solver configuration settings that determine how the computation was performed.",
       "additionalProperties": false,
       "properties": {
-
         "g": {
           "type": "number",
           "description": "Gravitational acceleration used in the Bernoulli energy term (m/s^2)."
         },
-
         "precision": {
           "type": "number",
           "description": "Numerical precision threshold used for floating‑point comparisons and rounding."
         },
-
         "k_v_min": {
           "type": "number",
           "description": "Lower bound for velocity validity range derived from environmental constraints."
         },
-
         "k_v_max": {
           "type": "number",
           "description": "Upper bound for velocity validity range derived from environmental constraints."
         },
-
         "k_p_min": {
           "type": "number",
           "description": "Lower bound for pressure validity range derived from environmental constraints."
         },
-
         "k_p_max": {
           "type": "number",
           "description": "Upper bound for pressure validity range derived from environmental constraints."
         }
       },
-
       "required": [
         "g",
         "precision",
@@ -68,52 +79,114 @@
         "k_p_max"
       ]
     },
-
     "results": {
       "type": "object",
-      "description": "Computed Bernoulli outputs including pressures, velocities, energies, and environmental range limits.",
       "additionalProperties": false,
       "properties": {
-
-        "p1":  { "type": "number", "description": "Computed inlet pressure at station 1." },
-        "p2":  { "type": "number", "description": "Computed outlet pressure at station 2." },
-        "v1":  { "type": "number", "description": "Computed inlet velocity at station 1." },
-        "v2":  { "type": "number", "description": "Computed outlet velocity at station 2." },
-        "h1":  { "type": "number", "description": "Elevation head at station 1 (echoed or derived)." },
-        "h2":  { "type": "number", "description": "Elevation head at station 2 (echoed or derived)." },
-        "rho": { "type": "number", "description": "Fluid density used in the computation (echoed)." },
-
+        "rho": {
+          "type": "number",
+          "description": "Fluid density."
+        },
+        "h1": {
+          "type": "number",
+          "description": "Elevation head at station 1."
+        },
+        "h2": {
+          "type": "number",
+          "description": "Elevation head at station 2."
+        },
+        "p1": {
+          "type": "number",
+          "description": "Static pressure at station 1."
+        },
+        "p2": {
+          "type": "number",
+          "description": "Static pressure at station 2."
+        },
+        "v1": {
+          "type": "number",
+          "description": "Fluid velocity at station 1."
+        },
+        "v2": {
+          "type": "number",
+          "description": "Fluid velocity at station 2."
+        },
         "energy": {
           "type": "array",
-          "items": { "type": "number" },
+          "items": {
+            "type": "number"
+          },
           "minItems": 2,
           "maxItems": 2,
           "description": "Specific mechanical energy at stations 1 and 2: [E1, E2]."
         },
-
         "energy_imbalance": {
           "type": "number",
           "description": "Difference between E1 and E2 (Bernoulli energy imbalance)."
         },
-
-        "p_min": { "type": "number", "description": "Minimum allowable pressure based on environmental constraints." },
-        "p_max": { "type": "number", "description": "Maximum allowable pressure based on environmental constraints." },
-        "v_min": { "type": "number", "description": "Minimum allowable velocity based on environmental constraints." },
-        "v_max": { "type": "number", "description": "Maximum allowable velocity based on environmental constraints." }
-  },
-
+        "initial_conditions": {
+          "type": "object",
+          "required": [
+            "velocity",
+            "pressure"
+          ],
+          "properties": {
+            "velocity": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 3,
+              "maxItems": 3,
+              "description": "3D velocity vector: [vx, vy, vz]"
+            },
+            "pressure": {
+              "type": "number"
+            }
+          }
+        },
+        "physical_constraints": {
+          "type": "object",
+          "required": [
+            "min_velocity",
+            "max_velocity",
+            "min_pressure",
+            "max_pressure"
+          ],
+          "properties": {
+            "min_velocity": {
+              "type": "number",
+              "description": "Minimum fluid velocity boundary envelope computed via looseness coefficients."
+            },
+            "max_velocity": {
+              "type": "number",
+              "description": "Maximum fluid velocity boundary envelope computed via looseness coefficients."
+            },
+            "min_pressure": {
+              "type": "number",
+              "description": "Minimum fluid pressure boundary envelope computed via looseness coefficients."
+            },
+            "max_pressure": {
+              "type": "number",
+              "description": "Maximum fluid pressure boundary envelope computed via looseness coefficients."
+            }
+          }
+        }
+      },
       "required": [
-        "p1", "p2",
-        "v1", "v2",
-        "h1", "h2",
         "rho",
+        "h1",
+        "h2",
         "energy",
         "energy_imbalance",
-        "p_min", "p_max",
-        "v_min", "v_max"
+        "initial_conditions",
+        "physical_constraints"
       ]
     }
   },
-
-  "required": ["inputs", "config", "results"]
+  "required": [
+    "inputs",
+    "config",
+    "results"
+  ]
 }
