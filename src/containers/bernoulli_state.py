@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Any
 from dataclasses import dataclass
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
 
@@ -15,7 +15,7 @@ class BernoulliState(BernoulliStateInterface):
     __slots__ = (
         'p1', 'p2', 'v1', 'v2', 'h1', 'h2', 'rho',
         'energy', 'energy_imbalance',
-        'p_min', 'p_max', 'v_min', 'v_max'
+        'initial_conditions', 'physical_constraints'
     )
 
     # Explicit class-level type annotations matching BernoulliStateInterface 100%
@@ -28,10 +28,8 @@ class BernoulliState(BernoulliStateInterface):
     rho: float
     energy: List[float]
     energy_imbalance: float
-    p_min: float
-    p_max: float
-    v_min: float
-    v_max: float
+    initial_conditions: Dict[str, Any]
+    physical_constraints: Dict[str, Any]
 
     def __init__(
         self,
@@ -44,10 +42,8 @@ class BernoulliState(BernoulliStateInterface):
         rho: float,
         energy: List[float],
         energy_imbalance: float,
-        p_min: float,
-        p_max: float,
-        v_min: float,
-        v_max: float
+        initial_conditions: Dict[str, Any],
+        physical_constraints: Dict[str, Any]
     ):
         """
         Pure assignment constructor. No defaults, no implicit type casting, 
@@ -63,7 +59,5 @@ class BernoulliState(BernoulliStateInterface):
         self.rho = rho
         self.energy = energy
         self.energy_imbalance = energy_imbalance
-        self.p_min = p_min
-        self.p_max = p_max
-        self.v_min = v_min
-        self.v_max = v_max
+        self.initial_conditions = initial_conditions
+        self.physical_constraints = physical_constraints
