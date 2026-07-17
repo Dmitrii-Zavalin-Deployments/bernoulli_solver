@@ -23,11 +23,17 @@ def test_execute_pipeline_identity_path(orchestrator, mock_config):
     # Mocking steps to return valid data without solving for a missing variable
     with patch.object(orchestrator.s0_classifier, 'classify_filled_and_unfilled', return_value=(None, None)):
         with patch.object(orchestrator.s1_validator, 'enforce_exactly_one_missing', return_value=(raw_input, None)):
-            # Fixed: Initialized all required fields for BernoulliState
+            # Fixed: Initialized all required fields for BernoulliState using dictionary constraints mapping
             with patch.object(orchestrator.s2_constructor, 'construct_partial_state', 
-                              return_value=BernoulliState(p1=100, p2=50, v1=10, v2=5, h1=0, h2=0, rho=1.0,
-                                                          energy=[100.0, 100.0], energy_imbalance=0.0,
-                                                          p_min=50.0, p_max=100.0, v_min=5.0, v_max=10.0)):
+                              return_value=BernoulliState(
+                                  p1=100, p2=50, v1=10, v2=5, h1=0, h2=0, rho=1.0,
+                                  energy=[100.0, 100.0], energy_imbalance=0.0,
+                                  initial_conditions={"velocity": [10.0, 0.0, 0.0], "pressure": 100.0},
+                                  physical_constraints={
+                                      "min_pressure": 50.0, "max_pressure": 100.0,
+                                      "min_velocity": 5.0, "max_velocity": 10.0
+                                  }
+                              )):
                 with patch.object(orchestrator.s4_diagnician, 'compute_energy_and_residual') as mock_s4:
                     with patch.object(orchestrator.s5_enveloper, 'compute_min_max_constraints') as mock_s5:
                         
