@@ -1,6 +1,6 @@
 import math
 import logging
-from typing import Any, Dict
+from typing import Any
 from src.interfaces.step_interfaces.step_s3_solve_missing_variable_interface import StepS3SolveMissingVariableInterface
 from src.containers.bernoulli_state import BernoulliState
 
