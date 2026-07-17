@@ -28,9 +28,19 @@
       104450.0
     ],
     "energy_imbalance": 0.0,
-    "p_min": 96500.0,
-    "p_max": 105012.5,
-    "v_min": -2.875,
-    "v_max": 3.125
+    "initial_conditions": {
+      "velocity": [
+        2.5,
+        0.0,
+        0.0
+      ],
+      "pressure": 101325.0
+    },
+    "physical_constraints": {
+      "min_pressure": 96500.0,
+      "max_pressure": 105012.5,
+      "min_velocity": -2.875,
+      "max_velocity": 3.125
+    }
   }
 }
