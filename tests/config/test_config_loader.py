@@ -18,7 +18,7 @@ def mock_schema(tmp_path):
             "k_p_max": {"type": "number"}
         },
         "required": ["g", "precision", "k_v_min", "k_v_max", "k_p_min", "k_p_max"],
-        "additionalProperties": false
+        "additionalProperties": False
     }
     schema_file.write_text(json.dumps(schema_data))
     return str(schema_file)
