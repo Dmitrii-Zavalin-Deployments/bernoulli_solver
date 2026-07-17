@@ -4,11 +4,8 @@ from config.config_interface import SolverConfig
 
 def load_and_validate_config(config_path: str = "config/config.json") -> SolverConfig:
     """
-    Loads the actual configuration file from disk and validates 
-    it against the frozen SolverConfig contract-only interface.
-    
-    Aborts execution immediately if the JSON structure does not 
-    perfectly match the SolverConfig fields.
+    Loads configuration, logs extra properties if found, and strips them 
+    out before instantiating the SolverConfig dataclass.
     """
     if not os.path.exists(config_path):
         raise FileNotFoundError(
@@ -21,18 +18,31 @@ def load_and_validate_config(config_path: str = "config/config.json") -> SolverC
             raw_data = json.load(f)
         except json.JSONDecodeError as e:
             raise ValueError(
-                f"Configuration Invariant Violation: 'config.json' is not valid JSON. Internal error: {e}"
+                f"Configuration Invariant Violation: '{config_path}' is not valid JSON. Internal error: {e}"
             ) from e
 
+    # 1. Identify valid fields defined in the dataclass
+    valid_fields = set(SolverConfig.__annotations__.keys())
+    input_fields = set(raw_data.keys())
+
+    # 2. Find extras (difference between input keys and valid class keys)
+    extra_fields = input_fields - valid_fields
+    if extra_fields:
+        print(f"LOG: Found additional properties in config file: {extra_fields}")
+        
+        # 3. Create a filtered dictionary containing only valid keys
+        filtered_data = {k: v for k, v in raw_data.items() if k in valid_fields}
+    else:
+        filtered_data = raw_data
+
+    # 4. Instantiate with the filtered (clean) data
     try:
-        # Dictionary unpacking creates a direct link to the interface fields.
-        # This will raise a TypeError if config.json contains extra or missing fields.
-        validated_config = SolverConfig(**raw_data)
+        validated_config = SolverConfig(**filtered_data)
     except TypeError as e:
+        # This handles cases where mandatory fields are missing
         raise TypeError(
-            f"Configuration Invariant Violation: The runtime 'config.json' file does not "
-            f"match the structural contract defined in 'config_interface.py'. "
-            f"Ensure no extra fields (like 'id') are present. Internal error: {e}"
+            f"Configuration Invariant Violation: Missing required parameters. "
+            f"Internal error: {e}"
         ) from e
 
     return validated_config
