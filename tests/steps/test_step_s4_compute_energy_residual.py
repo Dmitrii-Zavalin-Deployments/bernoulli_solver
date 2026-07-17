@@ -80,7 +80,7 @@ class TestS3ComputeEnergyResidual(S4ComputeEnergyResidualTestSignature):
         
         # Verify metadata (not computed by S4, but preserved)
         assert result.physical_constraints["min_pressure"] == 0.5
-        assert result.v_max == 100.0
+        assert result.physical_constraints["max_velocity"] == 100.0
         
         # Verify structure: energy must be a list of two floats
         assert isinstance(result.energy, list)

@@ -103,7 +103,7 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
 
     def test_s5_computes_envelopes_correctly(self, orchestrator, ground_truth, valid_config):
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "v2")
-        assert res.physical_constraints["min_velocity"] <= res.v_max
+        assert res.physical_constraints["min_velocity"] <= res.physical_constraints["max_velocity"]
 
     # -------------------------
     # Round‑trip scenarios

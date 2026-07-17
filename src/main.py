@@ -94,11 +94,17 @@ class BernoulliPipelineOrchestrator:
             e1 = p1 + 0.5 * rho * (v1 ** 2) + rho * config.g * h1
             e2 = p2 + 0.5 * rho * (v2 ** 2) + rho * config.g * h2
 
+            # Fixed initialization to comply with Sovereign Container structural changes
             solved_state = BernoulliState(
                 p1=p1, p2=p2, v1=v1, v2=v2, h1=h1, h2=h2, rho=rho,
                 energy=[e1, e2], energy_imbalance=abs(e1 - e2),
-                p_min=min(p1, p2), p_max=max(p1, p2),
-                v_min=min(v1, v2), v_max=max(v1, v2)
+                initial_conditions={"velocity": [v1, 0.0, 0.0], "pressure": p1},
+                physical_constraints={
+                    "min_pressure": min(p1, p2),
+                    "max_pressure": max(p1, p2),
+                    "min_velocity": min(v1, v2),
+                    "max_velocity": max(v1, v2)
+                }
             )
 
         # S4 & S5

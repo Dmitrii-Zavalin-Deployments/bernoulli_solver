@@ -42,7 +42,7 @@ class TestS5ComputeMinMaxConstraints(S5ComputeMinMaxConstraintsTestSignature):
         state = dummy.override(v1=2.0, v2=10.0)
         result = s5_step.compute_min_max_constraints(state, config)
         # 0.2 * max(2.0, 10.0) = 2.0
-        assert result.v_max == 12.0
+        assert result.physical_constraints["max_velocity"] == 12.0
 
     def test_computes_correct_p_min(self, s5_step, dummy, config):
         """S5 must compute p_min = min(p1, p2) - k_p_min * |p1 - p2|."""
