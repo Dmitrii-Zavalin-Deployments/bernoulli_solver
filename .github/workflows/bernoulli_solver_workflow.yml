@@ -372,8 +372,7 @@ jobs:
 
           ## 🔗 Ingestion → Pipeline Execution → Diagnostic Output
           A high-fidelity hydrodynamics transformation engine designed for structured JSON state vector ingestion,
-          missing physical variable reconstruction ($S_0 \rightarrow S_3$), Bernoulli energy residual calculation ($S_4$),
-          and physical constraint envelope export ($S_5$).
+          missing physical variable reconstruction, Bernoulli energy residual calculation, and physical constraint envelope export.
 
           ### 🖼️ Pipeline Preview (Input Vector → Config Limits → Solved State Output)
 
