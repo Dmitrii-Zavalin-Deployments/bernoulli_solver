@@ -336,8 +336,6 @@ jobs:
       - name: 📊 Audit Performance Ledger & Sync
         if: always()
         run: |
-          # WARNING: git reset/clean deletes non-tracked files. 
-          # Ensure your simulation artifacts are already saved/uploaded before this step!
           git reset --hard HEAD
           git clean -ffdx
           git pull origin HEAD --rebase
@@ -346,7 +344,7 @@ jobs:
           STATUS="${{ job.status }}"
           CURRENT_BRANCH=${GITHUB_REF##*/}
           
-          # Parse high-fidelity metrics populated during live engine load, fallback to idle if missing
+          # Parse peak metrics populated during live execution, fallback to idle if missing
           CPU_LOAD="${PEAK_COMPUTE_LOAD:-$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4 "%"}')}"
           MEM_USAGE="${PEAK_MEM_USAGE:-$(free -m | awk '/Mem:/ { print $3 "/" $2 "MB" }')}"
 
@@ -364,10 +362,12 @@ jobs:
           EOF
           )
 
-          # Extract JSON previews dynamically from Bernoulli solver input, config, and output files
+          # Extract JSON previews
           INPUT_PREVIEW=$(jq -r 'to_entries | map("<code>\(.key)</code>: <code>\(.value | tostring)</code>") | join("<br>")' data/testing-input-output/bernoulli_solver_input.json)
           CONFIG_PREVIEW=$(jq -r 'to_entries | map("<code>\(.key)</code>: <code>\(.value | tostring)</code>") | join("<br>")' config/config.json)
-          OUTPUT_PREVIEW=$(jq -r 'to_entries | map("<code>\(.key)</code>: <code>\(.value | tostring)</code>") | join("<br>")' data/testing-input-output/bernoulli_solver_output.json)
+          
+          # Extract ONLY the "results" object from output and keep formatted JSON syntax
+          RESULTS_PREVIEW=$(jq '.results' data/testing-input-output/bernoulli_solver_output.json)
 
           HEADER=$(cat <<EOF
           # 🌊 Bernoulli Fluid Dynamics Solver
@@ -381,23 +381,23 @@ jobs:
 
           <table align="center" style="border-collapse: collapse; background: transparent;">
             <tr>
-              <td style="padding: 10px; vertical-align: top;">
+              <td style="padding: 12px; vertical-align: top; text-align: left;">
                 <strong>bernoulli_solver_input.json</strong><br>
-                <div style="font-size: 13px; color: #ccc; margin-top: 6px;">$INPUT_PREVIEW</div>
-              </td>
-              <td style="padding: 12px; font-size: 24px; color: #666; vertical-align: middle;">
-                &rarr;
-              </td>
-              <td style="padding: 10px; vertical-align: top;">
+                <div style="font-size: 13px; margin-top: 6px;">
+                  $INPUT_PREVIEW
+                </div>
+                <div style="text-align: center; font-size: 20px; font-weight: bold; margin: 10px 0; color: #888;">+</div>
                 <strong>config.json (Solver Boundaries)</strong><br>
-                <div style="font-size: 13px; color: #ccc; margin-top: 6px;">$CONFIG_PREVIEW</div>
+                <div style="font-size: 13px; margin-top: 6px;">
+                  $CONFIG_PREVIEW
+                </div>
               </td>
-              <td style="padding: 12px; font-size: 24px; color: #666; vertical-align: middle;">
+              <td style="padding: 12px; font-size: 28px; color: #666; vertical-align: middle; text-align: center;">
                 &rarr;
               </td>
-              <td style="padding: 10px; vertical-align: top;">
-                <strong>bernoulli_solver_output.json</strong><br>
-                <div style="font-size: 13px; color: #ccc; margin-top: 6px;">$OUTPUT_PREVIEW</div>
+              <td style="padding: 12px; vertical-align: top; text-align: left;">
+                <strong>bernoulli_solver_output.json (results)</strong><br>
+                <pre style="margin-top: 6px; font-size: 12px;"><code>$RESULTS_PREVIEW</code></pre>
               </td>
             </tr>
           </table>
@@ -412,7 +412,7 @@ jobs:
           )
 
           if [ -f "README.md" ]; then
-              # Extract everything after the first horizontal rule to preserve history
+              # Extract everything after the first audit entry to preserve historical runs
               sed -n '/### Audit:/,$p' README.md > old_body.tmp
               echo "$HEADER" > README.md
               echo "$NEW_ENTRY" >> README.md
@@ -430,13 +430,13 @@ jobs:
             git commit -m "🤖 robot: audit ledger update [${{ job.status }}] [skip ci]"
             TARGET_COMMIT=$(git rev-parse HEAD)
 
-            # 1 Fetch remote notes
+            # Fetch remote notes
             git fetch origin refs/notes/commits:refs/notes/commits || true
 
-            # 2 Add note locally
+            # Attach Git note locally
             git notes add -f -m "robot: true" "$TARGET_COMMIT"
 
-            # 3 Push commit and notes
+            # Push commit and notes
             git pull origin HEAD --rebase || echo "Rebase failed, pushing without rebase."
             git push origin HEAD
             git push --force origin refs/notes/commits || true
