@@ -362,11 +362,9 @@ jobs:
           EOF
           )
 
-          # Extract JSON previews
-          INPUT_PREVIEW=$(jq -r 'to_entries | map("<code>\(.key)</code>: <code>\(.value | tostring)</code>") | join("<br>")' data/testing-input-output/bernoulli_solver_input.json)
-          CONFIG_PREVIEW=$(jq -r 'to_entries | map("<code>\(.key)</code>: <code>\(.value | tostring)</code>") | join("<br>")' config/config.json)
-          
-          # Extract ONLY the "results" object from output and keep formatted JSON syntax
+          # Extract full formatted JSON strings for inputs, config, and results
+          INPUT_PREVIEW=$(jq '.' data/testing-input-output/bernoulli_solver_input.json)
+          CONFIG_PREVIEW=$(jq '.' config/config.json)
           RESULTS_PREVIEW=$(jq '.results' data/testing-input-output/bernoulli_solver_output.json)
 
           HEADER=$(cat <<EOF
@@ -383,21 +381,19 @@ jobs:
             <tr>
               <td style="padding: 12px; vertical-align: top; text-align: left;">
                 <strong>bernoulli_solver_input.json</strong><br>
-                <div style="font-size: 13px; margin-top: 6px;">
-                  $INPUT_PREVIEW
-                </div>
-                <div style="text-align: center; font-size: 20px; font-weight: bold; margin: 10px 0; color: #888;">+</div>
+                <pre style="margin-top: 6px; margin-bottom: 0px; font-size: 12px;"><code>$INPUT_PREVIEW</code></pre>
+                
+                <div style="text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0; color: #888;">+</div>
+                
                 <strong>config.json (Solver Boundaries)</strong><br>
-                <div style="font-size: 13px; margin-top: 6px;">
-                  $CONFIG_PREVIEW
-                </div>
+                <pre style="margin-top: 6px; margin-bottom: 0px; font-size: 12px;"><code>$CONFIG_PREVIEW</code></pre>
               </td>
               <td style="padding: 12px; font-size: 28px; color: #666; vertical-align: middle; text-align: center;">
                 &rarr;
               </td>
               <td style="padding: 12px; vertical-align: top; text-align: left;">
                 <strong>bernoulli_solver_output.json (results)</strong><br>
-                <pre style="margin-top: 6px; font-size: 12px;"><code>$RESULTS_PREVIEW</code></pre>
+                <pre style="margin-top: 6px; margin-bottom: 0px; font-size: 12px;"><code>$RESULTS_PREVIEW</code></pre>
               </td>
             </tr>
           </table>
