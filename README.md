@@ -11,21 +11,33 @@ and physical constraint envelope export ($).
   <tr>
     <td style="padding: 12px; vertical-align: top; text-align: left;">
       <strong>bernoulli_solver_input.json</strong><br>
-      <div style="font-size: 13px; margin-top: 6px;">
-        <code>p1</code>: <code>101325.0</code><br><code>p2</code>: <code>100000.0</code><br><code>v1</code>: <code>2.5</code><br><code>h1</code>: <code>0.0</code><br><code>h2</code>: <code>0.4</code><br><code>rho</code>: <code>1000.0</code>
-      </div>
-      <div style="text-align: center; font-size: 20px; font-weight: bold; margin: 10px 0; color: #888;">+</div>
+      <pre style="margin-top: 6px; margin-bottom: 0px; font-size: 12px;"><code>{
+  "p1": 101325.0,
+  "p2": 100000.0,
+  "v1": 2.5,
+  "h1": 0.0,
+  "h2": 0.4,
+  "rho": 1000.0
+}</code></pre>
+      
+      <div style="text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0; color: #888;">+</div>
+      
       <strong>config.json (Solver Boundaries)</strong><br>
-      <div style="font-size: 13px; margin-top: 6px;">
-        <code>g</code>: <code>9.80665</code><br><code>precision</code>: <code>0.000001</code><br><code>k_v_min</code>: <code>0.15</code><br><code>k_v_max</code>: <code>0.25</code><br><code>k_p_min</code>: <code>0.12</code><br><code>k_p_max</code>: <code>0.18</code>
-      </div>
+      <pre style="margin-top: 6px; margin-bottom: 0px; font-size: 12px;"><code>{
+  "g": 9.80665,
+  "precision": 0.000001,
+  "k_v_min": 0.15,
+  "k_v_max": 0.25,
+  "k_p_min": 0.12,
+  "k_p_max": 0.18
+}</code></pre>
     </td>
     <td style="padding: 12px; font-size: 28px; color: #666; vertical-align: middle; text-align: center;">
       &rarr;
     </td>
     <td style="padding: 12px; vertical-align: top; text-align: left;">
       <strong>bernoulli_solver_output.json (results)</strong><br>
-      <pre style="margin-top: 6px; font-size: 12px;"><code>{
+      <pre style="margin-top: 6px; margin-bottom: 0px; font-size: 12px;"><code>{
   "p1": 101325.0,
   "p2": 100000.0,
   "v1": 2.5,
@@ -63,6 +75,13 @@ and physical constraint envelope export ($).
 ---
 
 ### 🧮 Performance Audit:
+### Audit: 2026-07-22 19:05:36 UTC
+- **Branch:** `main`
+- **Status:** `success`
+- **Run:** [Detailed Execution Logs](https://github.com/Dmitrii-Zavalin-Deployments/bernoulli_solver/actions/runs/29949442623)
+- **CPU Load:** `2%`
+- **Memory Usage:** `31/15989MB`
+---
 ### Audit: 2026-07-22 18:12:36 UTC
 - **Branch:** `main`
 - **Status:** `success`
