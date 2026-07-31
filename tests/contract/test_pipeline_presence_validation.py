@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from src.exceptions import ValidationError
 from src.main import BernoulliPipelineOrchestrator
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 from tests.signatures.presence_validation_signature import (
@@ -13,9 +14,11 @@ from tests.signatures.presence_validation_signature import (
 def orchestrator():
     return BernoulliPipelineOrchestrator()
 
+
 @pytest.fixture
 def ground_truth():
     return BernoulliStateDummy()
+
 
 @pytest.fixture
 def valid_config():
@@ -24,6 +27,7 @@ def valid_config():
         k_p_min=0.1, k_p_max=0.1, 
         k_v_min=0.1, k_v_max=0.1
     )
+
 
 class TestPipelinePresenceValidation(PresenceValidationTestSignature):
     """
@@ -47,7 +51,7 @@ class TestPipelinePresenceValidation(PresenceValidationTestSignature):
         # Test >1 missing (Should fail early validation)
         invalid_input = ground_truth.override(p1=None, p2=None)
         with pytest.raises(ValidationError): 
-             orchestrator.execute_pipeline(invalid_input, valid_config)
+            orchestrator.execute_pipeline(invalid_input, valid_config)
 
     def test_output_has_all_required_fields(self, orchestrator, ground_truth, valid_config, primary_fields, envelope_fields):
         input_state = ground_truth.override(p1=None)
