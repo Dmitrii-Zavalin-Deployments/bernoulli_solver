@@ -70,7 +70,7 @@ class TestS0Classification(S0ClassificationTestSignature):
         assert valid_state.energy == [100.0, 100.0]
 
     def test_classifies_diagnostic_fields(self, classifier, valid_state):
-        _, unfilled = classifier.classify_filled_and_unfilled(valid_state)
+        _, _unfilled = classifier.classify_filled_and_unfilled(valid_state)
         assert 'energy' in _unfilled
         assert 'p_min' in _unfilled
 

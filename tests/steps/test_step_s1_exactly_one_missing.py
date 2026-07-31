@@ -108,4 +108,4 @@ class TestStepS1ExactlyOneMissing(S1ExactlyOneMissingTestSignature):
         # Verify it returns the identity of the missing variable
         assert missing_var == 'p1'
         # Verify the returned dict is structurally the same as the input
-        assert 'p1' not in result_dict
+        assert 'p1' not in _result_dict
