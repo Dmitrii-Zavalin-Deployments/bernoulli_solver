@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
-from src.exceptions import ValidationError
+from src.steps.step_s1_exactly_one_missing import ValidationError
 
 from src.main import BernoulliPipelineOrchestrator
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy

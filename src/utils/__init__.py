@@ -1,13 +1,5 @@
-from src.utils.renderer import (
-    render_physical_boundary_map,
-    render_spatial_location_map,
-    render_step_snapshot,
-    set_debug_mode,
-)
+"""Utility modules for the Bernoulli solver."""
 
-__all__ = [
-    "render_physical_boundary_map",
-    "render_spatial_location_map",
-    "render_step_snapshot",
-    "set_debug_mode",
-]
+from src.utils.validate_schema import validate_schema
+
+__all__ = ["validate_schema"]
