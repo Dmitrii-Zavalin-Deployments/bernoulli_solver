@@ -1,8 +1,8 @@
 from types import SimpleNamespace
 
 import pytest
-
 from src.exceptions import ValidationError
+
 from src.main import BernoulliPipelineOrchestrator
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 from tests.signatures.presence_validation_signature import (
