@@ -1,9 +1,9 @@
 from types import SimpleNamespace
 
 import pytest
-from src.steps.step_s1_exactly_one_missing import ValidationError
 
 from src.main import BernoulliPipelineOrchestrator
+from src.steps.step_s1_exactly_one_missing import ValidationError
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 from tests.signatures.presence_validation_signature import (
     PresenceValidationTestSignature,
