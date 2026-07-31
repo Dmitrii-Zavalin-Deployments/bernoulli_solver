@@ -1,7 +1,11 @@
 import pytest
-from tests.signatures.s0_classification_scenarios_signature import S0ClassificationTestSignature
-from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+
 from src.steps.step_s0_filled_unfilled_classifier import FilledUnfilledClassifier
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.s0_classification_scenarios_signature import (
+    S0ClassificationTestSignature,
+)
+
 
 class TestS0Classification(S0ClassificationTestSignature):
     

@@ -1,9 +1,14 @@
-import pytest
-import math
 import copy
+import math
+
+import pytest
+
 from src.steps.step_s2_construct_partial_state import StepS2ConstructPartialState
-from tests.signatures.s2_construct_partial_state_test_signature import S2PartialStateEdgeCasesTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.s2_construct_partial_state_test_signature import (
+    S2PartialStateEdgeCasesTestSignature,
+)
+
 
 class TestS2PartialStateEdgeCases(S2PartialStateEdgeCasesTestSignature):
     """
@@ -131,5 +136,5 @@ class TestS2PartialStateEdgeCases(S2PartialStateEdgeCasesTestSignature):
         """S2 output must match the frozen dummy structure."""
         state = dummy.get_s1_compliant_state(missing_key="p1")
         result = s2_step.construct_partial_state(dict(state), "p1", sentinel)
-        assert math.isnan(getattr(result, "p1")) or getattr(result, "p1") is sentinel
+        assert math.isnan(result.p1) or result.p1 is sentinel
         assert result.p2 == 1.0

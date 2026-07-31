@@ -1,6 +1,8 @@
-from typing import List, Dict, Any
 from dataclasses import dataclass
+from typing import Any
+
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
+
 
 @dataclass(init=False)
 class BernoulliState(BernoulliStateInterface):
@@ -13,9 +15,17 @@ class BernoulliState(BernoulliStateInterface):
     
     # Enforce a strict memory layout and prevent the injection of excess properties
     __slots__ = (
-        'p1', 'p2', 'v1', 'v2', 'h1', 'h2', 'rho',
-        'energy', 'energy_imbalance',
-        'initial_conditions', 'physical_constraints'
+        'energy',
+        'energy_imbalance',
+        'h1',
+        'h2',
+        'initial_conditions',
+        'p1',
+        'p2',
+        'physical_constraints',
+        'rho',
+        'v1',
+        'v2'
     )
 
     # Explicit class-level type annotations matching BernoulliStateInterface 100%
@@ -26,10 +36,10 @@ class BernoulliState(BernoulliStateInterface):
     h1: float
     h2: float
     rho: float
-    energy: List[float]
+    energy: list[float]
     energy_imbalance: float
-    initial_conditions: Dict[str, Any]
-    physical_constraints: Dict[str, Any]
+    initial_conditions: dict[str, Any]
+    physical_constraints: dict[str, Any]
 
     def __init__(
         self,
@@ -40,10 +50,10 @@ class BernoulliState(BernoulliStateInterface):
         h1: float,
         h2: float,
         rho: float,
-        energy: List[float],
+        energy: list[float],
         energy_imbalance: float,
-        initial_conditions: Dict[str, Any],
-        physical_constraints: Dict[str, Any]
+        initial_conditions: dict[str, Any],
+        physical_constraints: dict[str, Any]
     ):
         """
         Pure assignment constructor. No defaults, no implicit type casting, 

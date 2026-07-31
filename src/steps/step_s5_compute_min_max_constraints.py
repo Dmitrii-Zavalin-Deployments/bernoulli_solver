@@ -1,6 +1,10 @@
 from typing import Any
-from src.interfaces.step_interfaces.step_s5_compute_min_max_constraints_interface import StepS5ComputeMinMaxConstraintsInterface
+
 from src.containers.bernoulli_state import BernoulliState
+from src.interfaces.step_interfaces.step_s5_compute_min_max_constraints_interface import (
+    StepS5ComputeMinMaxConstraintsInterface,
+)
+
 
 class StepS5ComputeMinMaxConstraints(StepS5ComputeMinMaxConstraintsInterface):
     """

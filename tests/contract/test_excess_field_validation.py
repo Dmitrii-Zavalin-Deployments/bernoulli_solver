@@ -1,9 +1,12 @@
 import json
 from pathlib import Path
 from typing import get_type_hints
+
 from src.containers.bernoulli_state import BernoulliState
-from tests.signatures.excess_field_validation_signature import ExcessFieldValidationTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.excess_field_validation_signature import (
+    ExcessFieldValidationTestSignature,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 INPUT_SCHEMA = BASE_DIR / "schema/bernoulli_input.schema.json"

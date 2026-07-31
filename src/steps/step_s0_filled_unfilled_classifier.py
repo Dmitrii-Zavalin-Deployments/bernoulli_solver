@@ -1,5 +1,8 @@
-from typing import Set, Tuple
-from src.interfaces.step_interfaces.step_s0_filled_unfilled_classifier_interface import FilledUnfilledClassifierInterface
+
+from src.interfaces.step_interfaces.step_s0_filled_unfilled_classifier_interface import (
+    FilledUnfilledClassifierInterface,
+)
+
 
 class FilledUnfilledClassifier(FilledUnfilledClassifierInterface):
     """
@@ -8,7 +11,7 @@ class FilledUnfilledClassifier(FilledUnfilledClassifierInterface):
     a 100% rigid match of the core code to the constitution.
     """
 
-    def classify_filled_and_unfilled(self, input_schema_instance) -> Tuple[Set[str], Set[str]]:
+    def classify_filled_and_unfilled(self, input_schema_instance) -> tuple[set[str], set[str]]:
         """
         Given an input schema instance, return two sets: filled_fields and unfilled_fields.
         

@@ -1,7 +1,14 @@
 import pytest
-from src.steps.step_s1_exactly_one_missing import StepS1ExactlyOneMissing, ValidationError
-from tests.signatures.s1_exactly_one_missing_test_signature import S1ExactlyOneMissingTestSignature
+
+from src.steps.step_s1_exactly_one_missing import (
+    StepS1ExactlyOneMissing,
+    ValidationError,
+)
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.s1_exactly_one_missing_test_signature import (
+    S1ExactlyOneMissingTestSignature,
+)
+
 
 class TestStepS1ExactlyOneMissing(S1ExactlyOneMissingTestSignature):
     """

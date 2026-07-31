@@ -1,5 +1,7 @@
 import copy
+
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
+
 
 class BernoulliStateDummy(dict, BernoulliStateInterface):
     def __init__(self):

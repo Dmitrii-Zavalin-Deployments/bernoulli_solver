@@ -1,7 +1,11 @@
 import math
-from typing import Dict, Any
-from src.interfaces.step_interfaces.step_s2_construct_partial_state_interface import StepS2ConstructPartialStateInterface
+from typing import Any
+
 from src.containers.bernoulli_state import BernoulliState
+from src.interfaces.step_interfaces.step_s2_construct_partial_state_interface import (
+    StepS2ConstructPartialStateInterface,
+)
+
 
 class StepS2ConstructPartialState(StepS2ConstructPartialStateInterface):
     """
@@ -12,7 +16,7 @@ class StepS2ConstructPartialState(StepS2ConstructPartialStateInterface):
 
     def construct_partial_state(
         self, 
-        validated_input_dict: Dict[str, Any], 
+        validated_input_dict: dict[str, Any], 
         missing_variable_name: str, 
         unfilled_sentinel: Any
     ) -> BernoulliState:

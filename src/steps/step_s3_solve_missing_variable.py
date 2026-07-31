@@ -1,8 +1,11 @@
-import math
 import logging
+import math
 from typing import Any
-from src.interfaces.step_interfaces.step_s3_solve_missing_variable_interface import StepS3SolveMissingVariableInterface
+
 from src.containers.bernoulli_state import BernoulliState
+from src.interfaces.step_interfaces.step_s3_solve_missing_variable_interface import (
+    StepS3SolveMissingVariableInterface,
+)
 
 # Configure module-level logger
 logger = logging.getLogger(__name__)
@@ -61,7 +64,7 @@ class StepS3SolveMissingVariable(StepS3SolveMissingVariableInterface):
 
         except Exception as e:
             # Log the full context before re-raising
-            error_msg = f"Numerical solver failure at field '{missing_field}': {str(e)}"
+            error_msg = f"Numerical solver failure at field '{missing_field}': {e!s}"
             logger.error(error_msg, exc_info=True) 
             raise ValueError(error_msg) from e
 

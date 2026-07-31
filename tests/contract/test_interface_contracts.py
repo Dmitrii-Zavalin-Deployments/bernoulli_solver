@@ -1,12 +1,25 @@
 import pytest
+
+from src.interfaces.step_interfaces.step_s0_filled_unfilled_classifier_interface import (
+    FilledUnfilledClassifierInterface,
+)
+from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import (
+    StepS1ExactlyOneMissingInterface,
+)
+from src.interfaces.step_interfaces.step_s2_construct_partial_state_interface import (
+    StepS2ConstructPartialStateInterface,
+)
+from src.interfaces.step_interfaces.step_s3_solve_missing_variable_interface import (
+    StepS3SolveMissingVariableInterface,
+)
+from src.interfaces.step_interfaces.step_s4_compute_energy_residual_interface import (
+    StepS4ComputeEnergyResidualInterface,
+)
+from src.interfaces.step_interfaces.step_s5_compute_min_max_constraints_interface import (
+    StepS5ComputeMinMaxConstraintsInterface,
+)
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
 
-from src.interfaces.step_interfaces.step_s0_filled_unfilled_classifier_interface import FilledUnfilledClassifierInterface
-from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import StepS1ExactlyOneMissingInterface
-from src.interfaces.step_interfaces.step_s2_construct_partial_state_interface import StepS2ConstructPartialStateInterface
-from src.interfaces.step_interfaces.step_s3_solve_missing_variable_interface import StepS3SolveMissingVariableInterface
-from src.interfaces.step_interfaces.step_s4_compute_energy_residual_interface import StepS4ComputeEnergyResidualInterface
-from src.interfaces.step_interfaces.step_s5_compute_min_max_constraints_interface import StepS5ComputeMinMaxConstraintsInterface
 
 @pytest.fixture
 def dummy_state():

@@ -1,10 +1,14 @@
 import json
-import pytest
 from typing import get_type_hints
+
+import pytest
 
 from src.interfaces.bernoulli_state_interface import BernoulliStateInterface
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
-from tests.signatures.schema_state_mapping_signature import SchemaStateMappingTestSignature
+from tests.signatures.schema_state_mapping_signature import (
+    SchemaStateMappingTestSignature,
+)
+
 
 class TestSchemaStateMapping(SchemaStateMappingTestSignature):
     """

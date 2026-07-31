@@ -1,8 +1,13 @@
-import pytest
 from types import SimpleNamespace
-from tests.signatures.presence_validation_signature import PresenceValidationTestSignature
-from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+
+import pytest
+
 from src.main import BernoulliPipelineOrchestrator
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.presence_validation_signature import (
+    PresenceValidationTestSignature,
+)
+
 
 @pytest.fixture
 def orchestrator():

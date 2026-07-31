@@ -1,10 +1,15 @@
-import math
 import copy
+import math
+
 import pytest
-from src.main import BernoulliPipelineOrchestrator
+
 from config.config_loader import SolverConfig
-from tests.signatures.pipeline_round_trip_scenarios_signature import PipelineRoundTripScenariosTestSignature
+from src.main import BernoulliPipelineOrchestrator
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.pipeline_round_trip_scenarios_signature import (
+    PipelineRoundTripScenariosTestSignature,
+)
+
 
 class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
     """

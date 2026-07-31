@@ -1,5 +1,9 @@
-from typing import Dict, Any, Tuple
-from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import StepS1ExactlyOneMissingInterface
+from typing import Any
+
+from src.interfaces.step_interfaces.step_s1_exactly_one_missing_interface import (
+    StepS1ExactlyOneMissingInterface,
+)
+
 
 class ValidationError(ValueError):
     """Structural validation failure."""
@@ -11,7 +15,7 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
     a 100% rigid structural match to the project constitution.
     """
 
-    def enforce_exactly_one_missing(self, raw_input_dict: Dict[str, Any]) -> Tuple[Dict[str, Any], str]:
+    def enforce_exactly_one_missing(self, raw_input_dict: dict[str, Any]) -> tuple[dict[str, Any], str]:
         """
         Validates the raw input dictionary structural layout. 
         Enforces that exactly one primary variable is missing and no unexpected 

@@ -1,10 +1,15 @@
-import pytest
-import math
 import copy
+import math
 from types import SimpleNamespace
-from tests.signatures.s4_compute_energy_residual_test_signature import S4ComputeEnergyResidualTestSignature
+
+import pytest
+
 from src.steps.step_s4_compute_energy_residual import StepS4ComputeEnergyResidual
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.s4_compute_energy_residual_test_signature import (
+    S4ComputeEnergyResidualTestSignature,
+)
+
 
 class TestS3ComputeEnergyResidual(S4ComputeEnergyResidualTestSignature):
     """

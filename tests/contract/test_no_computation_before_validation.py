@@ -1,9 +1,14 @@
-import pytest
-from unittest.mock import patch
 from types import SimpleNamespace
-from src.main import run_solver, BernoulliPipelineOrchestrator
-from tests.signatures.no_computation_before_validation_signature import NoComputationBeforeValidationTestSignature
+from unittest.mock import patch
+
+import pytest
+
+from src.main import BernoulliPipelineOrchestrator, run_solver
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.no_computation_before_validation_signature import (
+    NoComputationBeforeValidationTestSignature,
+)
+
 
 @pytest.fixture
 def dummy_state():
@@ -49,7 +54,9 @@ class TestNoComputationBeforeValidation(NoComputationBeforeValidationTestSignatu
         Verify that intermediate steps (like S0) cannot be called 
         with malformed data.
         """
-        from src.steps.step_s0_filled_unfilled_classifier import FilledUnfilledClassifier
+        from src.steps.step_s0_filled_unfilled_classifier import (
+            FilledUnfilledClassifier,
+        )
         
         s0 = FilledUnfilledClassifier()
         

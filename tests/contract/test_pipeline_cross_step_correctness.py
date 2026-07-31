@@ -1,10 +1,15 @@
-import pytest
 import copy
-from typing import Dict, Any
-from tests.signatures.pipeline_cross_step_correctness_scenarios_signature import PipelineCrossStepCorrectnessScenariosTestSignature
-from src.main import BernoulliPipelineOrchestrator
+from typing import Any
+
+import pytest
+
 from config.config_loader import SolverConfig
+from src.main import BernoulliPipelineOrchestrator
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.pipeline_cross_step_correctness_scenarios_signature import (
+    PipelineCrossStepCorrectnessScenariosTestSignature,
+)
+
 
 class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTestSignature):
     """
@@ -31,7 +36,7 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
         )
 
     @pytest.fixture
-    def baseline_input(self) -> Dict[str, Any]:
+    def baseline_input(self) -> dict[str, Any]:
         """Physics-compliant baseline for Bernoulli validation, utilizing the Dummy state."""
         return BernoulliStateDummy().override(
             p1=101325.0, 

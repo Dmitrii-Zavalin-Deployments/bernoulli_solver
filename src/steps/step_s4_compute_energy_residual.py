@@ -1,6 +1,10 @@
 from typing import Any
-from src.interfaces.step_interfaces.step_s4_compute_energy_residual_interface import StepS4ComputeEnergyResidualInterface
+
 from src.containers.bernoulli_state import BernoulliState
+from src.interfaces.step_interfaces.step_s4_compute_energy_residual_interface import (
+    StepS4ComputeEnergyResidualInterface,
+)
+
 
 class StepS4ComputeEnergyResidual(StepS4ComputeEnergyResidualInterface):
     """

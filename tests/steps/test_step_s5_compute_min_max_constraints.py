@@ -1,9 +1,14 @@
-import pytest
 import copy
 from types import SimpleNamespace
-from tests.signatures.s5_compute_min_max_constraints_test_signature import S5ComputeMinMaxConstraintsTestSignature
+
+import pytest
+
 from src.steps.step_s5_compute_min_max_constraints import StepS5ComputeMinMaxConstraints
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.s5_compute_min_max_constraints_test_signature import (
+    S5ComputeMinMaxConstraintsTestSignature,
+)
+
 
 class TestS5ComputeMinMaxConstraints(S5ComputeMinMaxConstraintsTestSignature):
     """

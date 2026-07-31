@@ -4,7 +4,7 @@ import logging
 import sys
 from dataclasses import asdict
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 import jsonschema
 import numpy as np
@@ -48,7 +48,7 @@ class BernoulliPipelineOrchestrator:
         self.s5_enveloper = StepS5ComputeMinMaxConstraints()
         logger.info("Pipeline components instantiated successfully.")
 
-    def _validate_boundaries(self, raw_input: Dict[str, Any]) -> None:
+    def _validate_boundaries(self, raw_input: dict[str, Any]) -> None:
         logger.debug("Executing pre-flight boundary validation.")
         p1, p2 = raw_input.get("p1"), raw_input.get("p2")
         if (p1 is not None and p1 < 0) or (p2 is not None and p2 < 0):
@@ -61,7 +61,7 @@ class BernoulliPipelineOrchestrator:
             raise ValueError("Velocity exceeds physical limits.")
         logger.debug("Pre-flight boundary validation passed.")
 
-    def execute_pipeline(self, raw_input: Dict[str, Any], config: SolverConfig) -> BernoulliState:
+    def execute_pipeline(self, raw_input: dict[str, Any], config: SolverConfig) -> BernoulliState:
         logger.info("Starting pipeline execution.")
         
         if config is None:

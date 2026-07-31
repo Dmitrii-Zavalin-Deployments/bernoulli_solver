@@ -1,9 +1,12 @@
-import pytest
-import jsonschema
 import sys
-from unittest.mock import patch, MagicMock, mock_open
-from src.main import BernoulliPipelineOrchestrator, run_solver, main
+from unittest.mock import MagicMock, mock_open, patch
+
+import jsonschema
+import pytest
+
 from src.containers.bernoulli_state import BernoulliState
+from src.main import BernoulliPipelineOrchestrator, main, run_solver
+
 
 @pytest.fixture
 def orchestrator():

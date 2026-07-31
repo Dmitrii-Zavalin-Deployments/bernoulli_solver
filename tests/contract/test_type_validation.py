@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
-from typing import get_type_hints, get_origin
+from typing import get_origin, get_type_hints
+
 from src.containers.bernoulli_state import BernoulliState
-from tests.signatures.type_validation_signature import TypeValidationTestSignature
 from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.type_validation_signature import TypeValidationTestSignature
 
 # Resolve paths to schema definitions
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

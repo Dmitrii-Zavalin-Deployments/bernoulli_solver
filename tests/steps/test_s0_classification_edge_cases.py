@@ -1,9 +1,14 @@
-import pytest
 import copy
+
+import pytest
+
 from src.main import BernoulliPipelineOrchestrator
-from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
-from tests.signatures.s0_classification_edge_cases_signature import S0ClassificationEdgeCasesTestSignature
 from src.steps.step_s1_exactly_one_missing import ValidationError
+from tests.dummies.dummy_bernoulli_state import BernoulliStateDummy
+from tests.signatures.s0_classification_edge_cases_signature import (
+    S0ClassificationEdgeCasesTestSignature,
+)
+
 
 class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
     """
