@@ -64,7 +64,7 @@ class StepS3SolveMissingVariable(StepS3SolveMissingVariableInterface):
 
         except Exception as e:
             # Log the full context before re-raising
-            error_msg = f"Numerical solver failure at field '{missing_field}': {str(e)}"
+            error_msg = f"Numerical solver failure at field '{missing_field}': {e!s}"
             logger.exception(error_msg)
             raise ValueError(error_msg) from e
 
