@@ -28,7 +28,7 @@ class TestStepS1ExactlyOneMissing(S1ExactlyOneMissingTestSignature):
         # Remove exactly one
         del dummy['p1']
         
-        result_dict, missing_var = self.s1.enforce_exactly_one_missing(dummy)
+        _result_dict, missing_var = self.s1.enforce_exactly_one_missing(dummy)
         assert missing_var == 'p1'
 
     def test_rejects_zero_missing_primary(self):
@@ -103,7 +103,7 @@ class TestStepS1ExactlyOneMissing(S1ExactlyOneMissingTestSignature):
         dummy = BernoulliStateDummy()
         del dummy['p1']
         
-        result_dict, missing_var = self.s1.enforce_exactly_one_missing(dummy)
+        _result_dict, missing_var = self.s1.enforce_exactly_one_missing(dummy)
         
         # Verify it returns the identity of the missing variable
         assert missing_var == 'p1'

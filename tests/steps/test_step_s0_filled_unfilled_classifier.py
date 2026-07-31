@@ -31,7 +31,7 @@ class TestS0Classification(S0ClassificationTestSignature):
         del invalid_state['p1']
         filled, _unfilled = classifier.classify_filled_and_unfilled(invalid_state)
         assert 'p1' not in filled
-        assert 'p1' in unfilled
+        assert 'p1' in _unfilled
 
     def test_rejects_excess_fields(self, classifier, valid_state):
         # Excess fields are completely excluded from structural universes
@@ -39,7 +39,7 @@ class TestS0Classification(S0ClassificationTestSignature):
         invalid_state['illegal_field'] = 999
         filled, _unfilled = classifier.classify_filled_and_unfilled(invalid_state)
         assert 'illegal_field' not in filled
-        assert 'illegal_field' not in unfilled
+        assert 'illegal_field' not in _unfilled
 
     def test_rejects_non_numeric_values(self, classifier, valid_state):
         # Types are ignored structurally; type checking is entirely deferred to S1
@@ -71,8 +71,8 @@ class TestS0Classification(S0ClassificationTestSignature):
 
     def test_classifies_diagnostic_fields(self, classifier, valid_state):
         _, unfilled = classifier.classify_filled_and_unfilled(valid_state)
-        assert 'energy' in unfilled
-        assert 'p_min' in unfilled
+        assert 'energy' in _unfilled
+        assert 'p_min' in _unfilled
 
     def test_consistency_passthrough(self, classifier, valid_state):
         # S0 should just pass the dict through logic without modifying values
@@ -88,4 +88,4 @@ class TestS0Classification(S0ClassificationTestSignature):
     def test_frozen_dummy_alignment(self, classifier, valid_state):
         filled, _ = classifier.classify_filled_and_unfilled(valid_state)
         # Logic check: Verify that S0 returns a set/dict that maps to the dummy
-        assert isinstance(filled, set) or isinstance(filled, dict)
+        assert isinstance(filled, (set, dict))
