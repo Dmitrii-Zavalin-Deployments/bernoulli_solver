@@ -64,13 +64,8 @@ class StepS3SolveMissingVariable(StepS3SolveMissingVariableInterface):
 
         except Exception as e:
             # Log the full context before re-raising
-<<<<<<< Updated upstream
-            error_msg = f"Numerical solver failure at field '{missing_field}': {e!s}"
-            logger.error(error_msg, exc_info=True) 
-=======
             error_msg = f"Numerical solver failure at field '{missing_field}': {str(e)}"
-            logger.exception(error_msg) 
->>>>>>> Stashed changes
+            logger.exception(error_msg)
             raise ValueError(error_msg) from e
 
         # Construct the Sovereign Container
