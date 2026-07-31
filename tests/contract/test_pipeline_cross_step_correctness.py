@@ -134,7 +134,7 @@ class TestPipelineCrossStepCorrectness(PipelineCrossStepCorrectnessScenariosTest
 
     def test_pipeline_output_alignment(self, executed_state):
         dummy = BernoulliStateDummy()
-        for key in dummy.keys():
+        for key in dummy:
             assert hasattr(executed_state, key)
         for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:
             assert hasattr(executed_state, attr)

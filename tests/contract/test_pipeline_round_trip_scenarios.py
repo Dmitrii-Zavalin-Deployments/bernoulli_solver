@@ -169,7 +169,7 @@ class TestPipelineRoundTripScenarios(PipelineRoundTripScenariosTestSignature):
         res = orchestrator.execute_pipeline(ground_truth, valid_config)
         dummy = BernoulliStateDummy()
         # Verify alignment using the dummy's interface definition
-        for key in dummy.keys():
+        for key in dummy:
             assert hasattr(res, key)
         # Verify non-dict attributes
         for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:

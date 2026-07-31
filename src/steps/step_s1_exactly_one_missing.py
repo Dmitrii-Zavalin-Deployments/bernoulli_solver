@@ -42,7 +42,7 @@ class StepS1ExactlyOneMissing(StepS1ExactlyOneMissingInterface):
         if len(missing_fields) == 0:
             raise ValidationError("Validation failed: No missing variables.")
         elif len(missing_fields) == 1:
-            missing_variable = list(missing_fields)[0]
+            missing_variable = next(iter(missing_fields))
         else:
             raise ValidationError(f"Validation failed: Too many missing variables: {missing_fields}")
         

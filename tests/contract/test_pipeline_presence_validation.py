@@ -46,7 +46,7 @@ class TestPipelinePresenceValidation(PresenceValidationTestSignature):
 
         # Test >1 missing (Should fail early validation)
         invalid_input = ground_truth.override(p1=None, p2=None)
-        with pytest.raises(Exception): 
+        with pytest.raises(ValidationError): 
              orchestrator.execute_pipeline(invalid_input, valid_config)
 
     def test_output_has_all_required_fields(self, orchestrator, ground_truth, valid_config, primary_fields, envelope_fields):

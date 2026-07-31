@@ -123,7 +123,7 @@ class TestS0ClassificationEdgeCases(S0ClassificationEdgeCasesTestSignature):
     def test_frozen_dummy_alignment(self, orchestrator, valid_base, config):
         res = orchestrator.execute_pipeline(valid_base, config)
         dummy = BernoulliStateDummy().get_s1_compliant_state(missing_key="h1")
-        for key in dummy.keys():
+        for key in dummy:
             assert hasattr(res, key)
             
         # Fixed: Checking structure compatibility against dictionary constraints

@@ -139,7 +139,7 @@ class TestPipelineMissingVariableScenarios(PipelineMissingVariableScenariosTestS
         res, _ = self._run_scenario(orchestrator, ground_truth, valid_config, "v2")
         dummy = BernoulliStateDummy()
         # Verify alignment using the dummy's interface definition
-        for key in dummy.keys():
+        for key in dummy:
             assert hasattr(res, key)
         # Verify non-dict attributes
         for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:

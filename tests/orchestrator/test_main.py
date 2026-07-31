@@ -24,8 +24,8 @@ def test_execute_pipeline_identity_path(orchestrator, mock_config):
     raw_input = {"p1": 100, "p2": 50, "v1": 10, "v2": 5, "h1": 0, "h2": 0, "rho": 1.0}
     
     # Mocking steps to return valid data without solving for a missing variable
-    with patch.object(orchestrator.s0_classifier, 'classify_filled_and_unfilled', return_value=(None, None)):
-        with patch.object(orchestrator.s1_validator, 'enforce_exactly_one_missing', return_value=(raw_input, None)):
+    with patch.object(orchestrator.s0_classifier, 'classify_filled_and_unfilled', return_value=(None, None)), \
+        patch.object(orchestrator.s1_validator, 'enforce_exactly_one_missing', return_value=(raw_input, None)):
             # Fixed: Initialized all required fields for BernoulliState using dictionary constraints mapping
             with patch.object(orchestrator.s2_constructor, 'construct_partial_state', 
                               return_value=BernoulliState(

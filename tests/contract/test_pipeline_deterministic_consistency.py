@@ -105,7 +105,7 @@ class TestPipelineDeterministicConsistency(PipelineDeterministicConsistencyScena
     def test_pipeline_output_alignment(self, result_state):
         dummy = BernoulliStateDummy()
         # Verify alignment using the dummy's interface definition
-        for key in dummy.keys():
+        for key in dummy:
             assert hasattr(result_state, key)
         # Verify non-dict attributes
         for attr in ['energy', 'energy_imbalance', 'initial_conditions', 'physical_constraints']:
