@@ -6,7 +6,7 @@ from jsonschema import ValidationError
 
 
 def main():
-    schema_path = "schema/bernoulli_solver_output_schema.json"
+    schema_path = "schema/bernoulli_output.schema.json"
     output_path = "data/testing-input-output/bernoulli_solver_output.json"
 
     try:
