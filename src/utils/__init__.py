@@ -1,5 +1,5 @@
 """Utility modules for the Bernoulli solver."""
 
-from src.utils.validate_schema import validate_schema
+from src.utils.validate_schema import main
 
-__all__ = ["validate_schema"]
+__all__ = ["main"]
