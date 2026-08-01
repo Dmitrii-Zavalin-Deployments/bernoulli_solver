@@ -1,0 +1,46 @@
+{
+  "inputs": {
+    "p1": 101325.0,
+    "p2": 100000.0,
+    "v1": 2.5,
+    "h1": 0.0,
+    "h2": 0.4,
+    "rho": 1000.0
+  },
+  "config": {
+    "g": 9.80665,
+    "precision": 1e-06,
+    "k_v_min": 0.15,
+    "k_v_max": 0.25,
+    "k_p_min": 0.12,
+    "k_p_max": 0.18
+  },
+  "results": {
+    "p1": 101325.0,
+    "p2": 100000.0,
+    "v1": 2.5,
+    "v2": 1.0269761438319784,
+    "h1": 0.0,
+    "h2": 0.4,
+    "rho": 1000.0,
+    "energy": [
+      104450.0,
+      104450.0
+    ],
+    "energy_imbalance": 0.0,
+    "initial_conditions": {
+      "velocity": [
+        2.5,
+        0.0,
+        0.0
+      ],
+      "pressure": 101325.0
+    },
+    "physical_constraints": {
+      "min_pressure": 96500.0,
+      "max_pressure": 105012.5,
+      "min_velocity": -2.875,
+      "max_velocity": 3.125
+    }
+  }
+}
